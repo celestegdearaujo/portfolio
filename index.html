@@ -91,7 +91,6 @@
   #playBtn{
     transition: transform .4s cubic-bezier(.22,1,.36,1), background .3s ease, opacity .25s ease;
   }
-  #playBtn:hover{ transform: translate(-50%,-50%) scale(1.18); background: rgba(230,57,155,0.4); }
   #playBtn.is-hidden{ opacity:0; pointer-events:none; transform: translate(-50%,-50%) scale(0.85); }
   .ctrl-btn{ opacity:.85; transition: opacity .15s ease, filter .15s ease; }
   .ctrl-btn:hover{ opacity:1; filter: drop-shadow(0 0 4px var(--pink-light)); }
@@ -105,33 +104,33 @@
   <!-- ============ FIXED CHROME: header + sidebar ============ -->
   <div id="chrome-fixed">
 
-    <div class="abs" style="left:0px; top:0px; width:1920px; height:122px; background:rgba(13,13,13,0.72); border-bottom:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(4px);"></div>
+    <div class="abs" style="left:0px; top:0px; width:1920px; height:122px; background:linear-gradient(90deg, transparent 0%, rgba(13,13,13,0.72) 50%, transparent 100%); border-bottom:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(4px);"></div>
 
-    <a href="#inicio" class="abs" style="left:69px; top:26px; width:118px; height:62px;">
+    <a href="#inicio" class="abs" style="left:69px; top:30px; width:118px; height:62px;">
       <img src="assets/logo.png" alt="Celeste Gouvea — logo" style="width:100%; height:100%; object-fit:contain;" />
     </a>
 
-    <a href="#conteudo" class="abs pill segoe" style="left:952px; top:47px; width:277px; height:42px; font-size:calc(20px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
+    <a href="#conteudo" class="abs pill segoe" style="left:952px; top:40px; width:277px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
       <img src="assets/icons/icone-teclado.png" alt="" style="width:26px; height:18px;" /> Ir para o Conteúdo <span style="opacity:.6">[Alt + 1]</span>
     </a>
-    <a href="#menu" class="abs pill segoe" style="left:1292px; top:47px; width:240px; height:42px; font-size:calc(20px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
+    <a href="#menu" class="abs pill segoe" style="left:1256px; top:40px; width:240px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
       <img src="assets/icons/icone-teclado.png" alt="" style="width:26px; height:18px;" /> Ir para o Menu <span style="opacity:.6">[Alt + 2]</span>
     </a>
 
-    <button id="fontMinus" title="Diminuir texto" class="abs pill" style="left:1526px; top:41px; width:52px; height:51px; font-weight:300; font-size:22px; border-radius:12px;">A-</button>
-    <button id="fontPlus" title="Aumentar texto" class="abs pill" style="left:1593px; top:40px; width:51px; height:51px; font-weight:300; font-size:21px; border-radius:12px;">A+</button>
-    <button id="contrastToggle" title="Alto contraste" class="abs pill" style="left:1662px; top:40px; width:51px; height:51px; border-radius:50%;">
+    <button id="fontMinus" title="Diminuir texto" class="abs pill" style="left:1526px; top:35.5px; width:52px; height:51px; font-weight:300; font-size:22px; border-radius:12px;">A-</button>
+    <button id="fontPlus" title="Aumentar texto" class="abs pill" style="left:1593px; top:35.5px; width:51px; height:51px; font-weight:300; font-size:21px; border-radius:12px;">A+</button>
+    <button id="contrastToggle" title="Alto contraste" class="abs pill" style="left:1662px; top:35.5px; width:51px; height:51px; border-radius:50%;">
       <img src="assets/icons/icone-altocontraste.png" alt="" style="width:24px; height:24px;" />
     </button>
-    <button id="themeToggle" title="Modo claro/escuro" class="abs pill" style="left:1729px; top:40px; width:52px; height:51px; border-radius:50%;">
+    <button id="themeToggle" title="Modo claro/escuro" class="abs pill" style="left:1729px; top:35.5px; width:52px; height:51px; border-radius:50%;">
       <img src="assets/icons/icone-darkmode.png" alt="" style="width:26px; height:26px;" />
     </button>
-    <button title="Acessibilidade" class="abs" style="left:1796px; top:39px; width:52px; height:52px; border-radius:50%; background:var(--pink-bold); display:flex; align-items:center; justify-content:center;">
+    <button title="Acessibilidade" class="abs" style="left:1796px; top:35px; width:52px; height:52px; border-radius:50%; background:var(--pink-bold); display:flex; align-items:center; justify-content:center;">
       <img src="assets/icons/icone-acessibilidade.png" alt="Acessibilidade" style="width:30px; height:30px;" />
     </button>
 
     <!-- SIDEBAR -->
-    <div class="abs card-panel" style="left:64px; top:227px; width:540px; height:749px; background:rgba(13,13,13,0.72); border-color: rgba(230,57,155,0.25);"></div>
+    <div class="abs card-panel" style="left:64px; top:227px; width:540px; height:650px; background:rgba(13,13,13,0.72); border-color: rgba(230,57,155,0.25);"></div>
 
     <img src="assets/img-ferramentas.png" alt="" class="abs" style="left:92px; top:255px; width:56px; height:305px; opacity:.9; pointer-events:none;" />
     <img src="assets/img-ilustracao.png" alt="Ilustração: 'Olá' e retrato de Celeste, designer, com estrelas decorativas" class="abs" style="left:140px; top:255px; width:412px; height:auto;" />
@@ -161,7 +160,7 @@
         <img class="seta-hover abs" src="assets/icons/icone-seta-hover.png" style="left:0;top:0;width:14px;height:26px;" alt="" />
       </span>
     </a>
-    <div class="abs" style="left:100px; top:776px; width:340px; border-top:1px solid rgba(255,255,255,0.1);"></div>
+    <div class="abs" style="left:169px; top:776px; width:352px; border-top:1px solid rgba(255,255,255,0.1);"></div>
 
     <a href="https://www.linkedin.com" target="_blank" rel="noopener" class="abs nav-item" style="left:100px; top:792px; width:440px; height:43px;">
       <img class="icon-ring abs" src="assets/icons/icone-alvo.png" alt="" style="left:70px; top:0; width:41px; height:42px;" />
@@ -183,7 +182,7 @@
   <div id="page-scale-wrapper">
     <div id="page-scale">
 
-      <div id="conteudo" class="abs card-panel" style="left:777px; top:221px; width:1020px; height:1082px;"></div>
+      <div id="conteudo" class="abs card-panel" style="left:777px; top:221px; width:1020px; height:1193px;"></div>
 
       <button class="tab-btn abs pill active" data-tab="todos" style="left:814px; top:287px; width:100px; height:37px;">Todos</button>
       <button class="tab-btn abs pill" data-tab="elearning" style="left:923px; top:287px; width:119px; height:37px;">E-learning</button>
@@ -192,7 +191,7 @@
       <button class="tab-btn abs pill" data-tab="outros" style="left:1312px; top:287px; width:86px; height:37px;">Outros</button>
 
       <span class="abs" style="left:1427px; top:292px; font-size:calc(20px * var(--font-scale)); font-weight:400; color:rgba(255,255,255,0.8);">Ordenar por:</span>
-      <div class="abs" style="left:1568px; top:288px;">
+      <div class="abs" style="left:1549px; top:288px;">
         <button id="sortBtn" class="pill" style="width:156px; height:37px; font-size:calc(20px * var(--font-scale)); font-weight:400; gap:6px; padding:0 16px;">
           <span id="sortLabel">Mais recentes</span> <span style="font-size:10px;">▾</span>
         </button>
@@ -209,15 +208,15 @@
       <div class="abs segoe" style="left:903px; top:386px; font-size:16px; color:#fff;">
         <span class="pink-bold">CLIENTE</span> / LOREM
       </div>
-      <span class="abs" style="left:1050px; top:389px; opacity:.4; color:var(--pink-bold);">+</span>
+      <img src="assets/icons/icone-estrela.png" alt="" class="abs" style="left:1050px; top:389px; width:14px; height:14px; opacity:.4;" />
       <div class="abs segoe" style="left:1084px; top:386px; font-size:16px; color:#fff;">
         <span class="pink-bold">PROJETO</span> / LOREM IPSUM
       </div>
-      <span class="abs" style="left:1294px; top:389px; opacity:.4; color:var(--pink-bold);">+</span>
+      <img src="assets/icons/icone-estrela.png" alt="" class="abs" style="left:1294px; top:389px; width:14px; height:14px; opacity:.4;" />
       <div class="abs segoe" style="left:1328px; top:386px; font-size:16px; color:#fff;">
         <span class="pink-bold">ANO</span> / 0000
       </div>
-      <span class="abs" style="left:1440px; top:389px; opacity:.4; color:var(--pink-bold);">+</span>
+      <img src="assets/icons/icone-estrela.png" alt="" class="abs" style="left:1440px; top:389px; width:14px; height:14px; opacity:.4;" />
       <div class="abs segoe" style="left:1473px; top:386px; font-size:16px; color:#fff;">
         <span class="pink-bold">CATEGORIA</span> / E-LEARNING
       </div>
@@ -242,32 +241,25 @@
         </div>
       </div>
 
-      <img src="assets/icons/icone-tracejado.png" alt="" class="abs" style="left:836px; top:1051px; width:418px; height:133px; opacity:.55; pointer-events:none;" />
 
       <span class="abs journey-pill segoe" style="left:920px; top:1067px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
       <span class="abs journey-pill" style="left:1315px; top:1124px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
       <span class="abs journey-pill segoe" style="left:1483px; top:1067px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
 
-      <div class="journey-dash abs" style="left:1293px; top:1118px; height:14px;"></div>
+      <img src="assets/journey-line.png" alt="" class="abs" style="left:1071px; top:1051px; width:418px; height:133px; opacity:.55; pointer-events:none;" />
 
       <p id="resumo" class="abs" style="left:920px; top:1198px; width:734px; font-size:calc(20px * var(--font-scale)); font-weight:400; line-height:1.6; color:rgba(255,255,255,0.6); margin:0;">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin malesuada, ipsum eu mattis rutrum,
         massa ipsum volutpat orci, vitae porta risus nisi ut lectus. Vestibulum non pellentesque quam.
         Sed commodo, dui non consectetur fringilla, quam diam condimentum mauris, in scelerisque tortor
         turpis vitae orci. Pellentesque tempor mi quis maximus fermentum. Nunc a ante semper, luctus mauris
-        in, finibus nulla. Fusce congue lacus ipsum, at sodales nibh consequat vulputate.
       </p>
-
-      <div class="abs" style="left:814px; top:1400px; width:945px; text-align:center; font-size:12px; color:rgba(255,255,255,0.25);">
-        Portfólio gerado a partir do design no Figma/XD — Celeste Gouvea
-      </div>
 
     </div>
   </div>
 
 </div>
 
-<div class="sr-hint">Cabeçalho, fundo e barra lateral fixos · role para ver mais</div>
 
 <script>
   const DESIGN_WIDTH = 1920;
