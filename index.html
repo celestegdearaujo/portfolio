@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>if ('scrollRestoration' in history){ history.scrollRestoration = 'manual'; } window.scrollTo(0,0);</script>
 <title>Celeste Gouvea — Portfólio</title>
 <style>
   @font-face{ font-family:'Futura PT'; src:url('assets/fonts/FuturaPTBook.otf') format('opentype'); font-weight:400; font-style:normal; }
@@ -94,6 +95,10 @@
   #playBtn.is-hidden{ opacity:0; pointer-events:none; transform: translate(-50%,-50%) scale(0.85); }
   .ctrl-btn{ opacity:.85; transition: opacity .15s ease, filter .15s ease; }
   .ctrl-btn:hover{ opacity:1; filter: drop-shadow(0 0 4px var(--pink-light)); }
+
+  /* ===== Transição suave entre páginas ===== */
+  #app{ opacity:0; transition: opacity .4s ease; }
+  #app.is-visible{ opacity:1; }
 </style>
 </head>
 <body>
@@ -152,7 +157,7 @@
     </a>
     <div class="abs" style="left:169px; top:698px; width:352px; border-top:1px solid rgba(255,255,255,0.1);"></div>
 
-    <a href="#resumo" class="abs nav-item" style="left:100px; top:714px; width:440px; height:42px;">
+    <a href="resumo-profissional.html" class="abs nav-item" style="left:100px; top:714px; width:440px; height:42px;">
       <img class="icon-ring abs" src="assets/icons/icone-alvo.png" alt="" style="left:70px; top:0; width:41px; height:42px;" />
       <span class="abs" style="left:129px; top:9px; font-size:calc(22px * var(--font-scale)); color:var(--text-dim);">Resumo profissional</span>
       <span class="abs" style="left:406px; top:8px; width:14px; height:26px;">
@@ -162,7 +167,7 @@
     </a>
     <div class="abs" style="left:169px; top:776px; width:352px; border-top:1px solid rgba(255,255,255,0.1);"></div>
 
-    <a href="https://www.linkedin.com" target="_blank" rel="noopener" class="abs nav-item" style="left:100px; top:792px; width:440px; height:43px;">
+    <a href="https://www.linkedin.com/in/celestegouvea/" target="_blank" rel="noopener" class="abs nav-item" style="left:100px; top:792px; width:440px; height:43px;">
       <img class="icon-ring abs" src="assets/icons/icone-alvo.png" alt="" style="left:70px; top:0; width:41px; height:42px;" />
       <span class="abs" style="left:129px; top:9px; font-size:calc(22px * var(--font-scale)); color:var(--text-dim);">LinkedIn</span>
       <span class="abs" style="left:406px; top:8px; width:14px; height:26px;">
@@ -389,6 +394,21 @@
       const target = document.querySelector(a.getAttribute('href'));
       if (target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
     });
+  });
+
+  /* ===== Transição suave entre páginas ===== */
+  window.scrollTo(0,0);
+  requestAnimationFrame(() => { document.getElementById('app').classList.add('is-visible'); });
+
+  document.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href && href.indexOf('.html') !== -1 && !/^https?:\/\//.test(href)){
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('app').classList.remove('is-visible');
+        setTimeout(() => { window.location.href = href; }, 380);
+      });
+    }
   });
 </script>
 </body>
