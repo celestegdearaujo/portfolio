@@ -118,6 +118,9 @@
   /* ===== Transição suave entre páginas ===== */
   #app{ opacity:0; transition: opacity .4s ease; }
   #app.is-visible{ opacity:1; }
+
+  /* ===== Foco visível para atalhos de acessibilidade (skip-links) ===== */
+  [tabindex="-1"]:focus{ outline: 2px solid var(--pink-bold); outline-offset: 6px; }
 </style>
 </head>
 <body>
@@ -166,6 +169,7 @@
 
     <div class="abs" style="left:100px; top:610px; width:466px; border-top:1px solid rgba(255,255,255,0.1);"></div>
 
+    <div id="menu" class="abs" tabindex="-1" style="left:100px; top:634px; width:1px; height:1px;"></div>
     <a href="index.html#inicio" class="abs nav-item" style="left:100px; top:634px; width:440px; height:42px;">
       <img class="icon-ring abs" src="assets/icons/icone-alvo.png" alt="" style="left:70px; top:0; width:41px; height:42px;" />
       <span class="abs" style="left:129px; top:9px; font-size:calc(22px * var(--font-scale)); font-weight:400; color:var(--text-dim);">Início</span>
@@ -206,7 +210,7 @@
   <div id="page-scale-wrapper">
     <div id="page-scale">
 
-      <div id="conteudo" class="abs card-panel" style="left:777px; top:221px; width:1020px; height:1193px; overflow:hidden;">
+      <div id="conteudo" class="abs card-panel" tabindex="-1" style="left:777px; top:221px; width:1020px; height:1193px; overflow:hidden;">
 
         <span class="badge-pill" style="position:absolute; left:50%; top:66px; transform:translateX(-50%); padding:11px 28px; font-size:calc(15px * var(--font-scale)); white-space:nowrap; z-index:2;">RESUMO PROFISSIONAL</span>
 
@@ -214,11 +218,11 @@
 
         <img class="resumo-hero" src="assets/img-sobremim.png" alt="Ilustração: painéis estilo terminal '// Technical Skills' com Apresentações interativas, Animações digitais, Manuais e cartilhas, Identidade e produção de cursos, Materiais didáticos e Design de Interfaces; painel '// Softwares' com ícones do Illustrator, Photoshop, InDesign, PowerPoint e Figma e barra '// Skill loading... 100%'; ao centro, retrato de Celeste meditando sentada, vestindo camiseta colorida com a frase 'graphic design is my passion.'; ao fundo, pastas de arquivo rotuladas '_pesquisa', '_ideias' e '_solução' sobre o texto decorativo 'SOBRE MIM'." style="left:50%; top:63px; width:1007px; height:auto; transform:translateX(-50%);" />
 
-        <div class="resumo-text" style="left:50%; top:706px; width:800px; transform:translateX(-50%); font-size:calc(19px * var(--font-scale));">
+        <div class="resumo-text" style="left:50%; top:706px; width:800px; transform:translateX(-50%); font-size:calc(21px * var(--font-scale));">
           <p>Sou formada em Design Gráfico e pós-graduanda em Animação e Cenários Digitais. Na prática? Gosto de transformar ideias em experiências visuais mais claras, criativas e interessantes.</p>
           <p>Para dar vida a cada projeto, uso o Pacote Adobe, Figma e ferramentas de autoria como Articulate Storyline, Rise 360 e Easygenerator, voltadas à criação de experiências de aprendizagem digitais.</p>
           <p>Também tenho conhecimentos em HTML/CSS e exploro ferramentas de Inteligência Artificial para testar possibilidades, otimizar processos e tirar novas ideias do papel.</p>
-          <p style="margin-bottom:0;">Você pode baixar meu currículo completo <a href="#" class="cv-link">aqui</a>.</p>
+          <p style="margin-bottom:0;">Você pode baixar meu currículo completo <a href="assets/curriculo-celeste-araujo.pdf" class="cv-link" target="_blank" rel="noopener" download="Curriculo-Celeste-Araujo.pdf">aqui</a>.</p>
         </div>
 
       </div>
@@ -267,11 +271,30 @@
   document.getElementById('contrastToggle').addEventListener('click', () => { document.body.classList.toggle('high-contrast'); });
   document.getElementById('themeToggle').addEventListener('click', () => { document.body.classList.toggle('light-theme'); });
 
+  function goToSkipTarget(hash){
+    const target = document.querySelector(hash);
+    if (!target) return;
+    target.scrollIntoView({behavior:'smooth', block:'start'});
+    if (target.hasAttribute('tabindex')){ target.focus({preventScroll:true}); }
+  }
+
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
+      e.preventDefault();
+      goToSkipTarget(a.getAttribute('href'));
     });
+  });
+
+  /* ===== Atalhos de teclado: Alt+1 = Ir para o Conteúdo / Alt+2 = Ir para o Menu ===== */
+  document.addEventListener('keydown', (e) => {
+    if (!e.altKey) return;
+    if (e.key === '1' || e.code === 'Digit1' || e.code === 'Numpad1'){
+      e.preventDefault();
+      goToSkipTarget('#conteudo');
+    } else if (e.key === '2' || e.code === 'Digit2' || e.code === 'Numpad2'){
+      e.preventDefault();
+      goToSkipTarget('#menu');
+    }
   });
 
   /* ===== Transição suave entre páginas ===== */

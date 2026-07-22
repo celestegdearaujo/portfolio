@@ -45,7 +45,7 @@
 
   #page-scale-wrapper{ position: relative; width: 100%; }
   #page-scale{
-    position: relative; width: 1920px; height: 1450px;
+    position: relative; width: 1920px; height: 2880px; /* altura inicial; recalculada via JS (layoutCourseCards) */
     transform-origin: top left; transform: scale(var(--scale)); z-index: 5;
   }
 
@@ -88,17 +88,29 @@
   }
   @media (max-width: 640px){ .sr-hint{ display:none; } }
 
-  #videoCard video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000; }
-  #playBtn{
+  .video-card video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000; }
+  .v-play{
     transition: transform .4s cubic-bezier(.22,1,.36,1), background .3s ease, opacity .25s ease;
   }
-  #playBtn.is-hidden{ opacity:0; pointer-events:none; transform: translate(-50%,-50%) scale(0.85); }
+  .v-play.is-hidden{ opacity:0; pointer-events:none; transform: translate(-50%,-50%) scale(0.85); }
   .ctrl-btn{ opacity:.85; transition: opacity .15s ease, filter .15s ease; }
   .ctrl-btn:hover{ opacity:1; filter: drop-shadow(0 0 4px var(--pink-light)); }
 
   /* ===== Transição suave entre páginas ===== */
   #app{ opacity:0; transition: opacity .4s ease; }
   #app.is-visible{ opacity:1; }
+
+  /* ===== Foco visível para atalhos de acessibilidade (skip-links) ===== */
+  [tabindex="-1"]:focus{ outline: 2px solid var(--pink-bold); outline-offset: 6px; }
+  .pdf-modal-box{
+    border-radius: 20px;
+    border: 1.5px solid rgba(255,45,160,0.9);
+  }
+  .pdf-modal-close{
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    transition: background .15s ease;
+  }
+  .pdf-modal-close:hover{ background: rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -118,6 +130,7 @@
     <a href="#conteudo" class="abs pill segoe" style="left:952px; top:40px; width:277px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
       <img src="assets/icons/icone-teclado.png" alt="" style="width:26px; height:18px;" /> Ir para o Conteúdo <span style="opacity:.6">[Alt + 1]</span>
     </a>
+    <img src="assets/icons/icone-estrela.png" alt="" class="abs" style="left:1236px; top:54px; width:14px; height:14px; opacity:.4;" />
     <a href="#menu" class="abs pill segoe" style="left:1256px; top:40px; width:240px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
       <img src="assets/icons/icone-teclado.png" alt="" style="width:26px; height:18px;" /> Ir para o Menu <span style="opacity:.6">[Alt + 2]</span>
     </a>
@@ -130,9 +143,9 @@
     <button id="themeToggle" title="Modo claro/escuro" class="abs pill" style="left:1729px; top:35.5px; width:52px; height:51px; border-radius:50%;">
       <img src="assets/icons/icone-darkmode.png" alt="" style="width:26px; height:26px;" />
     </button>
-    <button title="Acessibilidade" class="abs" style="left:1796px; top:35px; width:52px; height:52px; border-radius:50%; background:var(--pink-bold); display:flex; align-items:center; justify-content:center;">
+    <div title="Acessibilidade" class="abs" style="left:1796px; top:35px; width:52px; height:52px; border-radius:50%; background:var(--pink-bold); display:flex; align-items:center; justify-content:center; cursor:default;">
       <img src="assets/icons/icone-acessibilidade.png" alt="Acessibilidade" style="width:30px; height:30px;" />
-    </button>
+    </div>
 
     <!-- SIDEBAR -->
     <div class="abs card-panel" style="left:64px; top:227px; width:540px; height:650px; background:rgba(13,13,13,0.72); border-color: rgba(230,57,155,0.25);"></div>
@@ -147,6 +160,7 @@
 
     <div class="abs" style="left:100px; top:610px; width:466px; border-top:1px solid rgba(255,255,255,0.1);"></div>
 
+    <div id="menu" class="abs" tabindex="-1" style="left:100px; top:634px; width:1px; height:1px;"></div>
     <a href="#inicio" class="abs nav-item current" style="left:100px; top:634px; width:440px; height:42px;">
       <img class="icon-ring abs" src="assets/icons/icone-alvo.png" alt="" style="left:70px; top:0; width:41px; height:42px;" />
       <span class="abs" style="left:129px; top:9px; font-size:calc(22px * var(--font-scale)); font-weight:400; color:var(--text-dim);">Início</span>
@@ -187,16 +201,16 @@
   <div id="page-scale-wrapper">
     <div id="page-scale">
 
-      <div id="conteudo" class="abs card-panel" style="left:777px; top:221px; width:1020px; height:1193px;"></div>
+      <div id="conteudo" class="abs" tabindex="-1" style="left:777px; top:221px; width:1px; height:1px;"></div>
 
-      <button class="tab-btn abs pill active" data-tab="todos" style="left:814px; top:287px; width:100px; height:37px;">Todos</button>
-      <button class="tab-btn abs pill" data-tab="elearning" style="left:923px; top:287px; width:119px; height:37px;">E-learning</button>
-      <button class="tab-btn abs pill" data-tab="apresentacoes" style="left:1051px; top:287px; width:137px; height:37px;">Apresentações</button>
-      <button class="tab-btn abs pill" data-tab="animacao" style="left:1197px; top:287px; width:105px; height:37px;">Animação</button>
-      <button class="tab-btn abs pill" data-tab="outros" style="left:1312px; top:287px; width:86px; height:37px;">Outros</button>
+      <button class="tab-btn abs pill active" data-tab="todos" style="left:814px; top:227px; width:100px; height:37px;">Todos</button>
+      <button class="tab-btn abs pill" data-tab="elearning" style="left:923px; top:227px; width:119px; height:37px;">E-learning</button>
+      <button class="tab-btn abs pill" data-tab="apresentacoes" style="left:1051px; top:227px; width:137px; height:37px;">Apresentações</button>
+      <button class="tab-btn abs pill" data-tab="animacao" style="left:1197px; top:227px; width:105px; height:37px;">Animação</button>
+      <button class="tab-btn abs pill" data-tab="outros" style="left:1312px; top:227px; width:86px; height:37px;">Outros</button>
 
-      <span class="abs" style="left:1427px; top:292px; font-size:calc(20px * var(--font-scale)); font-weight:400; color:rgba(255,255,255,0.8);">Ordenar por:</span>
-      <div class="abs" style="left:1549px; top:288px;">
+      <span class="abs" style="left:1427px; top:232px; font-size:calc(20px * var(--font-scale)); font-weight:400; color:rgba(255,255,255,0.8);">Ordenar por:</span>
+      <div class="abs" style="left:1549px; top:228px;">
         <button id="sortBtn" class="pill" style="width:156px; height:37px; font-size:calc(20px * var(--font-scale)); font-weight:400; gap:6px; padding:0 16px;">
           <span id="sortLabel">Mais recentes</span> <span style="font-size:10px;">▾</span>
         </button>
@@ -206,60 +220,175 @@
           <button class="sort-opt" style="display:block; width:100%; text-align:left; padding:8px 16px; font-size:16px;">A-Z</button>
         </div>
       </div>
-      <button title="Calendário" class="abs pill" style="left:1720px; top:287px; width:38px; height:37px; border-radius:10px;">
-        <img src="assets/icons/icone-calendario.png" alt="" style="width:20px; height:18px;" />
-      </button>
-
-      <div class="abs segoe" style="left:903px; top:386px; font-size:16px; color:#fff;">
-        <span class="pink-bold">CLIENTE</span> / LOREM
-      </div>
-      <img src="assets/icons/icone-estrela.png" alt="" class="abs" style="left:1050px; top:389px; width:14px; height:14px; opacity:.4;" />
-      <div class="abs segoe" style="left:1084px; top:386px; font-size:16px; color:#fff;">
-        <span class="pink-bold">PROJETO</span> / LOREM IPSUM
-      </div>
-      <img src="assets/icons/icone-estrela.png" alt="" class="abs" style="left:1294px; top:389px; width:14px; height:14px; opacity:.4;" />
-      <div class="abs segoe" style="left:1328px; top:386px; font-size:16px; color:#fff;">
-        <span class="pink-bold">ANO</span> / 0000
-      </div>
-      <img src="assets/icons/icone-estrela.png" alt="" class="abs" style="left:1440px; top:389px; width:14px; height:14px; opacity:.4;" />
-      <div class="abs segoe" style="left:1473px; top:386px; font-size:16px; color:#fff;">
-        <span class="pink-bold">CATEGORIA</span> / E-LEARNING
-      </div>
-
-      <div class="abs" id="videoCard" style="left:814px; top:453px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
-        <video id="videoEl" src="assets/video-1.mp4" poster="assets/video-thumb.png" preload="metadata" playsinline></video>
-        <button id="playBtn" class="abs" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
-          <span id="playIcon">▶</span>
+      <div class="abs" style="left:1720px; top:227px;">
+        <button id="calendarBtn" title="Filtrar por ano" class="pill" style="width:38px; height:37px; border-radius:10px;">
+          <img src="assets/icons/icone-calendario.png" alt="" style="width:20px; height:18px;" />
         </button>
-        <div class="abs" style="left:0; right:0; bottom:0; padding:40px 24px 18px; background:linear-gradient(0deg, rgba(0,0,0,.9), transparent); display:flex; align-items:center; gap:16px; font-size:15px; z-index:2;">
-          <button id="miniPlay" class="ctrl-btn">▶</button>
-          <span id="timeLabel" style="color:rgba(255,255,255,0.7); white-space:nowrap; font-size:15px;">00:00 / 00:00</span>
-          <div id="progressTrack" style="flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,0.15); position:relative; cursor:pointer;">
-            <div id="progress-fill" style="height:100%; border-radius:999px; background:var(--pink-bold); width:0%;"></div>
-            <div id="progress-handle" style="position:absolute; top:-4px; left:0%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translateX(-50%);"></div>
-          </div>
-          <button id="muteBtn" class="ctrl-btn">🔊</button>
-          <span class="pill" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">CC</span>
-          <button id="speedBtn" class="pill ctrl-btn" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">1x</button>
-          <span>☀</span>
-          <button id="fsBtn" class="ctrl-btn">⛶</button>
+        <div id="yearMenu" class="dropdown-menu card-panel" style="position:absolute; right:0; margin-top:8px; width:170px; overflow:hidden; z-index:20;">
+          <button class="year-opt active" data-year="todos" style="display:block; width:100%; text-align:left; padding:8px 16px; font-size:16px;">Todos os anos</button>
         </div>
       </div>
 
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 1: RECLAME AQUI (painel de conteúdo completo) === -->
+      <!-- Card agora é o próprio container: todos os elementos internos -->
+      <!-- são posicionados relativos a ele, e sua altura é calculada    -->
+      <!-- via JS (layoutCourseCards) para acompanhar o conteúdo, com   -->
+      <!-- margem mínima de 60px no topo e na base.                    -->
+      <!-- ============================================================ -->
+      <div id="course-1" class="abs card-panel course-card" data-category="elearning" data-year="2025" style="left:777px; top:324px; width:1020px; height:1193px;">
 
-      <span class="abs journey-pill segoe" style="left:920px; top:1067px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
-      <span class="abs journey-pill" style="left:1315px; top:1124px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
-      <span class="abs journey-pill segoe" style="left:1483px; top:1067px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / BOTICÁRIO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / RECLAME AQUI</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2025</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
+        </div>
 
-      <img src="assets/journey-line.png" alt="" class="abs" style="left:1071px; top:1051px; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        <div class="abs video-card" data-video-card style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
+          <video class="v-el" src="assets/video-1.mp4" poster="assets/video-thumb.png" preload="metadata" playsinline></video>
+          <button class="abs v-play" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
+            <span class="v-play-icon">▶</span>
+          </button>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:40px 24px 18px; background:linear-gradient(0deg, rgba(0,0,0,.9), transparent); display:flex; align-items:center; gap:16px; font-size:15px; z-index:2;">
+            <button class="ctrl-btn v-mini-play">▶</button>
+            <span class="v-time" style="color:rgba(255,255,255,0.7); white-space:nowrap; font-size:15px;">00:00 / 00:00</span>
+            <div class="v-progress-track" style="flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,0.15); position:relative; cursor:pointer;">
+              <div class="v-progress-fill" style="height:100%; border-radius:999px; background:var(--pink-bold); width:0%;"></div>
+              <div class="v-progress-handle" style="position:absolute; top:-4px; left:0%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translateX(-50%);"></div>
+            </div>
+            <button class="ctrl-btn v-mute">🔊</button>
+            <span class="pill" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">CC</span>
+            <button class="pill ctrl-btn v-speed" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">1x</button>
+            <span>☀</span>
+            <button class="ctrl-btn v-fs">⛶</button>
+          </div>
+        </div>
 
-      <p id="resumo" class="abs" style="left:920px; top:1198px; width:734px; font-size:calc(20px * var(--font-scale)); font-weight:400; line-height:1.6; color:rgba(255,255,255,0.6); margin:0;">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin malesuada, ipsum eu mattis rutrum,
-        massa ipsum volutpat orci, vitae porta risus nisi ut lectus. Vestibulum non pellentesque quam.
-        Sed commodo, dui non consectetur fringilla, quam diam condimentum mauris, in scelerisque tortor
-        turpis vitae orci. Pellentesque tempor mi quis maximus fermentum. Nunc a ante semper, luctus mauris
-      </p>
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
 
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Ao longo do curso, os participantes exploram os principais processos do Reclame Aqui por meio de interações que estimulam a participação ativa e ajudam a fixar o conteúdo. A experiência prepara o público para gerenciar reclamações com mais estratégia, melhorar a experiência do cliente e fortalecer a reputação da empresa.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 2: GLUON JOURNEYS (painel de conteúdo completo) = -->
+      <!-- top é definido dinamicamente pelo JS logo abaixo do card 1   -->
+      <!-- ============================================================ -->
+      <div id="course-2" class="abs card-panel course-card" data-category="elearning" data-year="2025" style="left:777px; top:1616px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / F1RST</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / GLUON JOURNEYS</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2025</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
+        </div>
+
+        <div class="abs video-card" data-video-card style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
+          <video class="v-el" poster="assets/thumb-video.png" preload="metadata" playsinline></video>
+          <button class="abs v-play" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
+            <span class="v-play-icon">▶</span>
+          </button>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:40px 24px 18px; background:linear-gradient(0deg, rgba(0,0,0,.9), transparent); display:flex; align-items:center; gap:16px; font-size:15px; z-index:2;">
+            <button class="ctrl-btn v-mini-play">▶</button>
+            <span class="v-time" style="color:rgba(255,255,255,0.7); white-space:nowrap; font-size:15px;">00:00 / 00:00</span>
+            <div class="v-progress-track" style="flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,0.15); position:relative; cursor:pointer;">
+              <div class="v-progress-fill" style="height:100%; border-radius:999px; background:var(--pink-bold); width:0%;"></div>
+              <div class="v-progress-handle" style="position:absolute; top:-4px; left:0%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translateX(-50%);"></div>
+            </div>
+            <button class="ctrl-btn v-mute">🔊</button>
+            <span class="pill" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">CC</span>
+            <button class="pill ctrl-btn v-speed" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">1x</button>
+            <span>☀</span>
+            <button class="ctrl-btn v-fs">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Uma jornada de aprendizagem prática, dinâmica e interativa pelo Universo Gluon. Em uma missão espacial por bases orbitais e planetas, os participantes exploram o que é a plataforma, seus benefícios e como ela conecta pessoas, processos e tecnologia. Os vídeos, infográficos e desafios tornam os conteúdos complexos mais leves, visuais e envolventes.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 3: LOREM IPSUM (card de exemplo, com PDF) ======= -->
+      <!-- Mesmo formato dos cards anteriores, mas no lugar do vídeo há -->
+      <!-- um visualizador de PDF que abre o documento em pop-up, na    -->
+      <!-- própria página (semelhante à pré-visualização do Google      -->
+      <!-- Drive). Conteúdo textual é placeholder (Lorem Ipsum).        -->
+      <!-- top é definido dinamicamente pelo JS logo abaixo do card 2   -->
+      <!-- ============================================================ -->
+      <div id="course-3" class="abs card-panel course-card" data-category="animacao" data-year="2025" style="left:777px; top:2908px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / AUTORAL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / DESIGN DE PERSONAGEM</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2025</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / ANIMAÇÃO</span>
+        </div>
+
+        <div class="abs pdf-card" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
+          <img src="assets/thumb-pdf.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
+          <div class="abs" style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;">
+            <button class="pdf-open-btn" data-pdf-card
+                    data-pdf-src="assets/bob-character-design.pdf"
+                    data-pdf-title="Bob — Desenvolvimento de Personagem (Burnout Academy)"
+                    style="width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:38px; cursor:pointer;">📄</button>
+          </div>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:18px 24px; background:linear-gradient(0deg, rgba(0,0,0,.85), transparent); display:flex; align-items:center; gap:14px; font-size:15px; z-index:2;">
+            <span style="font-size:18px;">📄</span>
+            <span style="color:rgba(255,255,255,0.75);">bob-character-design.pdf</span>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Um estudo de criação de personagem para a série animada Burnout Academy: da definição do conceito e da paleta de cores até a construção do model sheet completo, das expressões faciais e do color key do Bob — um adolescente nerd, ansioso e perfeccionista tentando sobreviver ao próprio universo escolar-corporativo.
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ POP-UP DO VISUALIZADOR DE PDF ============ -->
+  <div id="pdfModal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.78); align-items:center; justify-content:center; padding:24px;">
+    <div class="pdf-modal-box" style="width:min(980px,94vw); height:min(88vh,1150px); background:#1b1b1e; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; align-items:center; gap:16px; padding:16px 22px; background:#141416; border-bottom:1px solid rgba(255,255,255,0.08); flex:0 0 auto;">
+        <span aria-hidden="true" style="font-size:18px; color:rgba(255,255,255,0.85); line-height:1;">☰</span>
+        <span id="pdfModalTitle" class="segoe" style="flex:1; font-size:15px; color:rgba(255,255,255,0.92); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Bob — Desenvolvimento de Personagem (Burnout Academy)</span>
+        <button id="pdfModalClose" class="pdf-modal-close" title="Fechar" aria-label="Fechar visualizador de PDF" style="font-size:17px; color:#fff;">✕</button>
+      </div>
+      <iframe id="pdfModalFrame" title="Visualizador de PDF" src="assets/bob-character-design.pdf" style="flex:1 1 auto; width:100%; border:0; background:#525659;"></iframe>
     </div>
   </div>
 
@@ -271,6 +400,7 @@
   const CHROME_HEIGHT = 1010;
   const MIN_SCALE = 0.68;
   const MAX_SCALE = 1;
+  let DESIGN_HEIGHT = 2880; // altura "lógica" do canvas; recalculada por layoutCourseCards()
 
   function updateScale(){
     const scaleByWidth = window.innerWidth / DESIGN_WIDTH;
@@ -284,29 +414,108 @@
     document.getElementById('chrome-fixed').style.left = offsetX + 'px';
     document.getElementById('page-scale').style.left = offsetX + 'px';
 
-    document.getElementById('page-scale-wrapper').style.height = (1450 * scale) + 'px';
+    document.getElementById('page-scale').style.height = DESIGN_HEIGHT + 'px';
+    document.getElementById('page-scale-wrapper').style.height = (DESIGN_HEIGHT * scale) + 'px';
   }
   window.addEventListener('resize', updateScale);
   window.addEventListener('load', updateScale);
+
+  /* ===== Cards de curso: altura acompanha o conteúdo =====
+     Cada .course-card contém seus elementos internos posicionados
+     relativos a ele mesmo (top/left já não são mais coordenadas do
+     canvas de 1920x2880, e sim do próprio card). Aqui medimos o ponto
+     mais baixo entre os filhos diretos, aplicamos 60px de respiro na
+     base e empilhamos o próximo card logo abaixo, com um gap fixo. */
+  const FIRST_CARD_TOP = parseFloat(document.querySelector('.course-card').style.top);
+
+  function layoutCourseCards(){
+    const GAP = 60; // espaço entre um card de curso e o próximo
+    const BOTTOM_MARGIN = 60; // margem mínima entre o conteúdo e a borda inferior do card
+    const courses = Array.from(document.querySelectorAll('.course-card')).filter(card => card.style.display !== 'none');
+    let nextTop = FIRST_CARD_TOP;
+
+    courses.forEach((card) => {
+      card.style.top = nextTop + 'px';
+
+      let maxBottom = 0;
+      Array.from(card.children).forEach(child => {
+        const bottom = child.offsetTop + child.offsetHeight;
+        if (bottom > maxBottom) maxBottom = bottom;
+      });
+
+      const height = maxBottom + BOTTOM_MARGIN;
+      card.style.height = height + 'px';
+
+      nextTop = parseFloat(card.style.top) + height + GAP;
+    });
+
+    if (nextTop !== null){ DESIGN_HEIGHT = nextTop + 40; }
+    updateScale();
+  }
+
   updateScale();
+  layoutCourseCards();
+  document.fonts.ready.then(layoutCourseCards);
+
+  let currentTab = 'todos';
+  let currentYear = 'todos';
+
+  function applyFilters(){
+    document.querySelectorAll('.course-card').forEach(card => {
+      const catOk = currentTab === 'todos' || card.dataset.category === currentTab;
+      const yearOk = currentYear === 'todos' || card.dataset.year === currentYear;
+      card.style.display = (catOk && yearOk) ? '' : 'none';
+    });
+    layoutCourseCards();
+  }
 
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      applyFilters();
     });
   });
 
   const sortBtn = document.getElementById('sortBtn');
   const sortMenu = document.getElementById('sortMenu');
-  sortBtn.addEventListener('click', (e) => { e.stopPropagation(); sortMenu.classList.toggle('open'); });
+  sortBtn.addEventListener('click', (e) => { e.stopPropagation(); yearMenu.classList.remove('open'); sortMenu.classList.toggle('open'); });
   document.querySelectorAll('.sort-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       document.getElementById('sortLabel').textContent = opt.textContent;
       sortMenu.classList.remove('open');
     });
   });
-  document.addEventListener('click', () => sortMenu.classList.remove('open'));
+
+  const calendarBtn = document.getElementById('calendarBtn');
+  const yearMenu = document.getElementById('yearMenu');
+
+  const years = Array.from(new Set(
+    Array.from(document.querySelectorAll('.course-card[data-year]')).map(c => c.dataset.year)
+  )).sort((a, b) => b.localeCompare(a));
+
+  years.forEach(year => {
+    const opt = document.createElement('button');
+    opt.className = 'year-opt';
+    opt.dataset.year = year;
+    opt.style.cssText = 'display:block; width:100%; text-align:left; padding:8px 16px; font-size:16px;';
+    opt.textContent = year;
+    yearMenu.appendChild(opt);
+  });
+
+  calendarBtn.addEventListener('click', (e) => { e.stopPropagation(); sortMenu.classList.remove('open'); yearMenu.classList.toggle('open'); });
+  yearMenu.addEventListener('click', (e) => {
+    const opt = e.target.closest('.year-opt');
+    if (!opt) return;
+    yearMenu.querySelectorAll('.year-opt').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    currentYear = opt.dataset.year;
+    yearMenu.classList.remove('open');
+    applyFilters();
+  });
+
+  document.addEventListener('click', () => { sortMenu.classList.remove('open'); yearMenu.classList.remove('open'); });
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -315,85 +524,155 @@
     });
   });
 
-  const video = document.getElementById('videoEl');
-  const playIcon = document.getElementById('playIcon');
-  const timeLabel = document.getElementById('timeLabel');
-  const progressFill = document.getElementById('progress-fill');
-  const progressHandle = document.getElementById('progress-handle');
-  const progressTrack = document.getElementById('progressTrack');
-  const muteBtn = document.getElementById('muteBtn');
-  const speedBtn = document.getElementById('speedBtn');
-  const fsBtn = document.getElementById('fsBtn');
-
   function fmt(t){
     if(!isFinite(t)) return '00:00';
     const m = Math.floor(t/60).toString().padStart(2,'0');
     const s = Math.floor(t%60).toString().padStart(2,'0');
     return m+':'+s;
   }
-  const playBtnEl = document.getElementById('playBtn');
-  const miniPlayEl = document.getElementById('miniPlay');
-  function togglePlay(){ if(video.paused){ video.play(); } else { video.pause(); } }
-  video.addEventListener('play', () => {
-    playIcon.textContent = '❚❚';
-    miniPlayEl.textContent = '❚❚';
-    playBtnEl.classList.add('is-hidden');
-  });
-  video.addEventListener('pause', () => {
-    playIcon.textContent = '▶';
-    miniPlayEl.textContent = '▶';
-    playBtnEl.classList.remove('is-hidden');
-  });
-  playBtnEl.addEventListener('click', togglePlay);
-  miniPlayEl.addEventListener('click', togglePlay);
-  video.addEventListener('click', togglePlay);
 
-  video.addEventListener('loadedmetadata', () => { timeLabel.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration); });
-  video.addEventListener('timeupdate', () => {
-    const pct = video.duration ? (video.currentTime/video.duration*100) : 0;
-    progressFill.style.width = pct + '%';
-    progressHandle.style.left = pct + '%';
-    timeLabel.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration);
-  });
+  function initVideoPlayer(card){
+    const video = card.querySelector('.v-el');
+    const playIcon = card.querySelector('.v-play-icon');
+    const timeLabel = card.querySelector('.v-time');
+    const progressFill = card.querySelector('.v-progress-fill');
+    const progressHandle = card.querySelector('.v-progress-handle');
+    const progressTrack = card.querySelector('.v-progress-track');
+    const muteBtn = card.querySelector('.v-mute');
+    const speedBtn = card.querySelector('.v-speed');
+    const fsBtn = card.querySelector('.v-fs');
+    const playBtnEl = card.querySelector('.v-play');
+    const miniPlayEl = card.querySelector('.v-mini-play');
 
-  function seek(e){
-    const rect = progressTrack.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    if(video.duration) video.currentTime = pct * video.duration;
+    function hasSrc(){ return !!(video.currentSrc || video.getAttribute('src')); }
+    function togglePlay(){ if(!hasSrc()) return; if(video.paused){ video.play(); } else { video.pause(); } }
+
+    video.addEventListener('play', () => {
+      playIcon.textContent = '❚❚';
+      miniPlayEl.textContent = '❚❚';
+      playBtnEl.classList.add('is-hidden');
+    });
+    video.addEventListener('pause', () => {
+      playIcon.textContent = '▶';
+      miniPlayEl.textContent = '▶';
+      playBtnEl.classList.remove('is-hidden');
+    });
+    playBtnEl.addEventListener('click', togglePlay);
+    miniPlayEl.addEventListener('click', togglePlay);
+    video.addEventListener('click', togglePlay);
+
+    video.addEventListener('loadedmetadata', () => { timeLabel.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration); });
+    video.addEventListener('timeupdate', () => {
+      const pct = video.duration ? (video.currentTime/video.duration*100) : 0;
+      progressFill.style.width = pct + '%';
+      progressHandle.style.left = pct + '%';
+      timeLabel.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration);
+    });
+
+    function seek(e){
+      if(!hasSrc()) return;
+      const rect = progressTrack.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      if(video.duration) video.currentTime = pct * video.duration;
+    }
+    progressTrack.addEventListener('click', seek);
+    let dragging = false;
+    progressTrack.addEventListener('mousedown', () => dragging = true);
+    window.addEventListener('mouseup', () => dragging = false);
+    window.addEventListener('mousemove', (e) => { if(dragging) seek(e); });
+
+    muteBtn.addEventListener('click', () => {
+      video.muted = !video.muted;
+      muteBtn.textContent = video.muted ? '🔇' : '🔊';
+    });
+
+    const speeds = [1, 1.5, 2, 0.5];
+    let speedIdx = 0;
+    speedBtn.addEventListener('click', () => {
+      if(!hasSrc()) return;
+      speedIdx = (speedIdx + 1) % speeds.length;
+      video.playbackRate = speeds[speedIdx];
+      speedBtn.textContent = speeds[speedIdx] + 'x';
+    });
+
+    fsBtn.addEventListener('click', () => { if(hasSrc() && video.requestFullscreen) video.requestFullscreen(); });
   }
-  progressTrack.addEventListener('click', seek);
-  let dragging = false;
-  progressTrack.addEventListener('mousedown', () => dragging = true);
-  window.addEventListener('mouseup', () => dragging = false);
-  window.addEventListener('mousemove', (e) => { if(dragging) seek(e); });
 
-  muteBtn.addEventListener('click', () => {
-    video.muted = !video.muted;
-    muteBtn.textContent = video.muted ? '🔇' : '🔊';
+  document.querySelectorAll('[data-video-card]').forEach(initVideoPlayer);
+
+  /* ===== Visualizador de PDF em pop-up (semelhante ao preview do Google Drive) ===== */
+  const pdfModal = document.getElementById('pdfModal');
+  const pdfModalFrame = document.getElementById('pdfModalFrame');
+  const pdfModalTitle = document.getElementById('pdfModalTitle');
+  const pdfModalClose = document.getElementById('pdfModalClose');
+  let pdfLastFocused = null;
+
+  function openPdfModal(src, title){
+    pdfLastFocused = document.activeElement;
+    pdfModalFrame.src = src;
+    pdfModalTitle.textContent = title || 'Documento';
+    pdfModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    pdfModalClose.focus();
+  }
+  function closePdfModal(){
+    pdfModal.style.display = 'none';
+    pdfModalFrame.src = '';
+    document.body.style.overflow = '';
+    if (pdfLastFocused && pdfLastFocused.focus) pdfLastFocused.focus();
+  }
+  pdfModalClose.addEventListener('click', closePdfModal);
+  pdfModal.addEventListener('click', (e) => { if (e.target === pdfModal) closePdfModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && pdfModal.style.display !== 'none') closePdfModal();
   });
 
-  const speeds = [1, 1.5, 2, 0.5];
-  let speedIdx = 0;
-  speedBtn.addEventListener('click', () => {
-    speedIdx = (speedIdx + 1) % speeds.length;
-    video.playbackRate = speeds[speedIdx];
-    speedBtn.textContent = speeds[speedIdx] + 'x';
+  document.querySelectorAll('[data-pdf-card]').forEach(card => {
+    const src = card.dataset.pdfSrc;
+    const title = card.dataset.pdfTitle;
+    card.addEventListener('click', () => openPdfModal(src, title));
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', 'Abrir ' + (title || 'documento PDF'));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPdfModal(src, title); }
+    });
   });
-
-  fsBtn.addEventListener('click', () => { if(video.requestFullscreen) video.requestFullscreen(); });
 
   let fontScale = 1;
-  function applyFontScale(){ document.documentElement.style.setProperty('--font-scale', fontScale.toFixed(2)); }
+  function applyFontScale(){
+    document.documentElement.style.setProperty('--font-scale', fontScale.toFixed(2));
+    requestAnimationFrame(layoutCourseCards);
+  }
   document.getElementById('fontPlus').addEventListener('click', () => { fontScale = Math.min(1.4, fontScale + 0.1); applyFontScale(); });
   document.getElementById('fontMinus').addEventListener('click', () => { fontScale = Math.max(0.8, fontScale - 0.1); applyFontScale(); });
   document.getElementById('contrastToggle').addEventListener('click', () => { document.body.classList.toggle('high-contrast'); });
   document.getElementById('themeToggle').addEventListener('click', () => { document.body.classList.toggle('light-theme'); });
 
+  function goToSkipTarget(hash){
+    const target = document.querySelector(hash);
+    if (!target) return;
+    target.scrollIntoView({behavior:'smooth', block:'start'});
+    if (target.hasAttribute('tabindex')){ target.focus({preventScroll:true}); }
+  }
+
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
+      e.preventDefault();
+      goToSkipTarget(a.getAttribute('href'));
     });
+  });
+
+  /* ===== Atalhos de teclado: Alt+1 = Ir para o Conteúdo / Alt+2 = Ir para o Menu ===== */
+  document.addEventListener('keydown', (e) => {
+    if (!e.altKey) return;
+    if (e.key === '1' || e.code === 'Digit1' || e.code === 'Numpad1'){
+      e.preventDefault();
+      goToSkipTarget('#conteudo');
+    } else if (e.key === '2' || e.code === 'Digit2' || e.code === 'Numpad2'){
+      e.preventDefault();
+      goToSkipTarget('#menu');
+    }
   });
 
   /* ===== Transição suave entre páginas ===== */
