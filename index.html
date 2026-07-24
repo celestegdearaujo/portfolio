@@ -236,7 +236,7 @@
       <!-- via JS (layoutCourseCards) para acompanhar o conteúdo, com   -->
       <!-- margem mínima de 60px no topo e na base.                    -->
       <!-- ============================================================ -->
-      <div id="course-1" class="abs card-panel course-card" data-category="elearning" data-year="2025" style="left:777px; top:324px; width:1020px; height:1193px;">
+      <div id="course-1" class="abs card-panel course-card" data-category="elearning" data-year="2025" data-order="1" data-title="Reclame Aqui" style="left:777px; top:324px; width:1020px; height:1193px;">
 
         <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
           <span><span class="pink-bold">CLIENTE</span> / BOTICÁRIO</span>
@@ -285,7 +285,7 @@
       <!-- ===== CURSO 2: GLUON JOURNEYS (painel de conteúdo completo) = -->
       <!-- top é definido dinamicamente pelo JS logo abaixo do card 1   -->
       <!-- ============================================================ -->
-      <div id="course-2" class="abs card-panel course-card" data-category="elearning" data-year="2025" style="left:777px; top:1616px; width:1020px; height:1193px;">
+      <div id="course-2" class="abs card-panel course-card" data-category="elearning" data-year="2025" data-order="2" data-title="Gluon" style="left:777px; top:1616px; width:1020px; height:1193px;">
 
         <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
           <span><span class="pink-bold">CLIENTE</span> / F1RST</span>
@@ -338,7 +338,7 @@
       <!-- Drive). Conteúdo textual é placeholder (Lorem Ipsum).        -->
       <!-- top é definido dinamicamente pelo JS logo abaixo do card 2   -->
       <!-- ============================================================ -->
-      <div id="course-3" class="abs card-panel course-card" data-category="animacao" data-year="2025" style="left:777px; top:2908px; width:1020px; height:1193px;">
+      <div id="course-3" class="abs card-panel course-card" data-category="animacao" data-year="2025" data-order="3" data-title="Design de Personagem" style="left:777px; top:2908px; width:1020px; height:1193px;">
 
         <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
           <span><span class="pink-bold">CLIENTE</span> / AUTORAL</span>
@@ -351,7 +351,7 @@
         </div>
 
         <div class="abs pdf-card" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
-          <img src="assets/thumb-pdf.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
+          <img src="assets/thumb-bob-character.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
           <div class="abs" style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;">
             <button class="pdf-open-btn" data-pdf-card
                     data-pdf-src="assets/bob-character-design.pdf"
@@ -373,6 +373,141 @@
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
           Um estudo de criação de personagem para a série animada Burnout Academy: da definição do conceito e da paleta de cores até a construção do model sheet completo, das expressões faciais e do color key do Bob — um adolescente nerd, ansioso e perfeccionista tentando sobreviver ao próprio universo escolar-corporativo.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 4: AMBIENTAÇÃO PARA ANIMAÇÃO (card com PDF) ===== -->
+      <!-- top é definido dinamicamente pelo JS logo abaixo do card 3   -->
+      <!-- ============================================================ -->
+      <div id="course-4" class="abs card-panel course-card" data-category="animacao" data-year="2025" data-order="4" data-title="Ambientação para Animação" style="left:777px; top:4200px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / AUTORAL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / AMBIENTAÇÃO PARA ANIMAÇÃO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2025</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / ANIMAÇÃO</span>
+        </div>
+
+        <div class="abs pdf-card" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
+          <img src="assets/thumb-ambientacao.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
+          <div class="abs" style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;">
+            <button class="pdf-open-btn" data-pdf-card
+                    data-pdf-src="assets/ambientacao-para-animacao.pdf"
+                    data-pdf-title="Ambientação para Animação — Quarto do Bob (Burnout Academy)"
+                    style="width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:38px; cursor:pointer;">📄</button>
+          </div>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:18px 24px; background:linear-gradient(0deg, rgba(0,0,0,.85), transparent); display:flex; align-items:center; gap:14px; font-size:15px; z-index:2;">
+            <span style="font-size:18px;">📄</span>
+            <span style="color:rgba(255,255,255,0.75);">ambientacao-para-animacao.pdf</span>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Estudo de ambientação a partir do quarto do Bob: da descrição do personagem e do seu conflito interno até a construção do espaço, com plano geral, ângulo em plongée e ponto de fuga único. A cena "Sair na Hora — Tentativa #37" traduz a ansiedade e o perfeccionismo do personagem através dos objetos do quarto, do quadro de recados aos post-its e à lixeira cheia de ideias descartadas.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 5: BÍBLIA DE ANIMAÇÃO — BURNOUT ACADEMY ========= -->
+      <!-- top é definido dinamicamente pelo JS logo abaixo do card 4   -->
+      <!-- ============================================================ -->
+      <div id="course-5" class="abs card-panel course-card" data-category="animacao" data-year="2026" data-order="6" data-title="Bíblia de Animação — Burnout Academy" style="left:777px; top:5492px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / AUTORAL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / BÍBLIA DE ANIMAÇÃO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / ANIMAÇÃO</span>
+        </div>
+
+        <div class="abs pdf-card" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
+          <img src="assets/thumb-biblia.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
+          <div class="abs" style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;">
+            <button class="pdf-open-btn" data-pdf-card
+                    data-pdf-src="assets/biblia-de-animacao-burnout-academy.pdf"
+                    data-pdf-title="Bíblia de Animação — Burnout Academy"
+                    style="width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:38px; cursor:pointer;">📄</button>
+          </div>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:18px 24px; background:linear-gradient(0deg, rgba(0,0,0,.85), transparent); display:flex; align-items:center; gap:14px; font-size:15px; z-index:2;">
+            <span style="font-size:18px;">📄</span>
+            <span style="color:rgba(255,255,255,0.75);">biblia-de-animacao-burnout-academy.pdf</span>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Bíblia de animação da série autoral Burnout Academy, uma comédia satírica sobre uma escola de elite que transforma adolescentes em executivos em miniatura. O documento reúne argumento, linguagem, universo narrativo, perfis de personagens, viabilidade mercadológica e cadeia de produção completa de uma série 2D cut-out voltada ao público jovem-adulto.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 6: BURNOUT ACADEMY — TESTE DE ANIMAÇÃO (vídeo) == -->
+      <!-- top é definido dinamicamente pelo JS logo abaixo do card 5   -->
+      <!-- ============================================================ -->
+      <div id="course-6" class="abs card-panel course-card" data-category="animacao" data-year="2025" data-order="5" data-title="Teste de Animação" style="left:777px; top:6784px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / AUTORAL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / TESTE DE ANIMAÇÃO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2025</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / ANIMAÇÃO</span>
+        </div>
+
+        <div class="abs video-card" data-video-card style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
+          <video class="v-el" src="assets/video-2.mp4" poster="assets/thumb-video-2.png" preload="metadata" playsinline></video>
+          <button class="abs v-play" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
+            <span class="v-play-icon">▶</span>
+          </button>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:40px 24px 18px; background:linear-gradient(0deg, rgba(0,0,0,.9), transparent); display:flex; align-items:center; gap:16px; font-size:15px; z-index:2;">
+            <button class="ctrl-btn v-mini-play">▶</button>
+            <span class="v-time" style="color:rgba(255,255,255,0.7); white-space:nowrap; font-size:15px;">00:00 / 00:00</span>
+            <div class="v-progress-track" style="flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,0.15); position:relative; cursor:pointer;">
+              <div class="v-progress-fill" style="height:100%; border-radius:999px; background:var(--pink-bold); width:0%;"></div>
+              <div class="v-progress-handle" style="position:absolute; top:-4px; left:0%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translateX(-50%);"></div>
+            </div>
+            <button class="ctrl-btn v-mute">🔊</button>
+            <span class="pill" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">CC</span>
+            <button class="pill ctrl-btn v-speed" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">1x</button>
+            <span>☀</span>
+            <button class="ctrl-btn v-fs">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Teste de animação explorando movimento, timing e expressividade dos personagens dentro da estética 2D. Um exercício prático de atuação e lipsync aplicado ao estilo visual proposto para o projeto.
         </p>
 
       </div>
@@ -427,11 +562,25 @@
      mais baixo entre os filhos diretos, aplicamos 60px de respiro na
      base e empilhamos o próximo card logo abaixo, com um gap fixo. */
   const FIRST_CARD_TOP = parseFloat(document.querySelector('.course-card').style.top);
+  let currentSort = 'recentes';
+
+  function sortCourses(cards){
+    const sorted = cards.slice();
+    if (currentSort === 'recentes'){
+      sorted.sort((a, b) => parseFloat(b.dataset.order || 0) - parseFloat(a.dataset.order || 0));
+    } else if (currentSort === 'antigos'){
+      sorted.sort((a, b) => parseFloat(a.dataset.order || 0) - parseFloat(b.dataset.order || 0));
+    } else if (currentSort === 'az'){
+      sorted.sort((a, b) => (a.dataset.title || '').localeCompare(b.dataset.title || '', 'pt-BR'));
+    }
+    return sorted;
+  }
 
   function layoutCourseCards(){
     const GAP = 60; // espaço entre um card de curso e o próximo
     const BOTTOM_MARGIN = 60; // margem mínima entre o conteúdo e a borda inferior do card
-    const courses = Array.from(document.querySelectorAll('.course-card')).filter(card => card.style.display !== 'none');
+    const visible = Array.from(document.querySelectorAll('.course-card')).filter(card => card.style.display !== 'none');
+    const courses = sortCourses(visible);
     let nextTop = FIRST_CARD_TOP;
 
     courses.forEach((card) => {
@@ -480,11 +629,14 @@
 
   const sortBtn = document.getElementById('sortBtn');
   const sortMenu = document.getElementById('sortMenu');
+  const SORT_KEYS = { 'Mais recentes': 'recentes', 'Mais antigos': 'antigos', 'A-Z': 'az' };
   sortBtn.addEventListener('click', (e) => { e.stopPropagation(); yearMenu.classList.remove('open'); sortMenu.classList.toggle('open'); });
   document.querySelectorAll('.sort-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       document.getElementById('sortLabel').textContent = opt.textContent;
+      currentSort = SORT_KEYS[opt.textContent.trim()] || 'recentes';
       sortMenu.classList.remove('open');
+      layoutCourseCards();
     });
   });
 
