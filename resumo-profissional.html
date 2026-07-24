@@ -121,9 +121,130 @@
 
   /* ===== Foco visível para atalhos de acessibilidade (skip-links) ===== */
   [tabindex="-1"]:focus{ outline: 2px solid var(--pink-bold); outline-offset: 6px; }
+
+  /* ================================================================ */
+  /* ===== TELA DE CARREGAMENTO ===================================== */
+  /* ================================================================ */
+  #preloader{
+    position:fixed; inset:0; z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(circle at 50% 42%, #14141a 0%, #0a0a0c 62%, #060607 100%);
+    transition: opacity .6s ease, visibility .6s ease;
+  }
+  #preloader.is-done{ opacity:0; visibility:hidden; pointer-events:none; }
+  .preloader-inner{ display:flex; flex-direction:column; align-items:center; gap:26px; }
+  .preloader-logo{
+    width:96px; height:auto; object-fit:contain;
+    filter: drop-shadow(0 0 18px rgba(255,45,160,0.45));
+    animation: preloaderBreathe 1.8s ease-in-out infinite;
+  }
+  @keyframes preloaderBreathe{
+    0%,100%{ transform: scale(1); opacity:.92; }
+    50%{ transform: scale(1.07); opacity:1; }
+  }
+  .preloader-bar{ width:220px; height:3px; border-radius:999px; background:rgba(255,255,255,0.1); overflow:hidden; }
+  .preloader-bar-fill{
+    height:100%; width:0%; border-radius:999px;
+    background: linear-gradient(90deg, var(--pink-bold), var(--pink-light));
+    box-shadow: 0 0 10px var(--pink-bold);
+    transition: width .25s ease-out;
+  }
+  .preloader-pct{
+    font-family:'Segoe UI', sans-serif; font-size:12px; letter-spacing:.12em;
+    color: var(--text-mouse); text-transform:uppercase;
+  }
+
+  /* ===== Barra de progresso de scroll ===== */
+  #scrollProgress{ position:fixed; top:0; left:0; width:100%; height:3px; z-index:9998; background: rgba(255,255,255,0.05); pointer-events:none; }
+  #scrollProgressFill{
+    height:100%; width:0%;
+    background: linear-gradient(90deg, var(--pink-bold), var(--pink-light));
+    box-shadow: 0 0 8px var(--pink-bold);
+  }
+
+  /* ===== Glow sutil que segue o cursor ===== */
+  #cursorGlow{
+    position:fixed; top:0; left:0; width:520px; height:520px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,45,160,0.13), transparent 70%);
+    transform: translate(-50%,-50%); pointer-events:none; z-index:3;
+    mix-blend-mode: screen; opacity:0; transition: opacity .4s ease; will-change: transform;
+  }
+  @media (hover:none), (pointer:coarse){ #cursorGlow{ display:none; } }
+
+  /* ===== Microinterações: header, nav, pills ===== */
+  .logo-link{ display:block; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .logo-link:hover, .logo-link:focus-visible{ transform: scale(1.07) rotate(-2deg); }
+
+  .pill{ transition: all .15s ease, transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease; }
+  .pill:hover{ transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255,45,160,0.16); }
+  .pill:active{ transform: translateY(0) scale(.94); }
+
+  .a11y-badge{ animation: pulseGlow 3.2s ease-in-out infinite; }
+  @keyframes pulseGlow{
+    0%,100%{ box-shadow: 0 0 0 0 rgba(255,45,160,0.35); }
+    50%{ box-shadow: 0 0 16px 4px rgba(255,45,160,0.22); }
+  }
+
+  .nav-item{ transition: transform .25s cubic-bezier(.22,1,.36,1); }
+  .nav-item:hover, .nav-item:focus-visible{ transform: translateX(8px); }
+  .nav-item .seta-normal, .nav-item .seta-hover{ transition: opacity .2s ease, transform .2s ease; }
+  .nav-item:hover .seta-hover{ transform: translateX(4px); }
+  .nav-item .icon-ring{ transition: filter .2s ease, transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .nav-item:hover .icon-ring{ transform: scale(1.08); }
+
+  .float-idle{ animation: floatY 6.5s ease-in-out infinite; }
+  .float-idle-delay{ animation: floatY 6.5s ease-in-out infinite; animation-delay: -3s; }
+  @keyframes floatY{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
+
+  .mouse-hint-icon{ animation: mouseBob 1.8s ease-in-out infinite; }
+  @keyframes mouseBob{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(4px); } }
+
+  .twinkle{ animation: twinkleSpin 9s linear infinite; }
+  @keyframes twinkleSpin{
+    0%{ transform: rotate(0deg) scale(1); opacity:.35; }
+    50%{ transform: rotate(180deg) scale(1.25); opacity:.7; }
+    100%{ transform: rotate(360deg) scale(1); opacity:.35; }
+  }
+
+  /* ===== Revelação de conteúdo ao rolar ===== */
+  #conteudo.reveal-target{
+    opacity:0; transform: translateY(56px);
+    transition: opacity .85s cubic-bezier(.22,1,.36,1), transform .85s cubic-bezier(.22,1,.36,1);
+  }
+  #conteudo.reveal-target.in-view{ opacity:1; transform: translateY(0); }
+
+  #playBtn:hover:not(.is-hidden){ transform: scale(1.08); box-shadow: 0 0 26px rgba(255,45,160,0.4); }
+
+  .cv-link{ transition: color .2s ease, text-shadow .2s ease; }
+  .cv-link:hover{ color: #fff; text-shadow: 0 0 10px var(--pink-light); }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+    #conteudo.reveal-target{ opacity:1 !important; transform:none !important; }
+    #cursorGlow{ display:none !important; }
+  }
 </style>
 </head>
 <body>
+
+<!-- ============ TELA DE CARREGAMENTO ============ -->
+<div id="preloader" role="status" aria-live="polite">
+  <div class="preloader-inner">
+    <img class="preloader-logo" src="assets/logo.png" alt="" />
+    <div class="preloader-bar"><div class="preloader-bar-fill" id="preloaderFill"></div></div>
+    <span class="preloader-pct" id="preloaderPct">Carregando 0%</span>
+  </div>
+</div>
+
+<!-- ============ BARRA DE PROGRESSO DE SCROLL ============ -->
+<div id="scrollProgress"><div id="scrollProgressFill"></div></div>
+
+<!-- ============ GLOW QUE SEGUE O CURSOR ============ -->
+<div id="cursorGlow"></div>
+
 <div id="app">
 
   <div id="bg-fixed"></div>
@@ -133,7 +254,7 @@
 
     <div class="abs" style="left:0px; top:0px; width:1920px; height:122px; background:linear-gradient(90deg, transparent 0%, rgba(13,13,13,0.72) 50%, transparent 100%); border-bottom:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(4px);"></div>
 
-    <a href="index.html" class="abs" style="left:69px; top:30px; width:118px; height:62px;">
+    <a href="index.html" class="abs logo-link" style="left:69px; top:30px; width:118px; height:62px;">
       <img src="assets/logo.png" alt="Celeste Gouvea — logo" style="width:100%; height:100%; object-fit:contain;" />
     </a>
 
@@ -152,15 +273,15 @@
     <button id="themeToggle" title="Modo claro/escuro" class="abs pill" style="left:1729px; top:35.5px; width:52px; height:51px; border-radius:50%;">
       <img src="assets/icons/icone-darkmode.png" alt="" style="width:26px; height:26px;" />
     </button>
-    <button title="Acessibilidade" class="abs" style="left:1796px; top:35px; width:52px; height:52px; border-radius:50%; background:var(--pink-bold); display:flex; align-items:center; justify-content:center;">
+    <button title="Acessibilidade" class="abs a11y-badge" style="left:1796px; top:35px; width:52px; height:52px; border-radius:50%; background:var(--pink-bold); display:flex; align-items:center; justify-content:center;">
       <img src="assets/icons/icone-acessibilidade.png" alt="Acessibilidade" style="width:30px; height:30px;" />
     </button>
 
     <!-- SIDEBAR -->
     <div class="abs card-panel" style="left:64px; top:227px; width:540px; height:650px; background:rgba(13,13,13,0.72); border-color: rgba(230,57,155,0.25);"></div>
 
-    <img src="assets/img-ferramentas.png" alt="" class="abs" style="left:92px; top:255px; width:56px; height:305px; opacity:.9; pointer-events:none;" />
-    <img src="assets/img-ilustracao.png" alt="Ilustração: 'Olá' e retrato de Celeste, designer, com estrelas decorativas" class="abs" style="left:140px; top:255px; width:412px; height:auto;" />
+    <img src="assets/img-ferramentas.png" alt="" class="abs float-idle-delay" style="left:92px; top:255px; width:56px; height:305px; opacity:.9; pointer-events:none;" />
+    <img src="assets/img-ilustracao.png" alt="Ilustração: 'Olá' e retrato de Celeste, designer, com estrelas decorativas" class="abs float-idle" style="left:140px; top:255px; width:412px; height:auto;" />
 
     <p class="abs" style="left:169px; top:465px; width:378px; font-size:calc(24px * var(--font-scale)); line-height:1.45; font-weight:400; color:var(--text-dim); margin:0;">
       Prazer! Sou <span style="color:var(--pink-light); font-weight:500;">Celeste</span>, designer com foco em e-learnings e animadora digital.<br/>
@@ -200,7 +321,7 @@
     </a>
 
     <div class="abs pill" style="left:110px; top:920px; width:428px; height:55px; font-size:calc(20px * var(--font-scale)); font-weight:400; color:var(--text-mouse); gap:12px; padding:0 20px;">
-      <img src="assets/icons/icone-mouse.png" alt="" style="width:16px; height:22px;" />
+      <img src="assets/icons/icone-mouse.png" alt="" class="mouse-hint-icon" style="width:16px; height:22px;" />
       <span style="opacity:0.3; font-weight:100;">|</span>
       Navegue pelo menu ou role o feed.
     </div>
@@ -210,7 +331,7 @@
   <div id="page-scale-wrapper">
     <div id="page-scale">
 
-      <div id="conteudo" class="abs card-panel" tabindex="-1" style="left:777px; top:221px; width:1020px; height:1193px; overflow:hidden;">
+      <div id="conteudo" class="abs card-panel reveal-target" tabindex="-1" style="left:777px; top:221px; width:1020px; height:1193px; overflow:hidden;">
 
         <span class="badge-pill" style="position:absolute; left:50%; top:66px; transform:translateX(-50%); padding:11px 28px; font-size:calc(15px * var(--font-scale)); white-space:nowrap; z-index:2;">RESUMO PROFISSIONAL</span>
 
@@ -297,10 +418,96 @@
     }
   });
 
-  /* ===== Transição suave entre páginas ===== */
+  /* ===== Tela de carregamento ===== */
   window.scrollTo(0,0);
-  requestAnimationFrame(() => { document.getElementById('app').classList.add('is-visible'); });
+  (function initPreloader(){
+    const preloader = document.getElementById('preloader');
+    const fill = document.getElementById('preloaderFill');
+    const pct = document.getElementById('preloaderPct');
+    const app = document.getElementById('app');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let progress = 0;
+    let pageLoaded = false;
+    let minTimeElapsed = reduceMotion;
 
+    function paint(){
+      fill.style.width = progress + '%';
+      pct.textContent = 'Carregando ' + Math.floor(progress) + '%';
+    }
+    function tick(){
+      if (progress < 90){
+        progress += (90 - progress) * 0.05 + 0.35;
+        if (progress > 90) progress = 90;
+        paint();
+      }
+      if (!(pageLoaded && minTimeElapsed)){ requestAnimationFrame(tick); }
+    }
+    function finish(){
+      progress = 100; paint();
+      setTimeout(() => {
+        preloader.classList.add('is-done');
+        app.classList.add('is-visible');
+        setTimeout(() => { preloader.remove(); }, 650);
+      }, reduceMotion ? 0 : 250);
+    }
+    function checkDone(){ if (pageLoaded && minTimeElapsed) finish(); }
+
+    if (reduceMotion){ progress = 100; paint(); }
+    else {
+      requestAnimationFrame(tick);
+      setTimeout(() => { minTimeElapsed = true; checkDone(); }, 700);
+    }
+    if (document.readyState === 'complete'){ pageLoaded = true; checkDone(); }
+    else { window.addEventListener('load', () => { pageLoaded = true; checkDone(); }); }
+  })();
+
+  /* ===== Revelação de conteúdo ao rolar ===== */
+  if ('IntersectionObserver' in window){
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal-target').forEach(el => revealObserver.observe(el));
+  } else {
+    document.querySelectorAll('.reveal-target').forEach(el => el.classList.add('in-view'));
+  }
+
+  /* ===== Barra de progresso de leitura (scroll) ===== */
+  const scrollFill = document.getElementById('scrollProgressFill');
+  function updateScrollProgress(){
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - doc.clientHeight;
+    const pct2 = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+    scrollFill.style.width = pct2 + '%';
+  }
+  window.addEventListener('scroll', updateScrollProgress, { passive: true });
+  window.addEventListener('resize', updateScrollProgress);
+  updateScrollProgress();
+
+  /* ===== Glow sutil que acompanha o cursor ===== */
+  (function initCursorGlow(){
+    const glow = document.getElementById('cursorGlow');
+    if (!glow || window.matchMedia('(hover:none), (pointer:coarse)').matches) return;
+    let tx = window.innerWidth / 2, ty = window.innerHeight / 2, gx = tx, gy = ty, active = false;
+    window.addEventListener('mousemove', (e) => {
+      tx = e.clientX; ty = e.clientY;
+      if (!active){ glow.style.opacity = '1'; active = true; }
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
+    function loop(){
+      gx += (tx - gx) * 0.12;
+      gy += (ty - gy) * 0.12;
+      glow.style.transform = 'translate(' + gx + 'px, ' + gy + 'px) translate(-50%,-50%)';
+      requestAnimationFrame(loop);
+    }
+    loop();
+  })();
+
+  /* ===== Transição suave entre páginas ===== */
   document.querySelectorAll('a[href]').forEach(a => {
     const href = a.getAttribute('href');
     if (href && href.indexOf('.html') !== -1 && !/^https?:\/\//.test(href)){
