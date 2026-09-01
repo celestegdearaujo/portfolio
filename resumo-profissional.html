@@ -226,6 +226,151 @@
     #conteudo.reveal-target{ opacity:1 !important; transform:none !important; }
     #cursorGlow{ display:none !important; }
   }
+
+  /* ================================================================ */
+  /* ===== LAYOUT EMPILHADO PARA TELAS PEQUENAS ====================== */
+  /* ================================================================ */
+  /* Mesma abordagem do index.html: abaixo de 1024px o canvas de 1920px */
+  /* escalado e desligado e tudo volta ao fluxo normal. Acima disso o   */
+  /* desktop segue intocado. Os !important vencem os style inline que   */
+  /* posicionam os elementos (e o que o JS de escala escreve).          */
+  /* ================================================================ */
+  @media (max-width: 1024px){
+
+    html, body{ overflow-x: hidden; }
+
+    #chrome-fixed, #page-scale{
+      position: static !important;
+      left: 0 !important; top: 0 !important;
+      width: 100% !important; height: auto !important;
+      transform: none !important;
+      pointer-events: auto;
+    }
+    #page-scale-wrapper{ height: auto !important; }
+
+    #chrome-fixed{
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+      gap: 10px 12px;
+      padding: 26px 16px 10px;
+    }
+    #page-scale{ padding: 10px 14px 48px; }
+
+    #chrome-fixed > .abs{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      right: auto !important; bottom: auto !important;
+      width: auto !important; height: auto !important;
+      max-width: 100%;
+    }
+
+    /* Decorativos vazios somem: faixa do header, painel da sidebar,
+       divisorias. A ancora #menu fica (Alt+2 / foco por teclado). */
+    #chrome-fixed > div.abs:empty{ display: none !important; }
+    #menu{
+      display: block !important;
+      flex: 0 0 100% !important;
+      width: 100% !important; height: 0 !important;
+      margin: 0 !important;
+    }
+
+    #chrome-fixed > .logo-link{
+      flex: 0 0 100%;
+      width: 106px !important; height: 56px !important;
+      margin: 0 auto 6px;
+    }
+    #chrome-fixed > a[href="#conteudo"].pill,
+    #chrome-fixed > a[href="#menu"].pill{ display: none !important; }
+    #chrome-fixed > img[alt=""]{ display: none !important; }
+    #chrome-fixed > div.pill{ display: none !important; }
+
+    #chrome-fixed > button.pill,
+    #chrome-fixed > .a11y-badge{
+      flex: 0 0 auto;
+      width: 46px !important; height: 46px !important;
+    }
+
+    #chrome-fixed > .float-idle{
+      flex: 0 0 100%;
+      width: min(250px, 60vw) !important; height: auto !important;
+      margin: 10px auto 0;
+    }
+    #chrome-fixed > p{
+      flex: 0 0 100%;
+      width: 100% !important; max-width: 420px;
+      margin: 0 auto 6px !important;
+      text-align: center;
+      font-size: calc(18px * var(--font-scale)) !important;
+    }
+
+    #chrome-fixed > .nav-item{
+      flex: 0 0 100%;
+      width: 100% !important; height: auto !important;
+      max-width: 420px; min-height: 54px;
+      margin: 0 auto;
+      display: flex !important; align-items: center; gap: 12px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+    }
+    #chrome-fixed > .nav-item:hover,
+    #chrome-fixed > .nav-item:focus-visible{ transform: none; }
+    #chrome-fixed > .nav-item > .abs{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      width: auto !important; height: auto !important;
+    }
+    #chrome-fixed > .nav-item > img.icon-ring{
+      flex: 0 0 auto; width: 28px !important; height: 28px !important;
+    }
+    #chrome-fixed > .nav-item > span.abs:not(:has(img)){
+      flex: 1 1 auto;
+      font-size: calc(18px * var(--font-scale)) !important;
+    }
+    #chrome-fixed > .nav-item > span.abs:has(img){
+      flex: 0 0 14px;
+      width: 14px !important; height: 26px !important;
+    }
+
+    /* ---- Painel do resumo ---- */
+    #conteudo.abs{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      width: 100% !important; height: auto !important;
+      overflow: visible !important;
+      padding: 24px 18px 30px !important;
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
+      border-radius: 16px;
+    }
+    #conteudo > .badge-pill{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      transform: none !important;
+      white-space: normal !important;
+      text-align: center;
+    }
+    /* O brilho decorativo e posicionado em pixels: sem sentido aqui */
+    #conteudo > .resumo-glow{ display: none !important; }
+    /* No desktop a ilustracao fica atras do painel (z-index:-1) como
+       fundo esmaecido. Empilhada, ela vira imagem normal no fluxo. */
+    #conteudo > .resumo-hero{
+      position: relative !important;
+      z-index: auto !important;
+      left: auto !important; top: auto !important;
+      transform: none !important;
+      width: 100% !important; height: auto !important;
+    }
+    #conteudo > .resumo-text{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      transform: none !important;
+      width: 100% !important;
+      font-size: calc(16px * var(--font-scale)) !important;
+      line-height: 1.65;
+    }
+    .resumo-text p{ margin: 0 0 calc(16px * var(--font-scale)) 0 !important; }
+  }
 </style>
 </head>
 <body>
@@ -360,7 +505,16 @@
   const MIN_SCALE = 0.68;
   const MAX_SCALE = 1;
 
+  /* Abaixo de 1024px o layout empilha no fluxo normal (ver bloco
+     "LAYOUT EMPILHADO" no CSS) e a escala de canvas não se aplica. */
+  const STACKED_MQ = window.matchMedia('(max-width: 1024px)');
+  const isStacked = () => STACKED_MQ.matches;
+
   function updateScale(){
+    if (isStacked()){
+      document.documentElement.style.setProperty('--scale', 1);
+      return;
+    }
     const scaleByWidth = window.innerWidth / DESIGN_WIDTH;
     const scaleByHeight = window.innerHeight / CHROME_HEIGHT;
     const rawScale = Math.min(scaleByWidth, scaleByHeight);

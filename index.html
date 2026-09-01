@@ -260,6 +260,374 @@
     .course-card, .journey-pill{ opacity:1 !important; transform:none !important; }
     #cursorGlow{ display:none !important; }
   }
+
+
+  /* ================================================================ */
+  /* ===== GALERIA DE TELAS ========================================== */
+  /* ================================================================ */
+  /* Uma tela grande por vez dentro do card, com setas, contador e     */
+  /* ampliação em tela cheia. Serve para projetos cujo entregável e a  */
+  /* propria interface — o PDF encolhia demais as telas.               */
+  .gal-img{
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    background: #0b0b0d;
+    transition: opacity .22s ease;
+  }
+  .gal-img.is-swapping{ opacity: 0; }
+
+  /* Telas cujo slide tem video embutido: o <video> ocupa o mesmo lugar
+     do <img> e so um dos dois fica visivel por vez. Autoplay mudo em
+     loop da o movimento sem os artefatos de um GIF de 256 cores. */
+  .gal-video{
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; background: #0b0b0d;
+    display: none;
+  }
+  .gal-video.is-active{ display: block; }
+  .gal-img.is-hidden{ display: none; }
+
+  /* Peças em A4 retrato dentro de um card 16:9: 'cover' cortaria a
+     página pela metade, então essas usam 'contain' e ficam inteiras,
+     com faixa lateral. */
+  .gal-img.is-retrato, .gal-video.is-retrato{ object-fit: contain; }
+
+  .gal-nav{
+    position: absolute; top: 50%;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff; font-size: 30px; line-height: 1; padding-bottom: 4px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 3; cursor: pointer;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity .25s ease, background .2s ease, border-color .2s ease;
+  }
+  .gallery-card:hover .gal-nav,
+  .gal-nav:focus-visible{ opacity: 1; }
+  .gal-nav:hover{ background: var(--pink-bold); border-color: var(--pink-bold); color: #000; }
+  .gal-nav[disabled]{ opacity: 0 !important; pointer-events: none; }
+  .gal-prev{ left: 18px; }
+  .gal-next{ right: 18px; }
+
+  .gal-bar{
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+    padding: 40px 22px 16px;
+    background: linear-gradient(0deg, rgba(0,0,0,.9), transparent);
+    display: flex; align-items: center; gap: 14px;
+    font-family: 'Segoe UI', sans-serif; font-size: 15px;
+    pointer-events: none;
+  }
+  .gal-bar button{ pointer-events: auto; }
+  .gal-label{ color: #fff; font-weight: 600; letter-spacing: .02em; }
+  .gal-count{ color: rgba(255,255,255,0.55); }
+  .gal-expand{
+    margin-left: auto; color: #fff; font-size: 19px; opacity: .85;
+    transition: opacity .15s ease, filter .15s ease;
+  }
+  .gal-expand:hover{ opacity: 1; filter: drop-shadow(0 0 5px var(--pink-light)); }
+
+  /* ---- Tela cheia ---- */
+  #galLightbox{
+    position: fixed; inset: 0; z-index: 120; display: none;
+    background: rgba(4,4,6,0.975);
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 18px; padding: 28px;
+    opacity: 0; transition: opacity .3s ease;
+  }
+  #galLightbox.is-open{ opacity: 1; }
+  #galLightboxImg{
+    max-width: 94vw; max-height: 82vh;
+    object-fit: contain; border-radius: 10px;
+    box-shadow: 0 30px 90px rgba(0,0,0,.65);
+    transform: scale(.96); transition: transform .35s cubic-bezier(.22,1,.36,1);
+  }
+  #galLightbox.is-open #galLightboxImg,
+  #galLightbox.is-open #galLightboxVideo{ transform: scale(1); }
+  #galLightboxVideo{ display: none; }
+  #galLightboxVideo.is-active{ display: block; }
+  #galLightboxImg.is-hidden{ display: none; }
+  .gal-lb-bar{
+    display: flex; align-items: center; gap: 18px;
+    font-family: 'Segoe UI', sans-serif; font-size: 16px; color: #fff;
+  }
+  .gal-lb-bar .gal-count{ color: rgba(255,255,255,0.55); }
+  .gal-lb-nav{
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06);
+    color: #fff; font-size: 24px; line-height: 1; padding-bottom: 3px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+  }
+  .gal-lb-nav:hover{ background: var(--pink-bold); border-color: var(--pink-bold); color: #000; }
+  #galLightboxClose{
+    position: absolute; top: 22px; right: 26px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); color: #fff; font-size: 19px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: background .15s ease;
+  }
+  #galLightboxClose:hover{ background: rgba(255,255,255,0.18); }
+
+  /* ---- Galeria em telas pequenas ---- */
+  @media (max-width: 1024px){
+    /* Sem hover no toque: as setas ficam sempre visíveis, e menores. */
+    .gal-nav{ opacity: 1; width: 42px; height: 42px; font-size: 24px; }
+    .gal-prev{ left: 8px; }
+    .gal-next{ right: 8px; }
+    .gal-bar{ padding: 30px 14px 12px; font-size: 13px; gap: 10px; }
+    #page-scale > .course-card > .gallery-card{
+      aspect-ratio: 16 / 9;
+      height: auto !important;
+      border-radius: 12px;
+    }
+    #galLightbox{ padding: 14px; gap: 12px; }
+    #galLightboxImg{ max-width: 96vw; max-height: 100%; }
+    #galLightboxClose{ top: 12px; right: 14px; }
+  }
+
+  /* Celular em pé: uma tela 16:9 deitada cabe em ~346px de largura e
+     fica ilegível. Girada 90°, passa a usar a ALTURA da tela e quase
+     dobra de tamanho. Fica absoluta dentro do palco para que o giro
+     não empurre o layout — transform não altera a caixa de layout. */
+  @media (max-width: 1024px) and (orientation: portrait){
+    .gal-lb-stage{ position: relative; }
+    #galLightboxImg{
+      position: absolute; top: 50%; left: 50%;
+      max-width: none; max-height: none;
+      width: min(86vh, 165vw); height: auto;
+      transform-origin: center center;
+      transform: translate(-50%, -50%) rotate(90deg) scale(.96);
+    }
+    #galLightbox.is-open #galLightboxImg{
+      transform: translate(-50%, -50%) rotate(90deg) scale(1);
+    }
+  }
+
+  /* ================================================================ */
+  /* ===== LAYOUT EMPILHADO PARA TELAS PEQUENAS ====================== */
+  /* ================================================================ */
+  /* Tudo abaixo vive dentro de @media (max-width:1024px). Acima disso */
+  /* o layout de canvas 1920px escalado continua EXATAMENTE como era.  */
+  /*                                                                   */
+  /* Por que tanto !important: o layout original posiciona os elementos */
+  /* por style inline (left/top/width/height) e o JS ainda reescreve    */
+  /* top/height dos cards. Regra de folha de estilo so vence estilo     */
+  /* inline com !important - nao e gosto, e a unica forma de desligar   */
+  /* o posicionamento absoluto sem reescrever o HTML inteiro.           */
+  /*                                                                   */
+  /* Os filhos diretos viram position:relative (e nao static) de        */
+  /* proposito: assim qualquer filho absoluto interno - controles do    */
+  /* player, menus suspensos - continua ancorado no proprio container   */
+  /* em vez de escapar para o <body>.                                   */
+  /* ================================================================ */
+  @media (max-width: 1024px){
+
+    html, body{ overflow-x: hidden; }
+
+    /* ---- Containers saem do modo canvas e voltam ao fluxo normal ---- */
+    #chrome-fixed, #page-scale{
+      position: static !important;
+      left: 0 !important; top: 0 !important;
+      width: 100% !important; height: auto !important;
+      transform: none !important;
+      pointer-events: auto;
+    }
+    #page-scale-wrapper{ height: auto !important; }
+
+    #chrome-fixed{
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+      gap: 10px 12px;
+      padding: 26px 16px 10px;
+    }
+    #page-scale{
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+      gap: 10px;
+      padding: 10px 14px 48px;
+    }
+
+    /* ---- Filhos diretos deixam de ser absolutos ---- */
+    #chrome-fixed > .abs,
+    #page-scale > .abs,
+    .course-card > .abs{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      right: auto !important; bottom: auto !important;
+      width: auto !important; height: auto !important;
+      max-width: 100%;
+    }
+
+    /* ---- Divs decorativos e vazios somem: faixa do header,
+           painel de fundo da sidebar, divisorias ---- */
+    #chrome-fixed > div.abs:empty,
+    #page-scale > div.abs:empty{ display: none !important; }
+
+    /* ...menos as ancoras dos skip-links, que precisam continuar
+       existindo para o Alt+1 / Alt+2 e o foco por teclado. */
+    #menu, #conteudo{
+      display: block !important;
+      flex: 0 0 100% !important;
+      width: 100% !important; height: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* ---- Cabecalho ---- */
+    #chrome-fixed > .logo-link{
+      flex: 0 0 100%;
+      width: 106px !important; height: 56px !important;
+      margin: 0 auto 6px;
+    }
+    /* Pills "Ir para o Conteudo/Menu": em tela de toque nao ha teclado.
+       Os atalhos Alt+1/Alt+2 seguem ativos para quem usa teclado. */
+    #chrome-fixed > a[href="#conteudo"].pill,
+    #chrome-fixed > a[href="#menu"].pill{ display: none !important; }
+    /* Estrela decorativa do header e a tira de ferramentas (alt="") */
+    #chrome-fixed > img[alt=""]{ display: none !important; }
+    /* Dica "role o feed" com icone de mouse: sem sentido no touch */
+    #chrome-fixed > div.pill{ display: none !important; }
+
+    /* ---- Botoes de acessibilidade, lado a lado ---- */
+    #chrome-fixed > button.pill,
+    #chrome-fixed > .a11y-badge{
+      flex: 0 0 auto;
+      width: 46px !important; height: 46px !important;
+    }
+
+    /* ---- Ilustracao + bio ---- */
+    #chrome-fixed > .float-idle{
+      flex: 0 0 100%;
+      width: min(250px, 60vw) !important; height: auto !important;
+      margin: 10px auto 0;
+    }
+    #chrome-fixed > p{
+      flex: 0 0 100%;
+      width: 100% !important; max-width: 420px;
+      margin: 0 auto 6px !important;
+      text-align: center;
+      font-size: calc(18px * var(--font-scale)) !important;
+    }
+
+    /* ---- Menu: cada item vira um bloco tocavel de largura cheia ---- */
+    #chrome-fixed > .nav-item{
+      flex: 0 0 100%;
+      width: 100% !important; height: auto !important;
+      max-width: 420px; min-height: 54px;
+      margin: 0 auto;
+      display: flex !important; align-items: center; gap: 12px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+    }
+    #chrome-fixed > .nav-item:hover,
+    #chrome-fixed > .nav-item:focus-visible{ transform: none; }
+    #chrome-fixed > .nav-item > .abs{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      width: auto !important; height: auto !important;
+    }
+    #chrome-fixed > .nav-item > img.icon-ring{
+      flex: 0 0 auto; width: 28px !important; height: 28px !important;
+    }
+    /* O span do rotulo (sem <img> dentro) ocupa o meio... */
+    #chrome-fixed > .nav-item > span.abs:not(:has(img)){
+      flex: 1 1 auto;
+      font-size: calc(18px * var(--font-scale)) !important;
+    }
+    /* ...e o span da seta mantem tamanho fixo, servindo de ancora
+       para as duas <img> absolutas de estado normal/hover. */
+    #chrome-fixed > .nav-item > span.abs:has(img){
+      flex: 0 0 14px;
+      width: 14px !important; height: 26px !important;
+    }
+
+    /* ---- Barra de filtros ---- */
+    #page-scale > .tab-btn{
+      flex: 0 0 auto;
+      width: auto !important; height: 34px !important;
+      padding: 0 14px;
+      font-size: calc(15px * var(--font-scale)) !important;
+    }
+    /* rotulo "Ordenar por:" - o proprio botao ja diz o que faz */
+    #page-scale > span.abs{ display: none !important; }
+    #page-scale > div.abs:has(.dropdown-menu){ flex: 0 0 auto; }
+    #page-scale > div.abs:has(#sortMenu) > #sortBtn{
+      width: auto !important; padding: 0 14px;
+      font-size: calc(15px * var(--font-scale)) !important;
+    }
+
+    /* ---- Cards de projeto ---- */
+    #page-scale > .course-card{
+      flex: 0 0 100% !important;
+      width: 100% !important; height: auto !important;
+      margin: 0 0 18px !important;
+      padding: 22px 16px 26px !important;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      border-radius: 16px;
+    }
+    #page-scale > .course-card > .abs{ width: 100% !important; }
+
+    /* Ficha tecnica: CLIENTE / PROJETO / ANO / CATEGORIA */
+    #page-scale > .course-card > div.segoe{
+      font-size: 13px !important;
+      column-gap: 10px !important;
+    }
+
+    /* Video e PDF: altura passa a vir da proporcao, nao de 496px fixos */
+    #page-scale > .course-card > .video-card,
+    #page-scale > .course-card > .pdf-card{
+      aspect-ratio: 945 / 496;
+      height: auto !important;
+      border-radius: 12px;
+    }
+    .video-card .v-play,
+    .pdf-card .pdf-open-btn{
+      width: 64px !important; height: 64px !important;
+      font-size: 26px !important;
+    }
+    .video-card .v-play{ margin: -32px 0 0 -32px !important; }
+
+    /* Trilha INICIO / DESAFIO / SUCESSO: vira uma linha que quebra,
+       e o PNG da linha pontilhada (posicionado em pixels) sai de cena. */
+    #page-scale > .course-card > .journey-group{
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+      gap: 10px;
+      height: auto !important;
+    }
+    .course-card > .journey-group > .abs{
+      position: relative !important;
+      left: auto !important; top: auto !important;
+      width: auto !important; height: auto !important;
+    }
+    .course-card > .journey-group > .journey-pill{
+      padding: 8px 20px;
+      font-size: calc(14px * var(--font-scale)) !important;
+    }
+    .course-card > .journey-group > img{ display: none !important; }
+
+    /* Descricao do projeto */
+    #page-scale > .course-card > p{
+      text-align: left;
+      font-size: calc(16px * var(--font-scale)) !important;
+      line-height: 1.65 !important;
+    }
+  }
+
+  /* ---- Celular estreito: a barra do player nao cabe inteira ---- */
+  @media (max-width: 560px){
+    .video-card .v-mute,
+    .video-card .v-speed,
+    .video-card .v-fs,
+    .video-card .pill{ display: none !important; }
+    #page-scale > .course-card{ padding: 18px 12px 22px !important; }
+    #page-scale > .course-card > div.segoe{ font-size: 12px !important; }
+  }
 </style>
 </head>
 <body>
@@ -395,26 +763,271 @@
       </div>
 
       <!-- ============================================================ -->
-      <!-- ===== CURSO 1: RECLAME AQUI (painel de conteúdo completo) === -->
-      <!-- Card agora é o próprio container: todos os elementos internos -->
-      <!-- são posicionados relativos a ele, e sua altura é calculada    -->
-      <!-- via JS (layoutCourseCards) para acompanhar o conteúdo, com   -->
-      <!-- margem mínima de 60px no topo e na base.                    -->
+      <!-- ===== CURSO 7: MISSÃO SEJA UM ESTRATEGISTA (card com PDF) === -->
+      <!-- top é definido dinamicamente pelo JS (layoutCourseCards)     -->
       <!-- ============================================================ -->
-      <div id="course-1" class="abs card-panel course-card" data-category="elearning" data-year="2025" data-order="1" data-title="Reclame Aqui" style="left:777px; top:324px; width:1020px; height:1193px;">
+      <div id="course-7" class="abs card-panel course-card" data-category="elearning" data-year="2026" data-order="7" data-title="Missão: Seja um Estrategista" style="left:777px; top:324px; width:1020px; height:1193px;">
 
         <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
-          <span><span class="pink-bold">CLIENTE</span> / BOTICÁRIO</span>
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER</span>
           <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
-          <span><span class="pink-bold">PROJETO</span> / RECLAME AQUI</span>
+          <span><span class="pink-bold">PROJETO</span> / MISSÃO: SEJA UM ESTRATEGISTA</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="missao" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+          <img class="gal-img" src="assets/telas-missao/01-capa.jpg" alt="Capa do curso: Missão — Seja um Estrategista" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
+          <div class="gal-bar">
+            <span class="gal-label">Capa</span>
+            <span class="gal-count">1 / 11</span>
+            <a class="gal-download" href="assets/missao-seja-um-estrategista.pdf" target="_blank" rel="noopener"
+               download="Missao-Seja-um-Estrategista-telas.pdf" title="Baixar as telas em PDF">PDF &darr;</a>
+            <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Design de interface de um curso em formato de missão, onde o participante avança por uma cidade-mapa desbloqueando territórios a cada etapa. O sistema cobre capa, menus, submenus, telas de destaque em versão clara e escura, cards e carrossel — todos partindo de uma mesma linguagem de HUD futurista, com pontuação, progresso e navegação sempre visíveis.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 8: ONBOARDING GERENTE B1 (galeria de telas) ===== -->
+      <!-- top é definido dinamicamente pelo JS (layoutCourseCards)     -->
+      <!-- ============================================================ -->
+      <div id="course-8" class="abs card-panel course-card" data-category="apresentacoes" data-year="2026" data-order="8" data-title="Onboarding Gerente B1" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / ONBOARDING GERENTE B1</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="onboarding" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+          <img class="gal-img" src="assets/telas-onboarding/slide-01.jpg" alt="Capa da apresentação Onboarding Gerente B1" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
+          <div class="gal-bar">
+            <span class="gal-label">Capa</span>
+            <span class="gal-count">1 / 12</span>
+            <button class="gal-expand" aria-label="Ampliar tela">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Apresentação de integração para gerentes recém-chegados ao segmento, construída sobre a identidade do Santander Empresas: vermelho e creme, tipografia de traço manual nos destaques e a chama da marca usada como máscara nos retratos. O sistema resolve capa, sumário, divisores de módulo, diagramas de rede e território, linha do tempo e fechamento. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 9: ALCANÇANDO A PRINCIPALIDADE (galeria) ======== -->
+      <!-- top é definido dinamicamente pelo JS (layoutCourseCards)     -->
+      <!-- ============================================================ -->
+      <div id="course-9" class="abs card-panel course-card" data-category="apresentacoes" data-year="2026" data-order="9" data-title="Alcançando a Principalidade" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / ALCANÇANDO A PRINCIPALIDADE</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="higher" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+          <img class="gal-img" src="assets/telas-higher/slide-01.jpg" alt="Capa do treinamento Alcançando a Principalidade" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
+          <div class="gal-bar">
+            <span class="gal-label">Capa</span>
+            <span class="gal-count">1 / 12</span>
+            <button class="gal-expand" aria-label="Ampliar tela">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Treinamento presencial para gerentes de relacionamento, com uma direção de arte bem mais dramática que a do onboarding: preto absoluto, vermelho incandescente e fotografia de alto contraste. Objetos em cena — bússola, rei de xadrez, alvo com dardos, lâmpada — carregam a ideia de cada bloco sem precisar de texto. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 11: PROSPERA — DONO DO NEGÓCIO (galeria) ======== -->
+      <!-- Telas escolhidas entre os 4 modulos do programa             -->
+      <!-- ============================================================ -->
+      <div id="course-11" class="abs card-panel course-card" data-category="apresentacoes" data-year="2025" data-order="7.5" data-title="Prospera — Formação Dono do Negócio" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER PROSPERA</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / FORMAÇÃO DONO DO NEGÓCIO</span>
           <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
           <span><span class="pink-bold">ANO</span> / 2025</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="prospera" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+          <img class="gal-img" src="assets/telas-prospera/m1-s01.jpg" alt="Capa do treinamento Formação Dono do Negócio" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
+          <div class="gal-bar">
+            <span class="gal-label">Capa</span>
+            <span class="gal-count">1 / 24</span>
+            <button class="gal-expand" aria-label="Ampliar tela">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Programa de formação em quatro módulos para microempreendedores, com um sistema visual próprio dentro do universo Santander: fundo de papel texturizado, recortes de foto em cantos arredondados e um traço amarelo que funciona como marca de destaque. As telas aqui vêm dos quatro módulos, escolhidas para mostrar o sistema sem repetir estrutura. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 10: GOL — TEAM BUILDING (galeria em video) ====== -->
+      <!-- Todas as telas animam, entao cada item da galeria e um video -->
+      <!-- ============================================================ -->
+      <div id="course-10" class="abs card-panel course-card" data-category="apresentacoes" data-year="2026" data-order="10" data-title="GOL — Team Building" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / GOL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / TEAM BUILDING</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="gol" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+          <img class="gal-img" src="assets/telas-gol/slide-01.jpg" alt="Capa da apresentação Team Building da GOL" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
+          <div class="gal-bar">
+            <span class="gal-label">Capa</span>
+            <span class="gal-count">1 / 20</span>
+            <button class="gal-expand" aria-label="Ampliar tela">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Material de team building para a GOL, em uma paleta de verde-azulado e branco que se afasta do vermelho corporativo dos outros projetos. A composição usa recortes circulares sobre fotografia e o símbolo da asa como elemento de ritmo entre as seções. <em style="font-style:normal; color:var(--pink-light);">Todas as telas têm animação — por isso cada item da galeria é um vídeo, não uma imagem parada.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 12: LIDERANÇACEX — MATERIAIS DE APOIO ========== -->
+      <!-- Duas pecas sao A4 retrato: entram com retrato:true           -->
+      <!-- ============================================================ -->
+      <div id="course-12" class="abs card-panel course-card" data-category="outros" data-year="2026" data-order="11" data-title="LiderançaCEx — Materiais de apoio" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / GRUPO BOTICÁRIO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / PROGRAMA LIDERANÇACEX</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / OUTROS</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="cex" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b1430;">
+          <img class="gal-img" src="assets/telas-cex/m04-prework-p1.jpg" alt="Capa do pre-work WFM e dimensionamento" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
+          <div class="gal-bar">
+            <span class="gal-label">Pre-work — capa</span>
+            <span class="gal-count">1 / 5</span>
+            <button class="gal-expand" aria-label="Ampliar tela">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Materiais de apoio de um programa de capacitação de supervisores: pré-work, mapa mental e checklist. A identidade é um azul profundo com gradiente e traços de luz, e cada peça resolve um formato diferente — o mapa mental em paisagem, para leitura de tela; o checklist em A4 retrato, para imprimir e marcar à mão. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 13: SANTANDER REWARDS (card de vídeo) ========== -->
+      <!-- Gravação de tela do curso, reencodada para a web            -->
+      <!-- ============================================================ -->
+      <div id="course-13" class="abs card-panel course-card" data-category="elearning" data-year="2026" data-order="6.5" data-title="Santander Rewards" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / SANTANDER REWARDS</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
           <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
           <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
         </div>
 
         <div class="abs video-card" data-video-card style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
-          <video class="v-el" src="assets/video-1.mp4" poster="assets/video-thumb.png" preload="metadata" playsinline></video>
+          <video class="v-el" src="assets/video-rewards.mp4" poster="assets/poster-rewards.jpg" preload="metadata" playsinline></video>
           <button class="abs v-play" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
             <span class="v-play-icon">▶</span>
           </button>
@@ -441,11 +1054,312 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Ao longo do curso, os participantes exploram os principais processos do Reclame Aqui por meio de interações que estimulam a participação ativa e ajudam a fixar o conteúdo. A experiência prepara o público para gerenciar reclamações com mais estratégia, melhorar a experiência do cliente e fortalecer a reputação da empresa.
+          Curso sobre o programa de recompensas do banco, construído em torno de casos de atendimento: o participante assume o papel da gerente e responde a mensagens de clientes, escolhendo entre alternativas que mudam o rumo da conversa. A gravação mostra o percurso completo — abertura, conteúdo, os diálogos com decisão e o fechamento com feedback.
         </p>
 
       </div>
 
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 14: BRIGADA DE EMERGÊNCIA (card de vídeo) ====== -->
+      <!-- Gravação de tela, reencodada sem áudio                      -->
+      <!-- ============================================================ -->
+      <div id="course-14" class="abs card-panel course-card" data-category="elearning" data-year="2026" data-order="6.6" data-title="Brigada de Emergência" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / BRIGADA DE EMERGÊNCIA</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
+        </div>
+
+        <div class="abs video-card" data-video-card style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
+          <video class="v-el" src="assets/video-brigada.mp4" poster="assets/poster-brigada.jpg" preload="metadata" playsinline muted></video>
+          <button class="abs v-play" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
+            <span class="v-play-icon">▶</span>
+          </button>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:40px 24px 18px; background:linear-gradient(0deg, rgba(0,0,0,.9), transparent); display:flex; align-items:center; gap:16px; font-size:15px; z-index:2;">
+            <button class="ctrl-btn v-mini-play">▶</button>
+            <span class="v-time" style="color:rgba(255,255,255,0.7); white-space:nowrap; font-size:15px;">00:00 / 00:00</span>
+            <div class="v-progress-track" style="flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,0.15); position:relative; cursor:pointer;">
+              <div class="v-progress-fill" style="height:100%; border-radius:999px; background:var(--pink-bold); width:0%;"></div>
+              <div class="v-progress-handle" style="position:absolute; top:-4px; left:0%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translateX(-50%);"></div>
+            </div>
+            <span class="pill" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">CC</span>
+            <button class="pill ctrl-btn v-speed" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">1x</button>
+            <button class="ctrl-btn v-fs">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Curso de segurança contra incêndio construído inteiro na linguagem de rede social: cada tela é um post, com curtidas, comentários e hashtags, e o participante rola o feed acompanhando o Alex descobrir na prática por que a atitude diante de um alarme decide o desfecho. A escolha de formato faz um tema árido de treinamento obrigatório virar algo que se lê sem esforço.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 15: TRILHA ORANGE CAP (card de vídeo) ========== -->
+      <!-- ============================================================ -->
+      <div id="course-15" class="abs card-panel course-card" data-category="elearning" data-year="2026" data-order="6.7" data-title="Trilha Orange Cap" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / GOL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / TRILHA ORANGE CAP</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
+        </div>
+
+        <div class="abs video-card" data-video-card style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
+          <video class="v-el" src="assets/video-orangecap.mp4" poster="assets/poster-orangecap.jpg" preload="metadata" playsinline muted></video>
+          <button class="abs v-play" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
+            <span class="v-play-icon">▶</span>
+          </button>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:40px 24px 18px; background:linear-gradient(0deg, rgba(0,0,0,.9), transparent); display:flex; align-items:center; gap:16px; font-size:15px; z-index:2;">
+            <button class="ctrl-btn v-mini-play">▶</button>
+            <span class="v-time" style="color:rgba(255,255,255,0.7); white-space:nowrap; font-size:15px;">00:00 / 00:00</span>
+            <div class="v-progress-track" style="flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,0.15); position:relative; cursor:pointer;">
+              <div class="v-progress-fill" style="height:100%; border-radius:999px; background:var(--pink-bold); width:0%;"></div>
+              <div class="v-progress-handle" style="position:absolute; top:-4px; left:0%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translateX(-50%);"></div>
+            </div>
+            <span class="pill" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">CC</span>
+            <button class="pill ctrl-btn v-speed" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">1x</button>
+            <button class="ctrl-btn v-fs">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Trilha de formação para o colaborador de rampa, em laranja e verde-azulado sobre fotografia de operação real. O curso cobre acessibilidade e manuseio de cadeiras de rodas, carregamento no porão e centro de gravidade da aeronave, alternando telas explicativas com interações de arrastar e escolher. É o mesmo cliente do Team Building, com uma identidade visual bem diferente.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 19: BANCO OURI FINANCE ======================== -->
+      <!-- ============================================================ -->
+      <div id="course-19" class="abs card-panel course-card" data-category="elearning" data-year="2026" data-order="7.2" data-title="Banco Ouri Finance" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / BANCO OURI FINANCE</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="financas" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0a0406;">
+          <img class="gal-img" src="assets/telas-financas/04.jpg" alt="Capa do curso Banco Ouri Finance" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
+          <div class="gal-bar">
+            <span class="gal-label">Capa</span>
+            <span class="gal-count">1 / 20</span>
+            <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Business case de finanças construído como jogo: o participante entra no Banco Ouri Finance e avança por uma missão pontuada, com HUD de pontos e vidas sempre visível, telas de placar que celebram ou penalizam a escolha, peças de quebra-cabeça que se encaixam a cada acerto e medalhas no fechamento. A direção de arte é vermelho neon sobre preto, com brilho e reflexo tratados como material. <em style="font-style:normal; color:var(--pink-light);">Um dos itens é um trecho gravado do curso rodando, com o ciclo de quiz e pontuação.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 20: CONVITE DE PROJETO ======================== -->
+      <!-- ============================================================ -->
+      <div id="course-20" class="abs card-panel course-card" data-category="outros" data-year="2026" data-order="11.5" data-title="Convite de Projeto" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / REVVO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / CONVITE DE PROJETO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / OUTROS</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="convite" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0d14;">
+          <img class="gal-img" src="assets/telas-convite/p1.jpg" alt="Primeira página do convite de projeto" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
+          <div class="gal-bar">
+            <span class="gal-label">Página 1</span>
+            <span class="gal-count">1 / 2</span>
+            <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Documento que a Revvo envia ao convidar um freela para um projeto: apresenta a demanda, o prazo e o valor, e fecha com as condições de nota fiscal e confidencialidade. O desafio era fazer um documento contratual parecer um convite — daí o preto com gradiente de laranja a azul nas faixas de cabeçalho, que dá presença sem tirar a legibilidade. <em style="font-style:normal; color:var(--pink-light);">É um modelo em branco: os campos já vêm preenchidos com XXXX.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 18: TREINAMENTO DE PERFORMANCE ================ -->
+      <!-- ============================================================ -->
+      <div id="course-18" class="abs card-panel course-card" data-category="apresentacoes" data-year="2026" data-order="10.6" data-title="Treinamento de Performance" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / GOL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / TREINAMENTO DE PERFORMANCE</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="performance" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0d1520;">
+          <img class="gal-img" src="assets/telas-performance/s001.jpg" alt="Capa do Treinamento de Performance" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
+          <div class="gal-bar">
+            <span class="gal-label">Capa</span>
+            <span class="gal-count">1 / 18</span>
+            <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Treinamento de performance de aeronave para despachantes de voo — 101 slides, dos quais estas 18 mostram o sistema. O material resolve um problema difícil de design: explicar cálculo de gradiente, limite de obstáculo e velocidades de decolagem sem virar apostila. Usa isométricos da aeronave, diagramas de trajetória, ilustração de pista e visualização 3D de terreno, tudo amarrado por divisores de capítulo em laranja e teal. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 17: ACADEMIA DE ÁGUIAS — SEGURANÇA DE CABINE == -->
+      <!-- ============================================================ -->
+      <div id="course-17" class="abs card-panel course-card" data-category="apresentacoes" data-year="2026" data-order="10.5" data-title="Academia de Águias — Segurança de cabine" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / GOL</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / ACADEMIA DE ÁGUIAS</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2026</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
+        </div>
+
+        <div class="abs gallery-card" data-gallery="aguias" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#1a1008;">
+          <img class="gal-img" src="assets/telas-aguias/auxilios-s01.jpg" alt="Capa do treinamento de primeiros socorros" />
+          <video class="gal-video" muted loop playsinline preload="none"></video>
+          <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
+          <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
+          <div class="gal-bar">
+            <span class="gal-label">Primeiros socorros — capa</span>
+            <span class="gal-count">1 / 12</span>
+            <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:713px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Dois treinamentos de segurança de cabine para tripulantes, primeiros socorros e equipes de emergência, que dividem o mesmo sistema visual: laranja quente sobre fotografia de operação, recortes circulares e ícones de traço. O desafio aqui é o oposto do usual — tema técnico e normativo, que precisa ser legível sob pressão, sem virar manual árido. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- ===== CURSO 16: RECLAME AQUI (card de vídeo) ============= -->
+      <!-- Gravação de tela, reencodada sem áudio                      -->
+      <!-- ============================================================ -->
+      <div id="course-16" class="abs card-panel course-card" data-category="elearning" data-year="2025" data-order="1" data-title="Reclame Aqui" style="left:777px; top:324px; width:1020px; height:1193px;">
+
+        <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
+          <span><span class="pink-bold">CLIENTE</span> / GRUPO BOTICÁRIO</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">PROJETO</span> / RECLAME AQUI</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">ANO</span> / 2025</span>
+          <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
+          <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
+        </div>
+
+        <div class="abs video-card" data-video-card style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#000;">
+          <video class="v-el" src="assets/video-boticario.mp4" poster="assets/poster-boticario.jpg" preload="metadata" playsinline muted></video>
+          <button class="abs v-play" style="left:50%; top:50%; width:100px; height:100px; margin:-50px 0 0 -50px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:34px; z-index:2;">
+            <span class="v-play-icon">▶</span>
+          </button>
+          <div class="abs" style="left:0; right:0; bottom:0; padding:40px 24px 18px; background:linear-gradient(0deg, rgba(0,0,0,.9), transparent); display:flex; align-items:center; gap:16px; font-size:15px; z-index:2;">
+            <button class="ctrl-btn v-mini-play">▶</button>
+            <span class="v-time" style="color:rgba(255,255,255,0.7); white-space:nowrap; font-size:15px;">00:00 / 00:00</span>
+            <div class="v-progress-track" style="flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,0.15); position:relative; cursor:pointer;">
+              <div class="v-progress-fill" style="height:100%; border-radius:999px; background:var(--pink-bold); width:0%;"></div>
+              <div class="v-progress-handle" style="position:absolute; top:-4px; left:0%; width:13px; height:13px; border-radius:50%; background:#fff; transform:translateX(-50%);"></div>
+            </div>
+            <span class="pill" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">CC</span>
+            <button class="pill ctrl-btn v-speed" style="padding:2px 10px; font-size:17px; border-radius:4px; width:auto; height:auto;">1x</button>
+            <button class="ctrl-btn v-fs">⛶</button>
+          </div>
+        </div>
+
+        <div class="abs journey-group" style="left:0; top:678px; width:1020px; height:133px;">
+          <span class="abs journey-pill segoe" style="left:143px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">INÍCIO</span>
+          <span class="abs journey-pill" style="left:538px; top:73px; width:160px; height:38px; background:var(--pink-light); color:var(--text-dark); font-weight:700;">DESAFIO</span>
+          <span class="abs journey-pill segoe" style="left:706px; top:16px; width:160px; height:38px; color:var(--pink-light); border:1px solid var(--pink-light);">SUCESSO</span>
+          <img src="assets/journey-line.png" alt="" class="abs" style="left:294px; top:0; width:418px; height:133px; opacity:.55; pointer-events:none;" />
+        </div>
+
+        <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
+          Curso sobre a gestão de reclamações no Reclame Aqui: o que a plataforma é, como o consumidor percorre a jornada de uma reclamação e como a empresa responde dentro do prazo. A construção é toda em navegação por estrada — o participante escolhe por onde seguir clicando nos balões — e fecha com um quiz de fixação. Os textos de resposta ao cliente aparecem como modelo, com o nome em placeholder.
+        </p>
+
+      </div>
+
+      <!-- ============================================================ -->
       <!-- ============================================================ -->
       <!-- ===== CURSO 2: GLUON JOURNEYS (painel de conteúdo completo) = -->
       <!-- top é definido dinamicamente pelo JS logo abaixo do card 1   -->
@@ -680,6 +1594,21 @@
     </div>
   </div>
 
+  <!-- ============ TELA CHEIA DA GALERIA ============ -->
+  <div id="galLightbox" role="dialog" aria-modal="true" aria-label="Tela ampliada">
+    <button id="galLightboxClose" title="Fechar" aria-label="Fechar tela ampliada">✕</button>
+    <div class="gal-lb-stage">
+      <img id="galLightboxImg" src="" alt="" />
+      <video id="galLightboxVideo" muted loop playsinline preload="none"></video>
+    </div>
+    <div class="gal-lb-bar">
+      <button id="galLightboxPrev" class="gal-lb-nav" aria-label="Tela anterior">‹</button>
+      <span id="galLightboxLabel">—</span>
+      <span id="galLightboxCount" class="gal-count">—</span>
+      <button id="galLightboxNext" class="gal-lb-nav" aria-label="Próxima tela">›</button>
+    </div>
+  </div>
+
   <!-- ============ POP-UP DO VISUALIZADOR DE PDF ============ -->
   <div id="pdfModal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.78); align-items:center; justify-content:center; padding:24px;">
     <div class="pdf-modal-box" style="width:min(980px,94vw); height:min(88vh,1150px); background:#1b1b1e; display:flex; flex-direction:column; overflow:hidden;">
@@ -702,7 +1631,19 @@
   const MAX_SCALE = 1;
   let DESIGN_HEIGHT = 2880; // altura "lógica" do canvas; recalculada por layoutCourseCards()
 
+  /* Abaixo de 1024px o layout deixa de ser um canvas escalado e passa a
+     empilhar no fluxo normal (ver bloco "LAYOUT EMPILHADO" no CSS).
+     Nesse modo o JS de escala/posicionamento não deve rodar: o CSS já
+     sobrescreve tudo com !important, mas deixar o JS escrevendo top e
+     height inline só gera trabalho perdido e leitura de offset errada. */
+  const STACKED_MQ = window.matchMedia('(max-width: 1024px)');
+  const isStacked = () => STACKED_MQ.matches;
+
   function updateScale(){
+    if (isStacked()){
+      document.documentElement.style.setProperty('--scale', 1);
+      return;
+    }
     const scaleByWidth = window.innerWidth / DESIGN_WIDTH;
     const scaleByHeight = window.innerHeight / CHROME_HEIGHT;
     const rawScale = Math.min(scaleByWidth, scaleByHeight);
@@ -726,7 +1667,11 @@
      canvas de 1920x2880, e sim do próprio card). Aqui medimos o ponto
      mais baixo entre os filhos diretos, aplicamos 60px de respiro na
      base e empilhamos o próximo card logo abaixo, com um gap fixo. */
-  const FIRST_CARD_TOP = parseFloat(document.querySelector('.course-card').style.top);
+  /* Topo do primeiro card no canvas. Constante de propósito: ler o
+     style.top do primeiro .course-card do DOM amarrava esse valor a
+     qual card vinha primeiro no HTML — remover ou reordenar um card
+     deslocava o feed inteiro. */
+  const FIRST_CARD_TOP = 324;
   let currentSort = 'recentes';
 
   function sortCourses(cards){
@@ -746,9 +1691,20 @@
     const BOTTOM_MARGIN = 60; // margem mínima entre o conteúdo e a borda inferior do card
     const visible = Array.from(document.querySelectorAll('.course-card')).filter(card => card.style.display !== 'none');
     const courses = sortCourses(visible);
+
+    /* No modo empilhado a posição vem do fluxo — medir offsetTop dos
+       filhos e escrever top/height daria números sem sentido. Mas a
+       escolha de "Ordenar por" ainda precisa valer, e num container
+       flex quem manda na ordem é a propriedade CSS order. */
+    if (isStacked()){
+      courses.forEach((card, i) => { card.style.order = i; });
+      return;
+    }
+
     let nextTop = FIRST_CARD_TOP;
 
     courses.forEach((card) => {
+      card.style.order = '';
       card.style.top = nextTop + 'px';
 
       let maxBottom = 0;
@@ -770,6 +1726,14 @@
   updateScale();
   layoutCourseCards();
   document.fonts.ready.then(layoutCourseCards);
+
+  /* Ao cruzar o breakpoint (girar o celular, redimensionar a janela),
+     recalcula: saindo do modo empilhado é preciso reconstruir as
+     posições que o JS tinha deixado de escrever. */
+  STACKED_MQ.addEventListener('change', () => {
+    updateScale();
+    layoutCourseCards();
+  });
 
   let currentTab = 'todos';
   let currentYear = 'todos';
@@ -898,21 +1862,24 @@
     window.addEventListener('mouseup', () => dragging = false);
     window.addEventListener('mousemove', (e) => { if(dragging) seek(e); });
 
-    muteBtn.addEventListener('click', () => {
+    /* Os cards de gravação de tela não têm faixa de áudio, então o botão
+       de mudo não existe neles. Sem esta guarda, o init quebrava e
+       derrubava os controles de TODOS os players da página. */
+    if (muteBtn) muteBtn.addEventListener('click', () => {
       video.muted = !video.muted;
       muteBtn.textContent = video.muted ? '🔇' : '🔊';
     });
 
     const speeds = [1, 1.5, 2, 0.5];
     let speedIdx = 0;
-    speedBtn.addEventListener('click', () => {
+    if (speedBtn) speedBtn.addEventListener('click', () => {
       if(!hasSrc()) return;
       speedIdx = (speedIdx + 1) % speeds.length;
       video.playbackRate = speeds[speedIdx];
       speedBtn.textContent = speeds[speedIdx] + 'x';
     });
 
-    fsBtn.addEventListener('click', () => { if(hasSrc() && video.requestFullscreen) video.requestFullscreen(); });
+    if (fsBtn) fsBtn.addEventListener('click', () => { if(hasSrc() && video.requestFullscreen) video.requestFullscreen(); });
   }
 
   document.querySelectorAll('[data-video-card]').forEach(initVideoPlayer);
@@ -925,6 +1892,13 @@
   let pdfLastFocused = null;
 
   function openPdfModal(src, title){
+    /* Em telas pequenas o <iframe> de PDF é pouco confiável — o Chrome
+       no Android não renderiza PDF embutido e mostra um quadro vazio.
+       Abrir em nova aba entrega o visualizador nativo do sistema. */
+    if (isStacked()){
+      window.open(src, '_blank', 'noopener');
+      return;
+    }
     pdfLastFocused = document.activeElement;
     pdfModalFrame.src = src;
     pdfModalTitle.textContent = title || 'Documento';
@@ -1111,6 +2085,354 @@
       });
     }
   });
+
+  /* ================================================================ */
+  /* ===== GALERIA DE TELAS ========================================== */
+  /* ================================================================ */
+  /* Cada card com [data-gallery] mostra uma tela por vez e pode abrir
+     em tela cheia. O índice é único por galeria: o card e o lightbox
+     leem e escrevem o mesmo estado, então navegar num move o outro. */
+  const GALERIAS = {
+    missao: [
+      { src: 'assets/telas-missao/01-capa.jpg', label: 'Capa' },
+      { src: 'assets/telas-missao/02-preencher-nome.jpg', label: 'Preencher nome' },
+      { src: 'assets/telas-missao/03-subtela.jpg', label: 'Subtela' },
+      { src: 'assets/telas-missao/04-menu.jpg', label: 'Menu — mapa estratégico' },
+      { src: 'assets/telas-missao/05-menu-intro.jpg', label: 'Menu — introdução' },
+      { src: 'assets/telas-missao/06-submenu.jpg', label: 'Submenu' },
+      { src: 'assets/telas-missao/07-tela-escura.jpg', label: 'Tela escura' },
+      { src: 'assets/telas-missao/09-destaque-claro.jpg', label: 'Destaque claro' },
+      { src: 'assets/telas-missao/10-destaque-escuro.jpg', label: 'Destaque escuro' },
+      { src: 'assets/telas-missao/11-cards.jpg', label: 'Cards' },
+      { src: 'assets/telas-missao/12-carrossel.jpg', label: 'Carrossel' }
+    ],
+    onboarding: [
+      { src: 'assets/telas-onboarding/slide-01.jpg', video: 'assets/telas-onboarding/slide-01.mp4', label: 'Capa' },
+      { src: 'assets/telas-onboarding/slide-02.jpg', video: 'assets/telas-onboarding/slide-02.mp4', label: 'Abertura' },
+      { src: 'assets/telas-onboarding/slide-03.jpg', label: 'Sumário' },
+      { src: 'assets/telas-onboarding/slide-04.jpg', label: 'Divisor de módulo' },
+      { src: 'assets/telas-onboarding/slide-10.jpg', video: 'assets/telas-onboarding/slide-10.mp4', label: 'Missão' },
+      { src: 'assets/telas-onboarding/slide-14.jpg', label: 'Rede de apoio' },
+      { src: 'assets/telas-onboarding/slide-19.jpg', label: 'Linha do tempo' },
+      { src: 'assets/telas-onboarding/slide-33.jpg', label: 'Território' },
+      { src: 'assets/telas-onboarding/slide-48.jpg', label: 'Etapas da visita' },
+      { src: 'assets/telas-onboarding/slide-60.jpg', label: 'Ecossistema de produtos' },
+      { src: 'assets/telas-onboarding/slide-69.jpg', label: 'Recursos comerciais' },
+      { src: 'assets/telas-onboarding/slide-84.jpg', label: 'Encerramento' }
+    ],
+    higher: [
+      { src: 'assets/telas-higher/slide-01.jpg', label: 'Capa' },
+      { src: 'assets/telas-higher/slide-03.jpg', label: 'Quebra-gelo' },
+      { src: 'assets/telas-higher/slide-06.jpg', label: 'Alta performance' },
+      { src: 'assets/telas-higher/slide-09.jpg', label: 'Preparação' },
+      { src: 'assets/telas-higher/slide-11.jpg', label: 'Divisor — soluções' },
+      { src: 'assets/telas-higher/slide-24.jpg', label: 'Atividade em grupo' },
+      { src: 'assets/telas-higher/slide-27.jpg', label: 'Divisor — benefícios' },
+      { src: 'assets/telas-higher/slide-31.jpg', label: 'Conversão de vendas' },
+      { src: 'assets/telas-higher/slide-37.jpg', label: 'Abertura de caso' },
+      { src: 'assets/telas-higher/slide-59.jpg', label: 'Citação' },
+      { src: 'assets/telas-higher/slide-60.jpg', label: 'Três tempos' },
+      { src: 'assets/telas-higher/slide-61.jpg', video: 'assets/telas-higher/slide-61.mp4', label: 'Agradecimento' }
+    ],
+    /* 21 das 24 telas animam — essas entram como video. */
+    prospera: [
+      { src: 'assets/telas-prospera/m1-s01.jpg', video: 'assets/telas-prospera/m1-s01.mp4', label: 'Capa' },
+      { src: 'assets/telas-prospera/m1-s03.jpg', video: 'assets/telas-prospera/m1-s03.mp4', label: 'Abertura' },
+      { src: 'assets/telas-prospera/m1-s04.jpg', video: 'assets/telas-prospera/m1-s04.mp4', label: 'Alta performance' },
+      { src: 'assets/telas-prospera/m1-s05.jpg', video: 'assets/telas-prospera/m1-s05.mp4', label: 'Jornada' },
+      { src: 'assets/telas-prospera/m1-s06.jpg', label: 'Agenda — módulo I' },
+      { src: 'assets/telas-prospera/m1-s08.jpg', video: 'assets/telas-prospera/m1-s08.mp4', label: 'Referência — propósito' },
+      { src: 'assets/telas-prospera/m1-s09.jpg', video: 'assets/telas-prospera/m1-s09.mp4', label: 'Gestor e dono' },
+      { src: 'assets/telas-prospera/m1-s15.jpg', video: 'assets/telas-prospera/m1-s15.mp4', label: 'Citação — vendas' },
+      { src: 'assets/telas-prospera/m1-s16.jpg', video: 'assets/telas-prospera/m1-s16.mp4', label: 'Pergunta' },
+      { src: 'assets/telas-prospera/m1-s22.jpg', label: 'Pausa' },
+      { src: 'assets/telas-prospera/m1-s25.jpg', video: 'assets/telas-prospera/m1-s25.mp4', label: 'Referência — Toyota' },
+      { src: 'assets/telas-prospera/m1-s26.jpg', video: 'assets/telas-prospera/m1-s26.mp4', label: 'Os cinco porquês' },
+      { src: 'assets/telas-prospera/m1-s28.jpg', video: 'assets/telas-prospera/m1-s28.mp4', label: 'Citação — execução' },
+      { src: 'assets/telas-prospera/m2-s06.jpg', label: 'Agenda — módulo II' },
+      { src: 'assets/telas-prospera/m2-s07.jpg', video: 'assets/telas-prospera/m2-s07.mp4', label: 'Ambidestria' },
+      { src: 'assets/telas-prospera/m2-s12.jpg', video: 'assets/telas-prospera/m2-s12.mp4', label: 'Matriz e SWOT' },
+      { src: 'assets/telas-prospera/m2-s15.jpg', video: 'assets/telas-prospera/m2-s15.mp4', label: 'Canvas' },
+      { src: 'assets/telas-prospera/m3-s10.jpg', video: 'assets/telas-prospera/m3-s10.mp4', label: 'Referência — pesquisa' },
+      { src: 'assets/telas-prospera/m3-s13.jpg', video: 'assets/telas-prospera/m3-s13.mp4', label: 'Citação — constância' },
+      { src: 'assets/telas-prospera/m3-s14.jpg', video: 'assets/telas-prospera/m3-s14.mp4', label: 'Barreiras' },
+      { src: 'assets/telas-prospera/m3-s16.jpg', video: 'assets/telas-prospera/m3-s16.mp4', label: 'Círculo de influência' },
+      { src: 'assets/telas-prospera/m3-s19.jpg', video: 'assets/telas-prospera/m3-s19.mp4', label: 'Curva da mudança' },
+      { src: 'assets/telas-prospera/m4-s07.jpg', video: 'assets/telas-prospera/m4-s07.mp4', label: 'Pergunta — gestão' },
+      { src: 'assets/telas-prospera/m4-s08.jpg', video: 'assets/telas-prospera/m4-s08.mp4', label: 'Consolidação' }
+    ],
+    financas: [
+      { src: 'assets/telas-financas/04.jpg', label: 'Capa' },
+      { src: 'assets/telas-financas/11.jpg', label: 'Contexto' },
+      { src: 'assets/telas-financas/12.jpg', label: 'Conteúdo' },
+      { src: 'assets/telas-financas/13.jpg', label: 'Conteúdo com vídeo' },
+      { src: 'assets/telas-financas/14.jpg', label: 'Player' },
+      { src: 'assets/telas-financas/15.jpg', label: 'Podcast' },
+      { src: 'assets/telas-financas/16.jpg', label: 'Comparativo' },
+      { src: 'assets/telas-financas/17.jpg', label: 'Detalhamento' },
+      { src: 'assets/telas-financas/18.jpg', label: 'Título' },
+      { src: 'assets/telas-financas/19.jpg', label: 'Título sobre foto' },
+      { src: 'assets/telas-financas/08.jpg', label: 'Peça do quebra-cabeça' },
+      { src: 'assets/telas-financas/09.jpg', label: 'Erro' },
+      { src: 'assets/telas-financas/10.jpg', label: 'Acerto' },
+      { src: 'assets/telas-financas/quiz.jpg', video: 'assets/telas-financas/quiz.mp4', label: 'Quiz e pontuação' },
+      { src: 'assets/telas-financas/05.jpg', label: 'Placar −50' },
+      { src: 'assets/telas-financas/06.jpg', label: 'Placar +70' },
+      { src: 'assets/telas-financas/07.jpg', label: 'Placar +100' },
+      { src: 'assets/telas-financas/01.jpg', label: 'Cálculo' },
+      { src: 'assets/telas-financas/02.jpg', label: 'Impacto' },
+      { src: 'assets/telas-financas/03.jpg', label: 'Dica grátis' }
+    ],
+    /* Duas páginas retrato. */
+    convite: [
+      { src: 'assets/telas-convite/p1.jpg', label: 'Página 1', retrato: true },
+      { src: 'assets/telas-convite/p2.jpg', label: 'Página 2', retrato: true }
+    ],
+    performance: [
+      { src: 'assets/telas-performance/s001.jpg', label: 'Capa' },
+      { src: 'assets/telas-performance/s002.jpg', label: 'Valores' },
+      { src: 'assets/telas-performance/s006.jpg', label: 'Material integrante' },
+      { src: 'assets/telas-performance/s009.jpg', label: 'Capítulo 01' },
+      { src: 'assets/telas-performance/s010.jpg', label: 'Conceito' },
+      { src: 'assets/telas-performance/s012.jpg', label: 'Fatores' },
+      { src: 'assets/telas-performance/s013.jpg', label: 'Soma de fatores' },
+      { src: 'assets/telas-performance/s017.jpg', label: 'Slope' },
+      { src: 'assets/telas-performance/s020.jpg', label: 'Teto operacional' },
+      { src: 'assets/telas-performance/s028.jpg', label: 'Alerta' },
+      { src: 'assets/telas-performance/s030.jpg', label: 'Capítulo 02' },
+      { src: 'assets/telas-performance/s045.jpg', label: 'Trajetória de decolagem' },
+      { src: 'assets/telas-performance/s058.jpg', label: 'Level-off' },
+      { src: 'assets/telas-performance/s070.jpg', label: 'Cone de decolagem' },
+      { src: 'assets/telas-performance/s072.jpg', label: 'Terreno 3D' },
+      { src: 'assets/telas-performance/s078.jpg', label: 'Objetivos' },
+      { src: 'assets/telas-performance/s088.jpg', label: 'Gross e net' },
+      { src: 'assets/telas-performance/s090.jpg', label: 'Limitações' }
+    ],
+    aguias: [
+      { src: 'assets/telas-aguias/auxilios-s01.jpg', label: 'Primeiros socorros — capa' },
+      { src: 'assets/telas-aguias/auxilios-s02.jpg', label: 'Diretrizes' },
+      { src: 'assets/telas-aguias/auxilios-s05.jpg', label: 'Divisor' },
+      { src: 'assets/telas-aguias/auxilios-s08.jpg', label: 'Trauma' },
+      { src: 'assets/telas-aguias/auxilios-s09.jpg', label: 'Diferenciação' },
+      { src: 'assets/telas-aguias/auxilios-s12.jpg', label: 'Emergência a bordo' },
+      { src: 'assets/telas-aguias/auxilios-s15.jpg', label: 'Equipe' },
+      { src: 'assets/telas-aguias/emergencia-s01.jpg', label: 'Equipes de emergência — capa' },
+      { src: 'assets/telas-aguias/emergencia-s03.jpg', label: 'Colete' },
+      { src: 'assets/telas-aguias/emergencia-s10.jpg', label: 'Sequência de saída' },
+      { src: 'assets/telas-aguias/emergencia-s14.jpg', label: 'Proteção respiratória' },
+      { src: 'assets/telas-aguias/emergencia-s15.jpg', label: 'Verificação pré-voo' }
+    ],
+    cex: [
+      { src: 'assets/telas-cex/m04-prework-p1.jpg', label: 'Pre-work — capa' },
+      { src: 'assets/telas-cex/m04-prework-p2.jpg', label: 'Pre-work — conteúdo' },
+      { src: 'assets/telas-cex/m01-mapamental-p1.jpg', label: 'Mapa mental' },
+      { src: 'assets/telas-cex/m02-checklist-p1.jpg', label: 'Checklist — capa', retrato: true },
+      { src: 'assets/telas-cex/m02-checklist-p2.jpg', label: 'Checklist — A4', retrato: true }
+    ],
+    gol: [
+      { src: 'assets/telas-gol/slide-01.jpg', video: 'assets/telas-gol/slide-01.mp4', label: 'Capa' },
+      { src: 'assets/telas-gol/slide-02.jpg', video: 'assets/telas-gol/slide-02.mp4', label: 'Abertura' },
+      { src: 'assets/telas-gol/slide-03.jpg', video: 'assets/telas-gol/slide-03.mp4', label: 'Tópicos' },
+      { src: 'assets/telas-gol/slide-04.jpg', video: 'assets/telas-gol/slide-04.mp4', label: 'Etapas' },
+      { src: 'assets/telas-gol/slide-05.jpg', video: 'assets/telas-gol/slide-05.mp4', label: 'Cronograma' },
+      { src: 'assets/telas-gol/slide-06.jpg', video: 'assets/telas-gol/slide-06.mp4', label: 'Divisor — time' },
+      { src: 'assets/telas-gol/slide-07.jpg', video: 'assets/telas-gol/slide-07.mp4', label: 'Pergunta' },
+      { src: 'assets/telas-gol/slide-08.jpg', video: 'assets/telas-gol/slide-08.mp4', label: 'Comunicação' },
+      { src: 'assets/telas-gol/slide-09.jpg', video: 'assets/telas-gol/slide-09.mp4', label: 'Divisor — equipe' },
+      { src: 'assets/telas-gol/slide-10.jpg', video: 'assets/telas-gol/slide-10.mp4', label: 'Colaboração' },
+      { src: 'assets/telas-gol/slide-11.jpg', video: 'assets/telas-gol/slide-11.mp4', label: 'Blocos' },
+      { src: 'assets/telas-gol/slide-12.jpg', video: 'assets/telas-gol/slide-12.mp4', label: 'Ciclo' },
+      { src: 'assets/telas-gol/slide-13.jpg', video: 'assets/telas-gol/slide-13.mp4', label: 'Participação' },
+      { src: 'assets/telas-gol/slide-14.jpg', video: 'assets/telas-gol/slide-14.mp4', label: 'Agenda I' },
+      { src: 'assets/telas-gol/slide-15.jpg', video: 'assets/telas-gol/slide-15.mp4', label: 'Agenda II' },
+      { src: 'assets/telas-gol/slide-16.jpg', video: 'assets/telas-gol/slide-16.mp4', label: 'Divisor — reflexão' },
+      { src: 'assets/telas-gol/slide-17.jpg', video: 'assets/telas-gol/slide-17.mp4', label: 'Pergunta final' },
+      { src: 'assets/telas-gol/slide-18.jpg', video: 'assets/telas-gol/slide-18.mp4', label: 'Referência' },
+      { src: 'assets/telas-gol/slide-19.jpg', video: 'assets/telas-gol/slide-19.mp4', label: 'Encerramento' },
+      { src: 'assets/telas-gol/slide-20.jpg', video: 'assets/telas-gol/slide-20.mp4', label: 'Interação' }
+    ]  };
+
+
+  const galLightbox      = document.getElementById('galLightbox');
+  const galLightboxImg   = document.getElementById('galLightboxImg');
+  const galLightboxVideo = document.getElementById('galLightboxVideo');
+  const galLightboxLabel = document.getElementById('galLightboxLabel');
+  const galLightboxCount = document.getElementById('galLightboxCount');
+  const galLightboxClose = document.getElementById('galLightboxClose');
+  let galAtiva = null;
+  let galFocoAnterior = null;
+
+  function galAberto(){ return galLightbox.style.display === 'flex'; }
+
+  /* Liga o video de uma tela. Com preload="none" o play() disparado logo
+     depois de trocar o src pega a midia ainda resetando e nao engata,
+     entao tentamos de novo no canplay. `aindaVale` impede que uma carga
+     atrasada ligue o video de uma tela da qual ja saimos. */
+  function tocarVideo(el, tela, aindaVale){
+    if (el.getAttribute('src') !== tela.video){
+      el.setAttribute('src', tela.video);
+      el.setAttribute('poster', tela.src);
+      el.load();
+      el.addEventListener('canplay', () => {
+        if (!aindaVale()) return;
+        const p = el.play();
+        if (p && p.catch) { p.catch(() => {}); }
+      }, { once: true });
+    }
+    const p = el.play();
+    if (p && p.catch) { p.catch(() => {}); } // autoplay bloqueado: fica no poster
+  }
+
+  function initGaleria(card){
+    const telas = GALERIAS[card.dataset.gallery];
+    if (!telas || !telas.length) return;
+
+    const img   = card.querySelector('.gal-img');
+    const vid   = card.querySelector('.gal-video');
+    const label = card.querySelector('.gal-label');
+    const count = card.querySelector('.gal-count');
+    let i = 0;
+    /* Cada navegação recebe um número. Sem isso, cliques rápidos deixam
+       várias pré-cargas em voo e a última a TERMINAR vence — não a
+       última clicada — e a imagem descola do contador. */
+    let epoca = 0;
+
+    function precarregar(n){
+      const tela = telas[(n + telas.length) % telas.length];
+      if (tela){ const p = new Image(); p.src = tela.src; }
+    }
+
+    function ir(novo){
+      i = (novo + telas.length) % telas.length;
+      const tela = telas[i];
+      const alt = 'Tela do curso: ' + tela.label;
+
+      /* Troca só depois que a próxima imagem carregou, senão o card
+         pisca em branco entre uma tela e outra. */
+      const minhaEpoca = ++epoca;
+
+      /* Tela com video: o JPEG entra como poster e o video toca por
+         cima. Sem video, para e esconde o player — deixar tocando fora
+         de vista gasta banda e bateria à toa. */
+      if (vid) {
+        if (tela.video) {
+          vid.classList.add('is-active');
+          img.classList.add('is-hidden');
+          tocarVideo(vid, tela, () => minhaEpoca === epoca);
+        } else {
+          vid.pause();
+          vid.classList.remove('is-active');
+          img.classList.remove('is-hidden');
+        }
+      }
+
+      img.classList.toggle('is-retrato', !!tela.retrato);
+      if (vid) { vid.classList.toggle('is-retrato', !!tela.retrato); }
+
+      img.classList.add('is-swapping');
+      const pre = new Image();
+      pre.onload = () => {
+        if (minhaEpoca !== epoca) return; // já houve outra navegação
+        img.src = tela.src;
+        img.alt = alt;
+        img.classList.remove('is-swapping');
+      };
+      pre.src = tela.src;
+
+      label.textContent = tela.label;
+      count.textContent = (i + 1) + ' / ' + telas.length;
+      precarregar(i + 1);
+      precarregar(i - 1);
+
+      if (galAtiva === api && galAberto()){
+        galLightboxImg.src = tela.src;
+        galLightboxImg.alt = alt;
+        if (tela.video) {
+          galLightboxVideo.classList.add('is-active');
+          galLightboxImg.classList.add('is-hidden');
+          tocarVideo(galLightboxVideo, tela, () => minhaEpoca === epoca);
+        } else {
+          galLightboxVideo.pause();
+          galLightboxVideo.classList.remove('is-active');
+          galLightboxImg.classList.remove('is-hidden');
+        }
+        galLightboxLabel.textContent = tela.label;
+        galLightboxCount.textContent = (i + 1) + ' / ' + telas.length;
+      }
+    }
+
+    const api = { ir, get indice(){ return i; } };
+
+    card.querySelector('.gal-prev').addEventListener('click', e => { e.stopPropagation(); ir(i - 1); });
+    card.querySelector('.gal-next').addEventListener('click', e => { e.stopPropagation(); ir(i + 1); });
+    card.querySelector('.gal-expand').addEventListener('click', e => { e.stopPropagation(); abrirLightbox(api); });
+    img.addEventListener('click', () => abrirLightbox(api));
+    img.style.cursor = 'zoom-in';
+
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'group');
+    card.setAttribute('aria-label', 'Galeria de telas do projeto — use as setas do teclado');
+    card.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft'){ e.preventDefault(); ir(i - 1); }
+      else if (e.key === 'ArrowRight'){ e.preventDefault(); ir(i + 1); }
+      else if (e.key === 'Enter'){ e.preventDefault(); abrirLightbox(api); }
+    });
+
+    /* Deslizar no toque */
+    let x0 = null;
+    card.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    card.addEventListener('touchend', e => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) ir(dx < 0 ? i + 1 : i - 1);
+      x0 = null;
+    }, { passive: true });
+
+    ir(0);
+  }
+
+  function abrirLightbox(api){
+    galAtiva = api;
+    galFocoAnterior = document.activeElement;
+    galLightbox.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    api.ir(api.indice); // preenche o lightbox com a tela atual
+    requestAnimationFrame(() => requestAnimationFrame(() => galLightbox.classList.add('is-open')));
+    galLightboxClose.focus();
+  }
+
+  function fecharLightbox(){
+    galLightboxVideo.pause();
+    galLightbox.classList.remove('is-open');
+    document.body.style.overflow = '';
+    setTimeout(() => { galLightbox.style.display = 'none'; }, 320);
+    galAtiva = null;
+    if (galFocoAnterior && galFocoAnterior.focus) galFocoAnterior.focus();
+  }
+
+  galLightboxClose.addEventListener('click', fecharLightbox);
+  document.getElementById('galLightboxPrev').addEventListener('click', () => { if (galAtiva) galAtiva.ir(galAtiva.indice - 1); });
+  document.getElementById('galLightboxNext').addEventListener('click', () => { if (galAtiva) galAtiva.ir(galAtiva.indice + 1); });
+  galLightbox.addEventListener('click', e => { if (e.target === galLightbox) fecharLightbox(); });
+  document.addEventListener('keydown', e => {
+    if (!galAberto()) return;
+    if (e.key === 'Escape'){ fecharLightbox(); }
+    else if (e.key === 'ArrowLeft' && galAtiva){ galAtiva.ir(galAtiva.indice - 1); }
+    else if (e.key === 'ArrowRight' && galAtiva){ galAtiva.ir(galAtiva.indice + 1); }
+  });
+
+  /* Aba aberta em segundo plano: o navegador adia o autoplay mesmo com
+     o video mudo. Quando a página fica visível, religa o que estava
+     ativo — senão o visitante chega numa tela parada no poster. */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    document.querySelectorAll('.gal-video.is-active, #galLightboxVideo.is-active').forEach(el => {
+      const p = el.play();
+      if (p && p.catch) { p.catch(() => {}); }
+    });
+  });
+
+  document.querySelectorAll('[data-gallery]').forEach(initGaleria);
 </script>
 </body>
 </html>
