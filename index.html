@@ -196,20 +196,22 @@
   .nav-item .icon-ring{ transition: filter .2s ease, transform .3s cubic-bezier(.34,1.56,.64,1); }
   .nav-item:hover .icon-ring{ transform: scale(1.08); }
 
-  .float-idle{ animation: floatY 6.5s ease-in-out infinite; }
-  .float-idle-delay{ animation: floatY 6.5s ease-in-out infinite; animation-delay: -3s; }
+  /* A ilustracao e a tira de ferramentas ficavam flutuando sozinhas.
+     As classes seguem no HTML para nao mexer no markup, mas nao
+     animam mais. */
+  .float-idle, .float-idle-delay{ animation: none; }
   @keyframes floatY{
     0%,100%{ transform: translateY(0); }
     50%{ transform: translateY(-10px); }
   }
 
-  .mouse-hint-icon{ animation: mouseBob 1.8s ease-in-out infinite; }
+  .mouse-hint-icon{ animation: none; }
   @keyframes mouseBob{
     0%,100%{ transform: translateY(0); }
     50%{ transform: translateY(4px); }
   }
 
-  .twinkle{ animation: twinkleSpin 9s linear infinite; }
+  .twinkle{ animation: none; }
   @keyframes twinkleSpin{
     0%{ transform: rotate(0deg) scale(1); opacity:.35; }
     50%{ transform: rotate(180deg) scale(1.25); opacity:.7; }
@@ -923,7 +925,7 @@
           <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
           <div class="gal-bar">
             <span class="gal-label">Capa</span>
-            <span class="gal-count">1 / 21</span>
+            <span class="gal-count">1 / 19</span>
             <button class="gal-expand" aria-label="Ampliar tela">⛶</button>
           </div>
         </div>
@@ -1187,7 +1189,7 @@
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
             <span class="gal-label">Capa</span>
-            <span class="gal-count">1 / 20</span>
+            <span class="gal-count">1 / 18</span>
             <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
           </div>
         </div>
@@ -1267,7 +1269,7 @@
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
             <span class="gal-label">Capa</span>
-            <span class="gal-count">1 / 16</span>
+            <span class="gal-count">1 / 19</span>
             <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
           </div>
         </div>
@@ -2081,11 +2083,7 @@
     loop();
   })();
 
-  /* ===== Estrelas decorativas: leve rotação/twinkle ===== */
-  document.querySelectorAll('img[src*="icone-estrela"]').forEach((star, i) => {
-    star.classList.add('twinkle');
-    star.style.animationDelay = (-(i % 5) * 1.6) + 's';
-  });
+  /* Estrelas decorativas: sem rotação — a animação foi removida. */
 
   /* ===== Transição suave entre páginas ===== */
   document.querySelectorAll('a[href]').forEach(a => {
@@ -2155,7 +2153,6 @@
       { src: 'assets/telas-prospera/m1-s08.jpg', video: 'assets/telas-prospera/m1-s08.mp4', label: 'Referência — propósito' },
       { src: 'assets/telas-prospera/m1-s09.jpg', video: 'assets/telas-prospera/m1-s09.mp4', label: 'Gestor e dono' },
       { src: 'assets/telas-prospera/m1-s15.jpg', video: 'assets/telas-prospera/m1-s15.mp4', label: 'Citação — vendas' },
-      { src: 'assets/telas-prospera/m1-s16.jpg', video: 'assets/telas-prospera/m1-s16.mp4', label: 'Pergunta' },
       { src: 'assets/telas-prospera/m1-s25.jpg', video: 'assets/telas-prospera/m1-s25.mp4', label: 'Referência — Toyota' },
       { src: 'assets/telas-prospera/m1-s26.jpg', video: 'assets/telas-prospera/m1-s26.mp4', label: 'Os cinco porquês' },
       { src: 'assets/telas-prospera/m1-s28.jpg', video: 'assets/telas-prospera/m1-s28.mp4', label: 'Citação — execução' },
@@ -2167,8 +2164,7 @@
       { src: 'assets/telas-prospera/m3-s13.jpg', video: 'assets/telas-prospera/m3-s13.mp4', label: 'Citação — constância' },
       { src: 'assets/telas-prospera/m3-s14.jpg', video: 'assets/telas-prospera/m3-s14.mp4', label: 'Barreiras' },
       { src: 'assets/telas-prospera/m3-s16.jpg', label: 'Círculo de influência' },
-      { src: 'assets/telas-prospera/m3-s19.jpg', video: 'assets/telas-prospera/m3-s19.mp4', label: 'Curva da mudança' },
-      { src: 'assets/telas-prospera/m4-s07.jpg', video: 'assets/telas-prospera/m4-s07.mp4', label: 'Pergunta — gestão' }
+      { src: 'assets/telas-prospera/m3-s19.jpg', video: 'assets/telas-prospera/m3-s19.mp4', label: 'Curva da mudança' }
     ],
     financas: [
       { src: 'assets/telas-financas/04.jpg', label: 'Capa' },
@@ -2196,20 +2192,23 @@
     performance: [
       { src: 'assets/telas-performance/s001.jpg', label: 'Capa' },
       { src: 'assets/telas-performance/s002.jpg', label: 'Valores' },
+      { src: 'assets/telas-performance/s004.jpg', label: 'Público' },
+      { src: 'assets/telas-performance/s005.jpg', label: 'Estrutura' },
       { src: 'assets/telas-performance/s006.jpg', label: 'Material integrante' },
       { src: 'assets/telas-performance/s009.jpg', label: 'Capítulo 01' },
       { src: 'assets/telas-performance/s010.jpg', label: 'Conceito' },
-      { src: 'assets/telas-performance/s012.jpg', label: 'Fatores' },
+      { src: 'assets/telas-performance/s011.jpg', label: 'Fatores' },
+      { src: 'assets/telas-performance/s012.jpg', label: 'Cadeia de fatores' },
+      { src: 'assets/telas-performance/s015.jpg', label: 'Cálculo' },
       { src: 'assets/telas-performance/s017.jpg', label: 'Slope' },
-      { src: 'assets/telas-performance/s028.jpg', label: 'Alerta' },
-      { src: 'assets/telas-performance/s030.jpg', label: 'Capítulo 02' },
-      { src: 'assets/telas-performance/s045.jpg', label: 'Trajetória de decolagem' },
-      { src: 'assets/telas-performance/s058.jpg', label: 'Level-off' },
-      { src: 'assets/telas-performance/s070.jpg', label: 'Cone de decolagem' },
-      { src: 'assets/telas-performance/s072.jpg', label: 'Terreno 3D' },
+      { src: 'assets/telas-performance/s019.jpg', label: 'Teto operacional' },
+      { src: 'assets/telas-performance/s027.jpg', label: 'Alerta' },
+      { src: 'assets/telas-performance/s042.jpg', label: 'Vídeo do instrutor' },
+      { src: 'assets/telas-performance/s069.jpg', label: 'Margens' },
+      { src: 'assets/telas-performance/s076.jpg', label: 'Improved Climb' },
       { src: 'assets/telas-performance/s078.jpg', label: 'Objetivos' },
-      { src: 'assets/telas-performance/s088.jpg', label: 'Gross e net' },
-      { src: 'assets/telas-performance/s090.jpg', label: 'Limitações' }
+      { src: 'assets/telas-performance/s079.jpg', label: 'Quando usar' },
+      { src: 'assets/telas-performance/s080.jpg', label: 'Efeitos' }
     ],
     aguias: [
       { src: 'assets/telas-aguias/auxilios-s01.jpg', label: 'Primeiros socorros — capa' },
