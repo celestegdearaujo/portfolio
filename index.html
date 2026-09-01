@@ -339,6 +339,36 @@
      download quando existe, senão o próprio botão de ampliar. */
   .gal-bar > .gal-expand{ margin-left: auto; }
   .gal-download ~ .gal-expand{ margin-left: 0; }
+  /* Barra de progresso dos itens em video. Fica acima da gal-bar e
+     aparece so quando a tela atual e um video. */
+  .gal-progresso{
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+    height: 26px; display: none; align-items: flex-end;
+    padding: 0 0 3px; cursor: pointer; pointer-events: auto;
+  }
+  .gal-progresso.is-active{ display: flex; }
+  .gal-progresso-trilha{
+    position: relative; width: 100%; height: 4px;
+    background: rgba(255,255,255,0.18);
+  }
+  .gal-progresso-preenchido{
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+    background: var(--pink-bold);
+  }
+  .gal-progresso-alca{
+    position: absolute; top: 50%; left: 0;
+    width: 11px; height: 11px; margin-top: -5.5px;
+    border-radius: 50%; background: #fff;
+    transform: translateX(-50%);
+    opacity: 0; transition: opacity .15s ease;
+  }
+  .gal-progresso:hover .gal-progresso-trilha{ height: 6px; }
+  .gal-progresso:hover .gal-progresso-alca{ opacity: 1; }
+  /* com a barra presente, a gal-bar sobe um pouco para nao encostar */
+  .gallery-card:has(.gal-progresso.is-active) .gal-bar{ padding-bottom: 26px; }
+
+  #galLightbox .gal-progresso{ height: 30px; }
+
   .gal-expand{
     color: #fff; font-size: 19px; opacity: .85;
     transition: opacity .15s ease, filter .15s ease;
@@ -796,6 +826,7 @@
         <div class="abs gallery-card" data-gallery="missao" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-missao/01-capa.jpg" alt="Capa do curso: Missão — Seja um Estrategista" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
@@ -839,6 +870,7 @@
         <div class="abs gallery-card" data-gallery="onboarding" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-onboarding/slide-01.jpg" alt="Capa da apresentação Onboarding Gerente B1" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
           <div class="gal-bar">
@@ -856,7 +888,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Apresentação de integração para gerentes recém-chegados ao segmento, construída sobre a identidade do Santander Empresas: vermelho e creme, tipografia de traço manual nos destaques e a chama da marca usada como máscara nos retratos. O sistema resolve capa, sumário, divisores de módulo, diagramas de rede e território, linha do tempo e fechamento. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+          Apresentação de integração para gerentes recém-chegados ao segmento, construída sobre a identidade do Santander Empresas: vermelho e creme, tipografia de traço manual nos destaques e a chama da marca usada como máscara nos retratos. O sistema resolve capa, sumário, divisores de módulo, diagramas de rede e território, linha do tempo e fechamento.
         </p>
 
       </div>
@@ -880,6 +912,7 @@
         <div class="abs gallery-card" data-gallery="higher" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-higher/slide-01.jpg" alt="Capa do treinamento Alcançando a Principalidade" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
           <div class="gal-bar">
@@ -897,7 +930,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Treinamento presencial para gerentes de relacionamento, com uma direção de arte bem mais dramática que a do onboarding: preto absoluto, vermelho incandescente e fotografia de alto contraste. Objetos em cena — bússola, rei de xadrez, alvo com dardos, lâmpada — carregam a ideia de cada bloco sem precisar de texto. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+          Treinamento presencial para gerentes de relacionamento, com uma direção de arte bem mais dramática que a do onboarding: preto absoluto, vermelho incandescente e fotografia de alto contraste. Objetos em cena — bússola, rei de xadrez, alvo com dardos, lâmpada — carregam a ideia de cada bloco sem precisar de texto.
         </p>
 
       </div>
@@ -921,11 +954,12 @@
         <div class="abs gallery-card" data-gallery="prospera" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-prospera/m1-s01.jpg" alt="Capa do treinamento Formação Dono do Negócio" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
           <div class="gal-bar">
             <span class="gal-label">Capa</span>
-            <span class="gal-count">1 / 37</span>
+            <span class="gal-count">1 / 41</span>
             <button class="gal-expand" aria-label="Ampliar tela">⛶</button>
           </div>
         </div>
@@ -938,7 +972,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Programa de formação em quatro módulos para microempreendedores, com um sistema visual próprio dentro do universo Santander: fundo de papel texturizado, recortes de foto em cantos arredondados e um traço amarelo que funciona como marca de destaque. As telas aqui vêm dos quatro módulos, escolhidas para mostrar o sistema sem repetir estrutura. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+          Programa de formação em quatro módulos para microempreendedores, com um sistema visual próprio dentro do universo Santander: fundo de papel texturizado, recortes de foto em cantos arredondados e um traço amarelo que funciona como marca de destaque. As telas aqui vêm dos quatro módulos, escolhidas para mostrar o sistema sem repetir estrutura.
         </p>
 
       </div>
@@ -962,6 +996,7 @@
         <div class="abs gallery-card" data-gallery="gol" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-gol/slide-01.jpg" alt="Capa da apresentação Team Building da GOL" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
           <div class="gal-bar">
@@ -1003,6 +1038,7 @@
         <div class="abs gallery-card" data-gallery="cex" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b1430;">
           <img class="gal-img" src="assets/telas-cex/m04-prework-p1.jpg" alt="Capa do pre-work WFM e dimensionamento" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">‹</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">›</button>
           <div class="gal-bar">
@@ -1020,7 +1056,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Materiais de apoio de um programa de capacitação de supervisores: pré-work, mapa mental e checklist. A identidade é um azul profundo com gradiente e traços de luz, e cada peça resolve um formato diferente — o mapa mental em paisagem, para leitura de tela; o checklist em A4 retrato, para imprimir e marcar à mão. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+          Materiais de apoio de um programa de capacitação de supervisores: pré-work, mapa mental e checklist. A identidade é um azul profundo com gradiente e traços de luz, e cada peça resolve um formato diferente — o mapa mental em paisagem, para leitura de tela; o checklist em A4 retrato, para imprimir e marcar à mão.
         </p>
 
       </div>
@@ -1185,11 +1221,12 @@
         <div class="abs gallery-card" data-gallery="financas" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0a0406;">
           <img class="gal-img" src="assets/telas-financas/percurso.jpg" alt="Capa do curso Banco Ouri Finance" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
             <span class="gal-label">Percurso do curso</span>
-            <span class="gal-count">1 / 18</span>
+            <span class="gal-count">1 / 1</span>
             <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
           </div>
         </div>
@@ -1225,6 +1262,7 @@
         <div class="abs gallery-card" data-gallery="convite" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0d14;">
           <img class="gal-img" src="assets/telas-convite/p1.jpg" alt="Primeira página do convite de projeto" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
@@ -1265,11 +1303,12 @@
         <div class="abs gallery-card" data-gallery="performance" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0d1520;">
           <img class="gal-img" src="assets/telas-performance/s001.jpg" alt="Capa do Treinamento de Performance" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
             <span class="gal-label">Capa</span>
-            <span class="gal-count">1 / 19</span>
+            <span class="gal-count">1 / 23</span>
             <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
           </div>
         </div>
@@ -1282,7 +1321,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Treinamento de performance de aeronave para despachantes de voo — 101 slides, dos quais estas 18 mostram o sistema. O material resolve um problema difícil de design: explicar cálculo de gradiente, limite de obstáculo e velocidades de decolagem sem virar apostila. Usa isométricos da aeronave, diagramas de trajetória, ilustração de pista e visualização 3D de terreno, tudo amarrado por divisores de capítulo em laranja e teal. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+          Treinamento de performance de aeronave para despachantes de voo — 101 slides, dos quais estas 18 mostram o sistema. O material resolve um problema difícil de design: explicar cálculo de gradiente, limite de obstáculo e velocidades de decolagem sem virar apostila. Usa isométricos da aeronave, diagramas de trajetória, ilustração de pista e visualização 3D de terreno, tudo amarrado por divisores de capítulo em laranja e teal.
         </p>
 
       </div>
@@ -1305,6 +1344,7 @@
         <div class="abs gallery-card" data-gallery="aguias" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#1a1008;">
           <img class="gal-img" src="assets/telas-aguias/auxilios-s01.jpg" alt="Capa do treinamento de primeiros socorros" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
@@ -1322,7 +1362,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Dois treinamentos de segurança de cabine para tripulantes, primeiros socorros e equipes de emergência, que dividem o mesmo sistema visual: laranja quente sobre fotografia de operação, recortes circulares e ícones de traço. O desafio aqui é o oposto do usual — tema técnico e normativo, que precisa ser legível sob pressão, sem virar manual árido. <em style="font-style:normal; color:var(--pink-light);">Os textos foram substituídos por marcação em latim — o conteúdo do curso é do cliente.</em>
+          Dois treinamentos de segurança de cabine para tripulantes, primeiros socorros e equipes de emergência, que dividem o mesmo sistema visual: laranja quente sobre fotografia de operação, recortes circulares e ícones de traço. O desafio aqui é o oposto do usual — tema técnico e normativo, que precisa ser legível sob pressão, sem virar manual árido.
         </p>
 
       </div>
@@ -1615,6 +1655,7 @@
     <div class="gal-lb-stage">
       <img id="galLightboxImg" src="" alt="" />
       <video id="galLightboxVideo" muted loop playsinline preload="none"></video>
+      <div class="gal-progresso" id="galLightboxProgresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
     </div>
     <div class="gal-lb-bar">
       <button id="galLightboxPrev" class="gal-lb-nav" aria-label="Tela anterior">‹</button>
@@ -2122,7 +2163,7 @@
       { src: 'assets/telas-onboarding/slide-02.jpg', video: 'assets/telas-onboarding/slide-02.mp4', label: 'Abertura' },
       { src: 'assets/telas-onboarding/slide-03.jpg', label: 'Sumário' },
       { src: 'assets/telas-onboarding/slide-04.jpg', label: 'Divisor de módulo' },
-      { src: 'assets/telas-onboarding/slide-10.jpg', video: 'assets/telas-onboarding/slide-10.mp4', label: 'Missão' },
+      { src: 'assets/telas-onboarding/slide-10.jpg', video: 'assets/telas-onboarding/slide-10.mp4', label: 'Nossa missão' },
       { src: 'assets/telas-onboarding/slide-14.jpg', label: 'Rede de apoio' },
       { src: 'assets/telas-onboarding/slide-19.jpg', label: 'Linha do tempo' },
       { src: 'assets/telas-onboarding/slide-48.jpg', label: 'Etapas da visita' },
@@ -2148,30 +2189,32 @@
     prospera: [
       { src: 'assets/telas-prospera/m1-s01.jpg', video: 'assets/telas-prospera/m1-s01.mp4', label: 'Capa' },
       { src: 'assets/telas-prospera/m1-s03.jpg', video: 'assets/telas-prospera/m1-s03.mp4', label: 'Abertura' },
+      { src: 'assets/telas-prospera/m1-s04.jpg', label: 'Alta performance' },
       { src: 'assets/telas-prospera/m1-s05.jpg', video: 'assets/telas-prospera/m1-s05.mp4', label: 'Jornada' },
       { src: 'assets/telas-prospera/m1-s06.jpg', label: 'Agenda' },
       { src: 'assets/telas-prospera/m1-s08.jpg', video: 'assets/telas-prospera/m1-s08.mp4', label: 'Referência — propósito' },
       { src: 'assets/telas-prospera/m1-s09.jpg', video: 'assets/telas-prospera/m1-s09.mp4', label: 'Gestor e dono' },
-      { src: 'assets/telas-prospera/m1-s11.jpg', label: 'Papéis' },
-      { src: 'assets/telas-prospera/m1-s12.jpg', label: 'Rotina' },
+      { src: 'assets/telas-prospera/m1-s11.jpg', label: 'Cadeia de valor' },
+      { src: 'assets/telas-prospera/m1-s12.jpg', label: 'Cadeia de valor — Prospera' },
       { src: 'assets/telas-prospera/m1-s15.jpg', video: 'assets/telas-prospera/m1-s15.mp4', label: 'Citação — vendas' },
-      { src: 'assets/telas-prospera/m1-s17.jpg', label: 'Diagnóstico' },
-      { src: 'assets/telas-prospera/m1-s18.jpg', label: 'Indicadores' },
-      { src: 'assets/telas-prospera/m1-s19.jpg', label: 'Metas' },
-      { src: 'assets/telas-prospera/m1-s20.jpg', label: 'Painel' },
+      { src: 'assets/telas-prospera/m1-s16.jpg', label: 'O que faz um negócio durar' },
+      { src: 'assets/telas-prospera/m1-s17.jpg', label: 'Produtividade' },
+      { src: 'assets/telas-prospera/m1-s19.jpg', label: 'Fatores' },
+      { src: 'assets/telas-prospera/m1-s20.jpg', label: 'Matriz SWOT' },
+      { src: 'assets/telas-prospera/m1-s22.jpg', label: 'Pausa' },
       { src: 'assets/telas-prospera/m1-s25.jpg', video: 'assets/telas-prospera/m1-s25.mp4', label: 'Referência — Toyota' },
       { src: 'assets/telas-prospera/m1-s26.jpg', video: 'assets/telas-prospera/m1-s26.mp4', label: 'Os cinco porquês' },
       { src: 'assets/telas-prospera/m1-s28.jpg', video: 'assets/telas-prospera/m1-s28.mp4', label: 'Citação — execução' },
-      { src: 'assets/telas-prospera/m1-s31.jpg', label: 'Território' },
-      { src: 'assets/telas-prospera/m1-s32.jpg', label: 'Carteira' },
-      { src: 'assets/telas-prospera/m1-s33.jpg', label: 'Mapa — microrregião' },
-      { src: 'assets/telas-prospera/m1-s34.jpg', label: 'Pontos fortes' },
-      { src: 'assets/telas-prospera/m1-s35.jpg', label: 'Carteirização' },
-      { src: 'assets/telas-prospera/m1-s37.jpg', label: 'Modelo de carteira' },
-      { src: 'assets/telas-prospera/m1-s38.jpg', label: 'Distribuição' },
-      { src: 'assets/telas-prospera/m1-s39.jpg', label: 'Cobertura' },
-      { src: 'assets/telas-prospera/m1-s40.jpg', label: 'Priorização' },
-      { src: 'assets/telas-prospera/m1-s47.jpg', label: 'Fechamento — módulo I' },
+      { src: 'assets/telas-prospera/m1-s31.jpg', label: 'Visão sistêmica' },
+      { src: 'assets/telas-prospera/m1-s32.jpg', label: 'Cenários' },
+      { src: 'assets/telas-prospera/m1-s33.jpg', label: 'Produtividade — cadeia' },
+      { src: 'assets/telas-prospera/m1-s34.jpg', label: 'Matriz GUT' },
+      { src: 'assets/telas-prospera/m1-s35.jpg', label: 'GUT — gravidade' },
+      { src: 'assets/telas-prospera/m1-s37.jpg', label: 'GUT — tendência' },
+      { src: 'assets/telas-prospera/m1-s38.jpg', label: 'GUT — resultado' },
+      { src: 'assets/telas-prospera/m1-s39.jpg', label: 'GUT — exemplo' },
+      { src: 'assets/telas-prospera/m1-s40.jpg', label: 'GUT — tabela' },
+      { src: 'assets/telas-prospera/m1-s47.jpg', label: 'Agradecimento' },
       { src: 'assets/telas-prospera/m2-s06.jpg', label: 'Agenda — módulo II' },
       { src: 'assets/telas-prospera/m2-s07.jpg', video: 'assets/telas-prospera/m2-s07.mp4', label: 'Ambidestria' },
       { src: 'assets/telas-prospera/m2-s12.jpg', video: 'assets/telas-prospera/m2-s12.mp4', label: 'Matriz e SWOT' },
@@ -2181,8 +2224,10 @@
       { src: 'assets/telas-prospera/m3-s10.jpg', video: 'assets/telas-prospera/m3-s10.mp4', label: 'Referência — pesquisa' },
       { src: 'assets/telas-prospera/m3-s13.jpg', video: 'assets/telas-prospera/m3-s13.mp4', label: 'Citação — constância' },
       { src: 'assets/telas-prospera/m3-s14.jpg', video: 'assets/telas-prospera/m3-s14.mp4', label: 'Barreiras' },
-      { src: 'assets/telas-prospera/m3-s16.jpg', video: 'assets/telas-prospera/m3-s16.mp4', label: 'Círculo de influência' },
-      { src: 'assets/telas-prospera/m3-s19.jpg', video: 'assets/telas-prospera/m3-s19.mp4', label: 'Curva da mudança' }
+      { src: 'assets/telas-prospera/m3-s16.jpg', label: 'Círculo de influência' },
+      { src: 'assets/telas-prospera/m3-s19.jpg', video: 'assets/telas-prospera/m3-s19.mp4', label: 'Curva da mudança' },
+      { src: 'assets/telas-prospera/m4-s07.jpg', video: 'assets/telas-prospera/m4-s07.mp4', label: 'Pergunta — gestão' },
+      { src: 'assets/telas-prospera/m4-s08.jpg', label: 'Consolidação' }
     ],
     /* So o percurso gravado: as telas estaticas sairam. Galeria de um
        item esconde setas e contador automaticamente. */
@@ -2195,23 +2240,27 @@
     performance: [
       { src: 'assets/telas-performance/s001.jpg', label: 'Capa' },
       { src: 'assets/telas-performance/s002.jpg', label: 'Valores' },
-      { src: 'assets/telas-performance/s004.jpg', label: 'Público' },
-      { src: 'assets/telas-performance/s005.jpg', label: 'Estrutura' },
+      { src: 'assets/telas-performance/s004.jpg', label: 'Propósito' },
+      { src: 'assets/telas-performance/s005.jpg', label: 'Público-alvo' },
       { src: 'assets/telas-performance/s006.jpg', label: 'Material integrante' },
       { src: 'assets/telas-performance/s009.jpg', label: 'Capítulo 01' },
-      { src: 'assets/telas-performance/s010.jpg', label: 'Conceito' },
-      { src: 'assets/telas-performance/s011.jpg', label: 'Fatores' },
-      { src: 'assets/telas-performance/s012.jpg', label: 'Cadeia de fatores' },
-      { src: 'assets/telas-performance/s015.jpg', label: 'Cálculo' },
-      { src: 'assets/telas-performance/s017.jpg', label: 'Slope' },
-      { src: 'assets/telas-performance/s019.jpg', label: 'Teto operacional' },
-      { src: 'assets/telas-performance/s027.jpg', label: 'Alerta' },
+      { src: 'assets/telas-performance/s010.jpg', label: 'Fatores da performance' },
+      { src: 'assets/telas-performance/s011.jpg', label: 'Cadeia de fatores' },
+      { src: 'assets/telas-performance/s012.jpg', label: 'Fluxo' },
+      { src: 'assets/telas-performance/s013.jpg', label: 'Soma de fatores' },
+      { src: 'assets/telas-performance/s014.jpg', label: 'Gradiente' },
+      { src: 'assets/telas-performance/s015.jpg', label: 'Cálculo do slope' },
+      { src: 'assets/telas-performance/s017.jpg', label: 'Slope positivo' },
+      { src: 'assets/telas-performance/s019.jpg', label: 'Vento de cauda' },
+      { src: 'assets/telas-performance/s021.jpg', label: 'Caso Pinnacle 3701' },
+      { src: 'assets/telas-performance/s027.jpg', label: 'Fonte QRH' },
       { src: 'assets/telas-performance/s042.jpg', label: 'Vídeo do instrutor' },
-      { src: 'assets/telas-performance/s069.jpg', label: 'Margens' },
+      { src: 'assets/telas-performance/s069.jpg', label: 'Obstacle limit' },
       { src: 'assets/telas-performance/s076.jpg', label: 'Improved Climb' },
+      { src: 'assets/telas-performance/s077.jpg', label: 'Eficiência da decolagem' },
       { src: 'assets/telas-performance/s078.jpg', label: 'Objetivos' },
       { src: 'assets/telas-performance/s079.jpg', label: 'Quando usar' },
-      { src: 'assets/telas-performance/s080.jpg', label: 'Efeitos' }
+      { src: 'assets/telas-performance/s080.jpg', label: 'Ganho de peso' }
     ],
     aguias: [
       { src: 'assets/telas-aguias/auxilios-s01.jpg', label: 'Primeiros socorros — capa' },
@@ -2220,7 +2269,7 @@
       { src: 'assets/telas-aguias/auxilios-s08.jpg', label: 'Trauma' },
       { src: 'assets/telas-aguias/auxilios-s09.jpg', label: 'Diferenciação' },
       { src: 'assets/telas-aguias/auxilios-s12.jpg', label: 'Emergência a bordo' },
-      { src: 'assets/telas-aguias/auxilios-s15.jpg', label: 'Equipe' },
+      { src: 'assets/telas-aguias/auxilios-s15.jpg', label: 'Atuação em equipe' },
       { src: 'assets/telas-aguias/emergencia-s01.jpg', label: 'Equipes de emergência — capa' },
       { src: 'assets/telas-aguias/emergencia-s03.jpg', label: 'Colete' },
       { src: 'assets/telas-aguias/emergencia-s10.jpg', label: 'Sequência de saída' },
@@ -2261,6 +2310,7 @@
   const galLightbox      = document.getElementById('galLightbox');
   const galLightboxImg   = document.getElementById('galLightboxImg');
   const galLightboxVideo = document.getElementById('galLightboxVideo');
+  const barraLightbox = ligarProgresso(document.getElementById('galLightboxProgresso'), galLightboxVideo);
   const galLightboxLabel = document.getElementById('galLightboxLabel');
   const galLightboxCount = document.getElementById('galLightboxCount');
   const galLightboxClose = document.getElementById('galLightboxClose');
@@ -2288,12 +2338,65 @@
     if (p && p.catch) { p.catch(() => {}); } // autoplay bloqueado: fica no poster
   }
 
+
+  /* ===== Barra de progresso dos itens em video =====
+     Liga uma barra a um <video>: acompanha o tempo, permite clicar e
+     arrastar para buscar. Chamado tanto pelo card quanto pelo
+     lightbox, entao recebe os dois elementos por parametro. */
+  function ligarProgresso(barra, video){
+    if (!barra || !video) return { mostrar(){}, esconder(){} };
+    const preenchido = barra.querySelector('.gal-progresso-preenchido');
+    const alca = barra.querySelector('.gal-progresso-alca');
+    let arrastando = false;
+
+    function pintar(){
+      if (!video.duration || !isFinite(video.duration)) return;
+      const p = Math.min(100, Math.max(0, (video.currentTime / video.duration) * 100));
+      preenchido.style.width = p + '%';
+      alca.style.left = p + '%';
+    }
+    function buscar(ev){
+      if (!video.duration || !isFinite(video.duration)) return;
+      const r = barra.getBoundingClientRect();
+      const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
+      video.currentTime = Math.min(video.duration, Math.max(0, x / r.width) * video.duration);
+      pintar();
+    }
+
+    video.addEventListener('timeupdate', pintar);
+    video.addEventListener('loadedmetadata', pintar);
+
+    barra.addEventListener('pointerdown', (ev) => {
+      arrastando = true;
+      /* Sem stopPropagation o evento sobe até o card, que troca de tela
+         e recarrega o vídeo — zerando exatamente o tempo que acabamos
+         de buscar. */
+      ev.stopPropagation();
+      /* setPointerCapture lança se o pointerId não estiver ativo. Buscar
+         vem primeiro para que uma falha na captura não impeça o seek. */
+      buscar(ev);
+      try { barra.setPointerCapture(ev.pointerId); } catch (e) { /* segue sem captura */ }
+      ev.preventDefault();
+    });
+    barra.addEventListener('pointermove', (ev) => { if (arrastando) buscar(ev); });
+    barra.addEventListener('pointerup', () => { arrastando = false; });
+    barra.addEventListener('pointercancel', () => { arrastando = false; });
+    /* o clique nao deve abrir o lightbox nem trocar de tela */
+    barra.addEventListener('click', (ev) => ev.stopPropagation());
+
+    return {
+      mostrar(){ barra.classList.add('is-active'); pintar(); },
+      esconder(){ barra.classList.remove('is-active'); },
+    };
+  }
+
   function initGaleria(card){
     const telas = GALERIAS[card.dataset.gallery];
     if (!telas || !telas.length) return;
 
     const img   = card.querySelector('.gal-img');
     const vid   = card.querySelector('.gal-video');
+    const barra = ligarProgresso(card.querySelector('.gal-progresso'), vid);
     const label = card.querySelector('.gal-label');
     const count = card.querySelector('.gal-count');
     let i = 0;
@@ -2323,11 +2426,13 @@
         if (tela.video) {
           vid.classList.add('is-active');
           img.classList.add('is-hidden');
+          barra.mostrar();
           tocarVideo(vid, tela, () => minhaEpoca === epoca);
         } else {
           vid.pause();
           vid.classList.remove('is-active');
           img.classList.remove('is-hidden');
+          barra.esconder();
         }
       }
 
@@ -2355,11 +2460,13 @@
         if (tela.video) {
           galLightboxVideo.classList.add('is-active');
           galLightboxImg.classList.add('is-hidden');
+          barraLightbox.mostrar();
           tocarVideo(galLightboxVideo, tela, () => minhaEpoca === epoca);
         } else {
           galLightboxVideo.pause();
           galLightboxVideo.classList.remove('is-active');
           galLightboxImg.classList.remove('is-hidden');
+          barraLightbox.esconder();
         }
         galLightboxLabel.textContent = tela.label;
         galLightboxCount.textContent = (i + 1) + ' / ' + telas.length;
@@ -2400,6 +2507,9 @@
       card.querySelector('.gal-next').style.display = 'none';
       count.style.display = 'none';
     }
+    /* o lightbox e compartilhado: guarda no api se esta galeria tem
+       navegacao, para abrirLightbox esconder as setas de la tambem */
+    api.navegavel = telas.length > 1;
 
     ir(0);
   }
@@ -2407,6 +2517,13 @@
   function abrirLightbox(api){
     galAtiva = api;
     galFocoAnterior = document.activeElement;
+    /* O lightbox é compartilhado por todas as galerias, então as setas
+       precisam ser reavaliadas a cada abertura: numa galeria de uma
+       tela só elas não levam a lugar nenhum. */
+    const mostraSetas = api.navegavel ? '' : 'none';
+    document.getElementById('galLightboxPrev').style.display = mostraSetas;
+    document.getElementById('galLightboxNext').style.display = mostraSetas;
+    galLightboxCount.style.display = mostraSetas;
     galLightbox.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     api.ir(api.indice); // preenche o lightbox com a tela atual
