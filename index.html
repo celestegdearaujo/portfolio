@@ -1674,17 +1674,21 @@
   /* A trilha: um segmento por tela, no topo do cartão. Diz onde você
      está no espaço, e não em número, e cada segmento é um atalho — pra
      chegar na tela 9 era preciso clicar oito vezes na seta. */
+  /* A trilha mora na barra de baixo, e não sobre a arte. Em cima ela
+     dependia do que estivesse por baixo: sobre uma tela clara os
+     segmentos brancos sumiam e o conjunto lia como sujeira. A barra já
+     tem gradiente escuro garantido. */
   .gal-trilha{
-    position:absolute; left:18px; right:18px; top:13px; z-index:4;
-    display:flex; gap:3px; pointer-events:auto;
+    flex:1 1 auto; min-width:40px; display:flex; gap:3px;
+    pointer-events:auto; margin:0 4px;
   }
   .gal-trilha button{
-    flex:1 1 0; min-width:0; height:15px; position:relative;
+    flex:1 1 0; min-width:0; height:14px; position:relative;
     background:none; border:none; padding:0; cursor:pointer;
   }
   .gal-trilha button::after{
-    content:''; position:absolute; left:0; right:0; top:6px; height:3px;
-    border-radius:99px; background:rgba(255,255,255,.26);
+    content:''; position:absolute; left:0; right:0; top:5.5px; height:3px;
+    border-radius:99px; background:rgba(255,255,255,.3);
     transition: background .18s ease;
   }
   .gal-trilha button:hover::after{ background:rgba(255,255,255,.6); }
@@ -1724,6 +1728,17 @@
     pointer-events: none;
   }
   .gal-bar button{ pointer-events: auto; }
+  /* O som começa desligado porque nenhum navegador deixa um vídeo tocar
+     com áudio sem gesto da pessoa. O botão é esse gesto. */
+  .gal-som{
+    flex:0 0 auto; width:30px; height:30px; padding:0; border:none;
+    background:none; cursor:pointer; border-radius:7px;
+    display:flex; align-items:center; justify-content:center;
+    color:rgba(255,255,255,.62); transition: color .16s, background .16s;
+  }
+  .gal-som:hover{ color:#fff; background:rgba(255,255,255,.1); }
+  .gal-som.on{ color:var(--pink-light); }
+  .gal-som svg{ width:17px; height:17px; fill:currentColor; }
   .gal-label{ color: #fff; font-weight: 600; letter-spacing: .02em; }
   .gal-count{ color: rgba(255,255,255,0.55); }
   /* sem o link de download, quem empurra para a direita é o ampliar */
@@ -2219,7 +2234,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Design de interface de um curso em formato de missão, onde o participante avança por uma cidade-mapa desbloqueando territórios a cada etapa. O sistema cobre capa, menus, submenus, telas de destaque em versão clara e escura, cards e carrossel — todos partindo de uma mesma linguagem de HUD futurista, com pontuação, progresso e navegação sempre visíveis.
+          Interface de um curso em formato de missão: o participante avança por uma cidade-mapa desbloqueando territórios. Capa, menus, telas de destaque em versão clara e escura, cards e carrossel, todos na mesma linguagem de HUD.
         </p>
 
       </div>
@@ -2261,7 +2276,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Apresentação de integração para gerentes recém-chegados ao segmento, construída sobre a identidade do Santander Empresas: vermelho e creme, tipografia de traço manual nos destaques e a chama da marca usada como máscara nos retratos. O sistema resolve capa, sumário, divisores de módulo, diagramas de rede e território, linha do tempo e fechamento.
+          Integração para gerentes recém-chegados ao segmento, sobre a identidade do Santander Empresas: vermelho e creme, tipografia de traço manual e a chama da marca como máscara nos retratos.
         </p>
 
       </div>
@@ -2303,7 +2318,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Treinamento presencial para gerentes de relacionamento, com uma direção de arte bem mais dramática que a do onboarding: preto absoluto, vermelho incandescente e fotografia de alto contraste. Objetos em cena — bússola, rei de xadrez, alvo com dardos, lâmpada — carregam a ideia de cada bloco sem precisar de texto.
+          Treinamento presencial para gerentes de relacionamento, em preto absoluto e vermelho incandescente. Objetos em cena — bússola, rei de xadrez, alvo — carregam a ideia de cada bloco sem precisar de texto.
         </p>
 
       </div>
@@ -2345,7 +2360,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Programa de formação em quatro módulos para microempreendedores, com um sistema visual próprio dentro do universo Santander: fundo de papel texturizado, recortes de foto em cantos arredondados e um traço amarelo que funciona como marca de destaque. As telas aqui vêm dos quatro módulos, escolhidas para mostrar o sistema sem repetir estrutura.
+          Formação em quatro módulos para microempreendedores, com sistema visual próprio dentro do universo Santander: papel texturizado, recortes de foto e um traço amarelo como marca de destaque.
         </p>
 
       </div>
@@ -2387,7 +2402,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Material de team building para a GOL, em uma paleta de verde-azulado e branco que se afasta do vermelho corporativo dos outros projetos. A composição usa recortes circulares sobre fotografia e o símbolo da asa como elemento de ritmo entre as seções. <em style="font-style:normal; color:var(--pink-light);">Todas as telas têm animação — por isso cada item da galeria é um vídeo, não uma imagem parada.</em>
+          Team building para a GOL, em verde-azulado e branco — longe do vermelho corporativo dos outros projetos. Recortes circulares sobre fotografia e a asa como elemento de ritmo. <em style="font-style:normal; color:var(--pink-light);">Todas as telas são animadas.</em>
         </p>
 
       </div>
@@ -2429,7 +2444,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Materiais de apoio de um programa de capacitação de supervisores: pré-work, mapa mental e checklist. A identidade é um azul profundo com gradiente e traços de luz, e cada peça resolve um formato diferente — o mapa mental em paisagem, para leitura de tela; o checklist em A4 retrato, para imprimir e marcar à mão.
+          Apoio de um programa de supervisores: pré-work, mapa mental e checklist. Azul profundo com traços de luz, e cada peça num formato diferente — o mapa em paisagem, para tela; o checklist em A4, para imprimir.
         </p>
 
       </div>
@@ -2476,7 +2491,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Curso sobre o programa de recompensas do banco, construído em torno de casos de atendimento: o participante assume o papel da gerente e responde a mensagens de clientes, escolhendo entre alternativas que mudam o rumo da conversa. A gravação mostra o percurso completo — abertura, conteúdo, os diálogos com decisão e o fechamento com feedback.
+          Curso sobre o programa de recompensas do banco, construído em casos de atendimento: o participante assume o papel da gerente e responde clientes, escolhendo entre alternativas que mudam o rumo da conversa.
         </p>
 
       </div>
@@ -2522,7 +2537,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Curso de segurança contra incêndio construído inteiro na linguagem de rede social: cada tela é um post, com curtidas, comentários e hashtags, e o participante rola o feed acompanhando o Alex descobrir na prática por que a atitude diante de um alarme decide o desfecho. A escolha de formato faz um tema árido de treinamento obrigatório virar algo que se lê sem esforço.
+          Curso de segurança contra incêndio na linguagem de rede social: cada tela é um post, com curtidas e comentários, e o participante rola o feed acompanhando o Alex. Faz um tema árido virar algo que se lê sem esforço.
         </p>
 
       </div>
@@ -2567,7 +2582,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Trilha de formação para o colaborador de rampa, em laranja e verde-azulado sobre fotografia de operação real. O curso cobre acessibilidade e manuseio de cadeiras de rodas, carregamento no porão e centro de gravidade da aeronave, alternando telas explicativas com interações de arrastar e escolher. É o mesmo cliente do Team Building, com uma identidade visual bem diferente.
+          Trilha para o colaborador de rampa, em laranja e verde-azulado sobre fotografia de operação real. Cobre acessibilidade, carregamento no porão e centro de gravidade, alternando telas explicativas com interações.
         </p>
 
       </div>
@@ -2608,7 +2623,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Business case de finanças construído como jogo: o participante entra no Banco Ouri Finance e avança por uma missão pontuada, com HUD de pontos e vidas sempre visível, telas de placar que celebram ou penalizam a escolha, peças de quebra-cabeça que se encaixam a cada acerto e medalhas no fechamento. A direção de arte é vermelho neon sobre preto, com brilho e reflexo tratados como material. <em style="font-style:normal; color:var(--pink-light);">Um dos itens é um trecho gravado do curso rodando, com o ciclo de quiz e pontuação.</em>
+          Business case de finanças construído como jogo: HUD de pontos e vidas sempre visível, telas de placar que celebram ou penalizam a escolha, e medalhas no fechamento. Vermelho neon sobre preto, com brilho tratado como material.
         </p>
 
       </div>
@@ -2649,7 +2664,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Documento que a Revvo envia ao convidar um freela para um projeto: apresenta a demanda, o prazo e o valor, e fecha com as condições de nota fiscal e confidencialidade. O desafio era fazer um documento contratual parecer um convite — daí o preto com gradiente de laranja a azul nas faixas de cabeçalho, que dá presença sem tirar a legibilidade. <em style="font-style:normal; color:var(--pink-light);">É um modelo em branco: os campos já vêm preenchidos com XXXX.</em>
+          Documento que a Revvo envia ao convidar um freela: demanda, prazo, valor e as condições de nota fiscal. O desafio era fazer um contrato parecer um convite — daí o gradiente de laranja a azul nas faixas de cabeçalho.
         </p>
 
       </div>
@@ -2679,7 +2694,7 @@
         <div class="abs gallery-card" data-gallery="motion" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0d0c11;">
           <img class="gal-img" src="assets/motion-poster.webp" alt="Letras recortadas de revista formando as palavras sobre fundo amarelo" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
-          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-cabeca"></div></div></div>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
@@ -2690,7 +2705,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Peça de motion em colagem de papel: sol, nuvens e objetos recortados que entram em cena sobre fundo chapado, e uma tipografia montada letra por letra, cada uma de uma fonte e de uma cor diferente, como carta anônima. O trabalho está no ritmo — a palavra aparece no tempo da fala, e a cor do fundo troca junto com o bloco.
+          Motion em colagem de papel: sol, nuvens e recortes que entram sobre fundo chapado, e uma tipografia montada letra por letra, cada uma de uma fonte, como carta anônima. O trabalho está no ritmo.
         </p>
 
       </div>
@@ -2720,7 +2735,7 @@
         <div class="abs gallery-card" data-gallery="manipulacoes" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0d0c11;">
           <img class="gal-img" src="assets/manip-01.webp" alt="Bailarinas saltando sobre um lago ao lado de um golfinho" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
-          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-cabeca"></div></div></div>
+          <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
           <button class="gal-nav gal-prev" aria-label="Tela anterior">&lsaquo;</button>
           <button class="gal-nav gal-next" aria-label="Próxima tela">&rsaquo;</button>
           <div class="gal-bar">
@@ -2731,7 +2746,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Colagem digital: cenas impossíveis montadas a partir de fotos avulsas, onde o trabalho está em fazer partes que nunca se encontraram parecerem da mesma luz. Recorte, mistura de bordas, correção de cor por camada e sombra pintada à mão. <span class="pink-bold">É onde eu treino o olho para o que ainda não existe.</span>
+          Colagem digital: cenas impossíveis montadas de fotos avulsas, onde o trabalho está em fazer partes que nunca se encontraram parecerem da mesma luz. <span class="pink-bold">É onde eu treino o olho para o que ainda não existe.</span>
         </p>
 
       </div>
@@ -2772,7 +2787,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Treinamento de performance de aeronave para despachantes de voo — 101 slides, dos quais estas 18 mostram o sistema. O material resolve um problema difícil de design: explicar cálculo de gradiente, limite de obstáculo e velocidades de decolagem sem virar apostila. Usa isométricos da aeronave, diagramas de trajetória, ilustração de pista e visualização 3D de terreno, tudo amarrado por divisores de capítulo em laranja e teal.
+          Performance de aeronave para despachantes de voo — 101 slides, dos quais estas 18 mostram o sistema. Explica cálculo de gradiente, limite de obstáculo e velocidades de decolagem sem virar apostila.
         </p>
 
       </div>
@@ -2813,7 +2828,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Dois treinamentos de segurança de cabine para tripulantes, primeiros socorros e equipes de emergência, que dividem o mesmo sistema visual: laranja quente sobre fotografia de operação, recortes circulares e ícones de traço. O desafio aqui é o oposto do usual — tema técnico e normativo, que precisa ser legível sob pressão, sem virar manual árido.
+          Dois treinamentos de segurança de cabine — primeiros socorros e equipes de emergência — no mesmo sistema visual. Tema normativo que precisa ser legível sob pressão, sem virar manual árido.
         </p>
 
       </div>
@@ -2859,7 +2874,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Curso sobre a gestão de reclamações no Reclame Aqui: o que a plataforma é, como o consumidor percorre a jornada de uma reclamação e como a empresa responde dentro do prazo. A construção é toda em navegação por estrada — o participante escolhe por onde seguir clicando nos balões — e fecha com um quiz de fixação. Os textos de resposta ao cliente aparecem como modelo, com o nome em placeholder.
+          Curso sobre a gestão de reclamações no Reclame Aqui. Construído em navegação por estrada — o participante escolhe por onde seguir clicando nos balões — e fecha com um quiz de fixação.
         </p>
 
       </div>
@@ -2907,7 +2922,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Uma jornada de aprendizagem prática, dinâmica e interativa pelo Universo Gluon. Em uma missão espacial por bases orbitais e planetas, os participantes exploram o que é a plataforma, seus benefícios e como ela conecta pessoas, processos e tecnologia. Os vídeos, infográficos e desafios tornam os conteúdos complexos mais leves, visuais e envolventes.
+          Jornada de aprendizagem pelo Universo Gluon. Numa missão espacial por bases orbitais e planetas, os participantes exploram a plataforma e como ela conecta pessoas, processos e tecnologia.
         </p>
 
       </div>
@@ -2950,7 +2965,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Um estudo de criação de personagem para a série animada Burnout Academy: da definição do conceito e da paleta de cores até a construção do model sheet completo, das expressões faciais e do color key do Bob — um adolescente nerd, ansioso e perfeccionista tentando sobreviver ao próprio universo escolar-corporativo.
+          Criação de personagem para a série Burnout Academy: do conceito e da paleta ao model sheet completo, às expressões faciais e ao color key do Bob — um adolescente nerd, ansioso e perfeccionista.
         </p>
 
       </div>
@@ -2989,7 +3004,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Estudo de ambientação a partir do quarto do Bob: da descrição do personagem e do seu conflito interno até a construção do espaço, com plano geral, ângulo em plongée e ponto de fuga único. A cena "Sair na Hora — Tentativa #37" traduz a ansiedade e o perfeccionismo do personagem através dos objetos do quarto, do quadro de recados aos post-its e à lixeira cheia de ideias descartadas.
+          Ambientação a partir do quarto do Bob: plano geral, ângulo em plongée e ponto de fuga único. A cena traduz a ansiedade do personagem pelos objetos — do quadro de recados à lixeira cheia de ideias descartadas.
         </p>
 
       </div>
@@ -3028,7 +3043,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Bíblia de animação da série autoral Burnout Academy, uma comédia satírica sobre uma escola de elite que transforma adolescentes em executivos em miniatura. O documento reúne argumento, linguagem, universo narrativo, perfis de personagens, viabilidade mercadológica e cadeia de produção completa de uma série 2D cut-out voltada ao público jovem-adulto.
+          Bíblia de animação da série autoral Burnout Academy, comédia satírica sobre uma escola de elite que transforma adolescentes em executivos em miniatura. Reúne argumento, universo, personagens e cadeia de produção.
         </p>
 
       </div>
@@ -3075,7 +3090,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:869px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Teste de animação explorando movimento, timing e expressividade dos personagens dentro da estética 2D. Um exercício prático de atuação e lipsync aplicado ao estilo visual proposto para o projeto.
+          Teste de animação explorando movimento, timing e expressividade dos personagens na estética 2D. Um exercício de atuação e lipsync aplicado ao estilo visual do projeto.
         </p>
 
       </div>
@@ -3291,6 +3306,7 @@ o resto você descobre clicando.
           'emptying the trash is unavailable — I cannot delete anything',
         'CLIENTE':'CLIENT', 'PROJETO':'PROJECT', 'ANO':'YEAR', 'CATEGORIA':'CATEGORY',
         'Ir para a tela':'Go to screen', 'Tela':'Screen',
+        'Ativar som':'Turn sound on', 'Desativar som':'Turn sound off',
         'Tipografia em colagem':'Collage typography',
         'outros projetos de':'more projects in',
         'Os materiais desta pasta tratam de temas genéricos de conhecimento comum e/ou retratam situações fictícias.':
@@ -3332,6 +3348,7 @@ o resto você descobre clicando.
           'vaciar la papelera no está disponible — no consigo borrar nada',
         'CLIENTE':'CLIENTE', 'PROJETO':'PROYECTO', 'ANO':'AÑO', 'CATEGORIA':'CATEGORÍA',
         'Ir para a tela':'Ir a la pantalla', 'Tela':'Pantalla',
+        'Ativar som':'Activar sonido', 'Desativar som':'Desactivar sonido',
         'Tipografia em colagem':'Tipografía en collage',
         'outros projetos de':'más proyectos de',
         'Os materiais desta pasta tratam de temas genéricos de conhecimento comum e/ou retratam situações fictícias.':
@@ -3345,10 +3362,8 @@ o resto você descobre clicando.
        projeto e não pelo texto: o texto é longo e tem marcação de
        destaque no meio, e casar por texto quebraria a cada revisão. */
     const DESC = {
-      en: {"course-7":"Interface design for a course built as a mission, where the learner advances through a city-map, unlocking territories at each stage. The system covers cover screen, menus, submenus, highlight screens in light and dark versions, cards and carousel — all from a single futuristic HUD language, with score, progress and navigation always in view.","course-8":"Onboarding deck for managers newly arrived in the segment, built on the Santander Empresas identity: red and cream, hand-drawn type in the highlights and the brand flame used as a mask over the portraits. The system resolves cover, contents, module dividers, network and territory diagrams, timeline and closing.","course-9":"In-person training for relationship managers, with art direction far more dramatic than the onboarding: absolute black, incandescent red and high-contrast photography. Objects staged in each scene — a compass, a chess king, a dartboard, a lightbulb — carry the idea of each block without needing text.","course-11":"A four-module training programme for micro-entrepreneurs, with its own visual system inside the Santander universe: textured paper background, photo cut-outs with rounded corners and a yellow stroke that works as a highlight mark. The screens here come from all four modules, chosen to show the system without repeating structure.","course-10":"Team building material for GOL, in a teal and white palette that steps away from the corporate red of the other projects. The composition uses circular cut-outs over photography and the wing symbol as a rhythm element between sections. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Every screen is animated — which is why each gallery item is a video, not a still.\u003c/em>","course-12":"Support material for a supervisor training programme: pre-work, mind map and checklist. The identity is a deep blue with gradient and streaks of light, and each piece resolves a different format — the mind map in landscape, for reading on screen; the checklist in A4 portrait, to print and tick by hand.","course-13":"A course on the bank’s rewards programme, built around service cases: the learner takes on the manager’s role and answers customer messages, choosing between options that change where the conversation goes. The recording shows the full path — opening, content, the branching dialogues and the closing with feedback.","course-14":"A fire safety course built entirely in the language of social media: every screen is a post, with likes, comments and hashtags, and the learner scrolls the feed following Alex discover first-hand why what you do when an alarm goes off decides the outcome. The format turns a dry mandatory-training subject into something you read without effort.","course-15":"A training path for ramp staff, in orange and teal over photography of real operations. The course covers accessibility and wheelchair handling, hold loading and the aircraft’s centre of gravity, alternating explanatory screens with drag-and-choose interactions. Same client as the Team Building, with a very different visual identity.","course-19":"A finance business case built as a game: the learner enters Banco Ouri Finance and advances through a scored mission, with a points-and-lives HUD always in view, scoreboard screens that celebrate or penalise each choice, puzzle pieces that lock in with every correct answer and medals at the close. Art direction is neon red on black, with glow and reflection treated as material. \u003cem style=\"font-style:normal; color:var(--pink-light);\">One of the items is a recorded run of the course, with the quiz and scoring loop.\u003c/em>","course-20":"The document Revvo sends when inviting a freelancer onto a project: it lays out the brief, the deadline and the fee, and closes with the invoicing and confidentiality terms. The challenge was making a contractual document read like an invitation — hence the black with an orange-to-blue gradient in the header bands, which gives presence without costing legibility. \u003cem style=\"font-style:normal; color:var(--pink-light);\">It is a blank template: the fields come filled with XXXX.\u003c/em>","course-22":"A paper-collage motion piece: a sun, clouds and cut-out objects entering the frame over flat colour, and type assembled letter by letter, each one from a different face and colour, like a ransom note. The work is in the timing — each word lands on the beat of the voice, and the background colour changes with the block.",
- "course-21":"Digital collage: impossible scenes assembled from unrelated photographs, where the work is in making parts that never met look like they share the same light. Cutting out, blending edges, colour correction per layer and shadow painted by hand. \u003cspan class=\"pink-bold\">This is where I train my eye on what does not exist yet.\u003c/span>","course-18":"Aircraft performance training for flight dispatchers — 101 slides, of which these 18 show the system. The material solves a hard design problem: explaining gradient calculation, obstacle limits and take-off speeds without becoming a textbook. It uses isometric aircraft, trajectory diagrams, runway illustration and 3D terrain visualisation, all tied together by chapter dividers in orange and teal.","course-17":"Two cabin safety trainings for crew — first aid and emergency teams — sharing one visual system: warm orange over operational photography, circular cut-outs and line icons. The challenge here is the opposite of the usual: a technical, regulatory subject that has to stay legible under pressure without turning into a dry manual.","course-16":"A course on complaint management at Reclame Aqui: what the platform is, how a consumer moves through the journey of a complaint and how a company answers within the deadline. It is built entirely as road navigation — the learner chooses which way to go by clicking the speech bubbles — and closes with a recap quiz. The customer-reply texts appear as templates, with the name as a placeholder.","course-2":"A hands-on, dynamic and interactive learning journey through the Gluon Universe. On a space mission across orbital bases and planets, participants explore what the platform is, its benefits and how it connects people, processes and technology. Videos, infographics and challenges make complex content lighter, more visual and more engaging.","course-3":"A character design study for the animated series Burnout Academy: from defining the concept and the colour palette through to the full model sheet, the facial expressions and Bob’s colour key — a nerdy, anxious, perfectionist teenager trying to survive his own school-corporate universe.","course-4":"An environment study starting from Bob’s bedroom: from the character description and his inner conflict through to building the space, with a wide shot, a high-angle view and a single vanishing point. The scene “Leaving On Time — Attempt #37” translates the character’s anxiety and perfectionism through the objects in the room, from the noticeboard to the sticky notes and the bin full of discarded ideas.","course-5":"The series bible for the original show Burnout Academy, a satirical comedy about an elite school that turns teenagers into miniature executives. The document brings together premise, tone, narrative universe, character profiles, market viability and the full production pipeline for a 2D cut-out series aimed at a young-adult audience.","course-6":"An animation test exploring movement, timing and character expressiveness within the 2D aesthetic. A hands-on exercise in acting and lipsync applied to the visual style proposed for the project."},
-      es: {"course-7":"Diseño de interfaz de un curso en formato de misión, donde el participante avanza por una ciudad-mapa desbloqueando territorios en cada etapa. El sistema cubre portada, menús, submenús, pantallas de destaque en versión clara y oscura, tarjetas y carrusel — todo partiendo de un mismo lenguaje de HUD futurista, con puntuación, progreso y navegación siempre visibles.","course-8":"Presentación de integración para gerentes recién llegados al segmento, construida sobre la identidad de Santander Empresas: rojo y crema, tipografía de trazo manual en los destaques y la llama de la marca usada como máscara en los retratos. El sistema resuelve portada, sumario, divisores de módulo, diagramas de red y territorio, línea de tiempo y cierre.","course-9":"Formación presencial para gerentes de relación, con una dirección de arte bastante más dramática que la del onboarding: negro absoluto, rojo incandescente y fotografía de alto contraste. Objetos en escena — brújula, rey de ajedrez, diana con dardos, bombilla — cargan la idea de cada bloque sin necesitar texto.","course-11":"Programa de formación en cuatro módulos para microemprendedores, con un sistema visual propio dentro del universo Santander: fondo de papel texturizado, recortes de foto con esquinas redondeadas y un trazo amarillo que funciona como marca de destaque. Las pantallas aquí vienen de los cuatro módulos, elegidas para mostrar el sistema sin repetir estructura.","course-10":"Material de team building para GOL, en una paleta de verde azulado y blanco que se aleja del rojo corporativo de los otros proyectos. La composición usa recortes circulares sobre fotografía y el símbolo del ala como elemento de ritmo entre las secciones. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Todas las pantallas tienen animación — por eso cada elemento de la galería es un video, no una imagen fija.\u003c/em>","course-12":"Materiales de apoyo de un programa de capacitación de supervisores: pre-work, mapa mental y checklist. La identidad es un azul profundo con degradado y trazos de luz, y cada pieza resuelve un formato diferente — el mapa mental en horizontal, para leer en pantalla; el checklist en A4 vertical, para imprimir y marcar a mano.","course-13":"Curso sobre el programa de recompensas del banco, construido en torno a casos de atención: el participante asume el papel de la gerente y responde a mensajes de clientes, eligiendo entre alternativas que cambian el rumbo de la conversación. La grabación muestra el recorrido completo — apertura, contenido, los diálogos con decisión y el cierre con feedback.","course-14":"Curso de seguridad contra incendios construido enteramente en el lenguaje de las redes sociales: cada pantalla es un post, con likes, comentarios y hashtags, y el participante recorre el feed acompañando a Alex descubrir en la práctica por qué la actitud ante una alarma decide el desenlace. La elección de formato convierte un tema árido de formación obligatoria en algo que se lee sin esfuerzo.","course-15":"Itinerario de formación para el personal de rampa, en naranja y verde azulado sobre fotografía de operación real. El curso cubre accesibilidad y manejo de sillas de ruedas, carga en la bodega y centro de gravedad de la aeronave, alternando pantallas explicativas con interacciones de arrastrar y elegir. Es el mismo cliente del Team Building, con una identidad visual muy diferente.","course-19":"Business case de finanzas construido como juego: el participante entra en el Banco Ouri Finance y avanza por una misión puntuada, con HUD de puntos y vidas siempre visible, pantallas de marcador que celebran o penalizan la elección, piezas de rompecabezas que encajan con cada acierto y medallas en el cierre. La dirección de arte es rojo neón sobre negro, con brillo y reflejo tratados como material. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Uno de los elementos es un fragmento grabado del curso funcionando, con el ciclo de quiz y puntuación.\u003c/em>","course-20":"Documento que Revvo envía al invitar a un freelance a un proyecto: presenta la demanda, el plazo y el importe, y cierra con las condiciones de facturación y confidencialidad. El desafío era hacer que un documento contractual pareciera una invitación — de ahí el negro con degradado de naranja a azul en las franjas de cabecera, que da presencia sin quitar legibilidad. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Es una plantilla en blanco: los campos vienen rellenados con XXXX.\u003c/em>","course-22":"Pieza de motion en collage de papel: sol, nubes y objetos recortados que entran en escena sobre fondo plano, y una tipografía montada letra por letra, cada una de una fuente y un color distintos, como carta anónima. El trabajo está en el ritmo — la palabra aparece al tiempo del habla, y el color del fondo cambia junto con el bloque.",
- "course-21":"Collage digital: escenas imposibles montadas a partir de fotos sueltas, donde el trabajo está en hacer que partes que nunca se encontraron parezcan de la misma luz. Recorte, mezcla de bordes, corrección de color por capa y sombra pintada a mano. \u003cspan class=\"pink-bold\">Es donde entreno el ojo para lo que todavía no existe.\u003c/span>","course-18":"Formación de performance de aeronave para despachadores de vuelo — 101 diapositivas, de las cuales estas 18 muestran el sistema. El material resuelve un problema difícil de diseño: explicar cálculo de gradiente, límite de obstáculo y velocidades de despegue sin volverse un manual. Usa isométricos de la aeronave, diagramas de trayectoria, ilustración de pista y visualización 3D de terreno, todo amarrado por divisores de capítulo en naranja y teal.","course-17":"Dos formaciones de seguridad de cabina para tripulantes — primeros auxilios y equipos de emergencia — que comparten el mismo sistema visual: naranja cálido sobre fotografía de operación, recortes circulares e iconos de trazo. El desafío aquí es el opuesto del habitual: tema técnico y normativo, que necesita ser legible bajo presión, sin volverse un manual árido.","course-16":"Curso sobre la gestión de reclamaciones en Reclame Aqui: qué es la plataforma, cómo el consumidor recorre el trayecto de una reclamación y cómo la empresa responde dentro del plazo. La construcción es toda en navegación por carretera — el participante elige por dónde seguir haciendo clic en los globos — y cierra con un quiz de fijación. Los textos de respuesta al cliente aparecen como plantilla, con el nombre como marcador.","course-2":"Un recorrido de aprendizaje práctico, dinámico e interactivo por el Universo Gluon. En una misión espacial por bases orbitales y planetas, los participantes exploran qué es la plataforma, sus beneficios y cómo conecta personas, procesos y tecnología. Los videos, infografías y desafíos vuelven los contenidos complejos más ligeros, visuales y envolventes.","course-3":"Un estudio de creación de personaje para la serie animada Burnout Academy: desde la definición del concepto y la paleta de colores hasta la construcción del model sheet completo, las expresiones faciales y el color key de Bob — un adolescente nerd, ansioso y perfeccionista intentando sobrevivir a su propio universo escolar-corporativo.","course-4":"Estudio de ambientación a partir del cuarto de Bob: desde la descripción del personaje y su conflicto interno hasta la construcción del espacio, con plano general, ángulo en picado y punto de fuga único. La escena «Salir a Tiempo — Intento #37» traduce la ansiedad y el perfeccionismo del personaje a través de los objetos del cuarto, del tablero de notas a los post-its y a la papelera llena de ideas descartadas.","course-5":"Biblia de animación de la serie autoral Burnout Academy, una comedia satírica sobre una escuela de elite que transforma adolescentes en ejecutivos en miniatura. El documento reúne argumento, lenguaje, universo narrativo, perfiles de personajes, viabilidad comercial y cadena de producción completa de una serie 2D cut-out dirigida al público joven-adulto.","course-6":"Prueba de animación explorando movimiento, timing y expresividad de los personajes dentro de la estética 2D. Un ejercicio práctico de actuación y lipsync aplicado al estilo visual propuesto para el proyecto."}
+      en: {"course-7":"Interface for a course built as a mission, advancing through a city-map that unlocks territory by territory. Cover, menus, highlight screens in light and dark, cards and carousel — one HUD language throughout.","course-8":"Onboarding for managers new to the segment, on the Santander Empresas identity: red and cream, hand-drawn type and the brand flame as a mask over the portraits.","course-9":"In-person training for relationship managers, in absolute black and incandescent red. Objects staged in each scene — a compass, a chess king, a dartboard — carry the idea without needing text.","course-11":"A four-module programme for micro-entrepreneurs, with its own visual system inside the Santander universe: textured paper, photo cut-outs and a yellow stroke as the highlight mark.","course-10":"Team building for GOL, in teal and white — away from the corporate red of the other projects. Circular cut-outs over photography and the wing as a rhythm element. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Every screen is animated.\u003c/em>","course-12":"Support material for a supervisor programme: pre-work, mind map and checklist. Deep blue with streaks of light, each piece in a different format — the map in landscape, for screen; the checklist in A4, to print.","course-13":"A course on the bank’s rewards programme, built around service cases: the learner takes the manager’s role and answers customers, choosing between options that change where the conversation goes.","course-14":"A fire safety course in the language of social media: every screen is a post, with likes and comments, and the learner scrolls the feed following Alex. It turns a dry subject into something you read without effort.","course-15":"A training path for ramp staff, in orange and teal over real operational photography. It covers accessibility, hold loading and centre of gravity, alternating explanatory screens with interactions.","course-19":"A finance business case built as a game: a points-and-lives HUD always in view, scoreboard screens that celebrate or penalise each choice, and medals at the close. Neon red on black, with glow treated as material.","course-20":"The document Revvo sends when inviting a freelancer: brief, deadline, fee and the invoicing terms. The challenge was making a contract read like an invitation — hence the orange-to-blue gradient in the header bands.","course-22":"Paper-collage motion: a sun, clouds and cut-outs entering over flat colour, and type assembled letter by letter, each from a different face, like a ransom note. The work is in the timing.","course-21":"Digital collage: impossible scenes assembled from unrelated photographs, where the work is making parts that never met look like they share the same light. \u003cspan class=\"pink-bold\">This is where I train my eye on what does not exist yet.\u003c/span>","course-18":"Aircraft performance for flight dispatchers — 101 slides, of which these 18 show the system. It explains gradient calculation, obstacle limits and take-off speeds without becoming a textbook.","course-17":"Two cabin safety trainings — first aid and emergency teams — sharing one visual system. A regulatory subject that has to stay legible under pressure without turning into a dry manual.","course-16":"A course on complaint management at Reclame Aqui. Built as road navigation — the learner picks which way to go by clicking the speech bubbles — closing with a recap quiz.","course-2":"A learning journey through the Gluon Universe. On a space mission across orbital bases and planets, participants explore the platform and how it connects people, processes and technology.","course-3":"Character design for the series Burnout Academy: from concept and palette to the full model sheet, the facial expressions and Bob’s colour key — a nerdy, anxious, perfectionist teenager.","course-4":"Environment design from Bob’s bedroom: wide shot, high angle and a single vanishing point. The scene translates the character’s anxiety through objects — from the noticeboard to the bin full of discarded ideas.","course-5":"Series bible for the original show Burnout Academy, a satirical comedy about an elite school that turns teenagers into miniature executives. It gathers premise, universe, characters and production pipeline.","course-6":"An animation test exploring movement, timing and character expressiveness in the 2D aesthetic. An exercise in acting and lipsync applied to the project’s visual style."},
+      es: {"course-7":"Interfaz de un curso en formato de misión: el participante avanza por una ciudad-mapa desbloqueando territorios. Portada, menús, pantallas de destaque en versión clara y oscura, tarjetas y carrusel, todo en el mismo lenguaje de HUD.","course-8":"Integración para gerentes recién llegados al segmento, sobre la identidad de Santander Empresas: rojo y crema, tipografía de trazo manual y la llama de la marca como máscara en los retratos.","course-9":"Formación presencial para gerentes de relación, en negro absoluto y rojo incandescente. Objetos en escena — brújula, rey de ajedrez, diana — cargan la idea de cada bloque sin necesitar texto.","course-11":"Formación en cuatro módulos para microemprendedores, con sistema visual propio dentro del universo Santander: papel texturizado, recortes de foto y un trazo amarillo como marca de destaque.","course-10":"Team building para GOL, en verde azulado y blanco — lejos del rojo corporativo de los otros proyectos. Recortes circulares sobre fotografía y el ala como elemento de ritmo. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Todas las pantallas están animadas.\u003c/em>","course-12":"Apoyo de un programa de supervisores: pre-work, mapa mental y checklist. Azul profundo con trazos de luz, y cada pieza en un formato diferente — el mapa en horizontal, para pantalla; el checklist en A4, para imprimir.","course-13":"Curso sobre el programa de recompensas del banco, construido en casos de atención: el participante asume el papel de la gerente y responde a clientes, eligiendo entre alternativas que cambian el rumbo de la conversación.","course-14":"Curso de seguridad contra incendios en el lenguaje de las redes sociales: cada pantalla es un post, con likes y comentarios, y el participante recorre el feed acompañando a Alex. Convierte un tema árido en algo que se lee sin esfuerzo.","course-15":"Itinerario para el personal de rampa, en naranja y verde azulado sobre fotografía de operación real. Cubre accesibilidad, carga en la bodega y centro de gravedad, alternando pantallas explicativas con interacciones.","course-19":"Business case de finanzas construido como juego: HUD de puntos y vidas siempre visible, pantallas de marcador que celebran o penalizan la elección, y medallas en el cierre. Rojo neón sobre negro, con brillo tratado como material.","course-20":"Documento que Revvo envía al invitar a un freelance: demanda, plazo, importe y las condiciones de facturación. El desafío era hacer que un contrato pareciera una invitación — de ahí el degradado de naranja a azul en las franjas de cabecera.","course-22":"Motion en collage de papel: sol, nubes y recortes que entran sobre fondo plano, y una tipografía montada letra por letra, cada una de una fuente, como carta anónima. El trabajo está en el ritmo.","course-21":"Collage digital: escenas imposibles montadas de fotos sueltas, donde el trabajo está en hacer que partes que nunca se encontraron parezcan de la misma luz. \u003cspan class=\"pink-bold\">Es donde entreno el ojo para lo que todavía no existe.\u003c/span>","course-18":"Performance de aeronave para despachadores de vuelo — 101 diapositivas, de las cuales estas 18 muestran el sistema. Explica cálculo de gradiente, límite de obstáculo y velocidades de despegue sin volverse un manual.","course-17":"Dos formaciones de seguridad de cabina — primeros auxilios y equipos de emergencia — en el mismo sistema visual. Tema normativo que necesita ser legible bajo presión, sin volverse un manual árido.","course-16":"Curso sobre la gestión de reclamaciones en Reclame Aqui. Construido en navegación por carretera — el participante elige por dónde seguir haciendo clic en los globos — y cierra con un quiz de fijación.","course-2":"Recorrido de aprendizaje por el Universo Gluon. En una misión espacial por bases orbitales y planetas, los participantes exploran la plataforma y cómo conecta personas, procesos y tecnología.","course-3":"Creación de personaje para la serie Burnout Academy: del concepto y la paleta al model sheet completo, las expresiones faciales y el color key de Bob — un adolescente nerd, ansioso y perfeccionista.","course-4":"Ambientación a partir del cuarto de Bob: plano general, ángulo en picado y punto de fuga único. La escena traduce la ansiedad del personaje por los objetos — del tablero de notas a la papelera llena de ideas descartadas.","course-5":"Biblia de animación de la serie autoral Burnout Academy, comedia satírica sobre una escuela de elite que transforma adolescentes en ejecutivos en miniatura. Reúne argumento, universo, personajes y cadena de producción.","course-6":"Prueba de animación explorando movimiento, timing y expresividad de los personajes en la estética 2D. Un ejercicio de actuación y lipsync aplicado al estilo visual del proyecto."}
     };
 
     /* Os rótulos das telas de galeria: [inglês, espanhol]. */
@@ -5383,7 +5398,7 @@ o resto você descobre clicando.
     ],
     motion: [
       { src: 'assets/motion-poster.webp', label: 'Tipografia em colagem',
-        video: 'assets/motion-after-effects.mp4' }
+        video: 'assets/motion-after-effects.mp4', som: true }
     ],
     manipulacoes: [
       { src: 'assets/manip-01.webp', label: 'Lago' },
@@ -5567,12 +5582,41 @@ o resto você descobre clicando.
     dica.textContent = '← → ou arraste';
     card.appendChild(dica);
 
+    const barraInf = card.querySelector('.gal-bar');
+    const contador = card.querySelector('.gal-count');
+
     const trilha = document.createElement('div');
     trilha.className = 'gal-trilha';
     trilha.innerHTML = telas.map((tela, n) =>
       '<button data-n="' + n + '" aria-label="Ir para a tela ' + (n + 1)
       + ': ' + __tr(tela.label).replace(/"/g, '&quot;') + '"></button>').join('');
-    card.appendChild(trilha);
+    /* entra antes do contador: rótulo · trilha · 3/11 · som · ampliar */
+    if (barraInf && contador) barraInf.insertBefore(trilha, contador);
+    else card.appendChild(trilha);
+
+    /* o botão de som só existe se alguma tela desta galeria tiver áudio */
+    let botaoSom = null;
+    if (telas.some(function(x){ return x.som; })){
+      botaoSom = document.createElement('button');
+      botaoSom.className = 'gal-som';
+      botaoSom.setAttribute('aria-label', __tr('Ativar som'));
+      botaoSom.setAttribute('aria-pressed', 'false');
+      botaoSom.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">'
+        + '<path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4Z"/>'
+        + '<path d="M15.2 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" '
+        + 'stroke-width="1.7" stroke-linecap="round"/></svg>';
+      botaoSom.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (!vid) return;
+        vid.muted = !vid.muted;
+        botaoSom.classList.toggle('on', !vid.muted);
+        botaoSom.setAttribute('aria-pressed', String(!vid.muted));
+        botaoSom.setAttribute('aria-label',
+          __tr(vid.muted ? 'Ativar som' : 'Desativar som'));
+        if (!vid.muted && vid.paused) vid.play().catch(function(){});
+      });
+      if (barraInf && contador) barraInf.insertBefore(botaoSom, contador.nextSibling);
+    }
     const segmentos = Array.from(trilha.children);
     trilha.addEventListener('click', e => {
       const b = e.target.closest('button');
