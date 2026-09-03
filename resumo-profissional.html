@@ -37,7 +37,7 @@
   }
 
   #chrome-fixed{
-    position: fixed; top:0; left:0; width:1920px; height:1010px;
+    position: fixed; top:0; left:0; width:1920px; height:1090px;
     transform-origin: top left; transform: scale(var(--scale));
     z-index: 10; pointer-events: none;
   }
@@ -58,6 +58,8 @@
     background: rgba(255,255,255,0.04); transition: all .15s ease;
   }
   .pill:hover{ border-color: var(--pink-light); }
+  .skip-link{ opacity: 0; pointer-events: none; transform: translateY(-10px); }
+  .skip-link:focus{ opacity: 1; pointer-events: auto; transform: translateY(0); }
   .card-panel{
     background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
     border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
@@ -120,39 +122,121 @@
   #app.is-visible{ opacity:1; }
 
   /* ===== Foco visível para atalhos de acessibilidade (skip-links) ===== */
-  [tabindex="-1"]:focus{ outline: 2px solid var(--pink-bold); outline-offset: 6px; }
+  [tabindex="-1"]:focus-visible{ outline: 2px solid var(--pink-bold); outline-offset: 6px; }
 
   /* ================================================================ */
-  /* ===== TELA DE CARREGAMENTO ===================================== */
+  /* ===== LIGANDO O COMPUTADOR (boot) ============================== */
   /* ================================================================ */
   #preloader{
     position:fixed; inset:0; z-index:9999;
     display:flex; align-items:center; justify-content:center;
-    background: radial-gradient(circle at 50% 42%, #14141a 0%, #0a0a0c 62%, #060607 100%);
-    transition: opacity .6s ease, visibility .6s ease;
+    background:#000;
   }
-  #preloader.is-done{ opacity:0; visibility:hidden; pointer-events:none; }
-  .preloader-inner{ display:flex; flex-direction:column; align-items:center; gap:26px; }
-  .preloader-logo{
-    width:96px; height:auto; object-fit:contain;
-    filter: drop-shadow(0 0 18px rgba(255,45,160,0.45));
-    animation: preloaderBreathe 1.8s ease-in-out infinite;
+  /* o desligar: a tela colapsa numa linha, feito monitor antigo */
+  #preloader.is-done{
+    animation: bootDesliga .55s cubic-bezier(.7,0,.35,1) forwards;
+    pointer-events:none;
   }
-  @keyframes preloaderBreathe{
-    0%,100%{ transform: scale(1); opacity:.92; }
-    50%{ transform: scale(1.07); opacity:1; }
+  @keyframes bootDesliga{
+    0%   { transform: scaleY(1) scaleX(1);       opacity:1; filter:brightness(1); }
+    45%  { transform: scaleY(.012) scaleX(1);    opacity:1; filter:brightness(2.6); }
+    70%  { transform: scaleY(.012) scaleX(.28);  opacity:1; filter:brightness(3); }
+    100% { transform: scaleY(.012) scaleX(0);    opacity:0; filter:brightness(3); }
   }
-  .preloader-bar{ width:220px; height:3px; border-radius:999px; background:rgba(255,255,255,0.1); overflow:hidden; }
-  .preloader-bar-fill{
-    height:100%; width:0%; border-radius:999px;
-    background: linear-gradient(90deg, var(--pink-bold), var(--pink-light));
-    box-shadow: 0 0 10px var(--pink-bold);
-    transition: width .25s ease-out;
+
+  .boot-inner{ display:flex; flex-direction:column; align-items:center; }
+
+  /* 1. o simbolo de liga acende */
+  .boot-power{
+    width:44px; height:44px; color:rgba(255,255,255,.28);
+    opacity:0; animation: bootAcende .9s ease-out .1s forwards;
   }
-  .preloader-pct{
-    font-family:'Segoe UI', sans-serif; font-size:12px; letter-spacing:.12em;
-    color: var(--text-mouse); text-transform:uppercase;
+  @keyframes bootAcende{
+    0%  { opacity:0; color:rgba(255,255,255,.10); filter:none; transform:scale(.9); }
+    55% { opacity:1; color:var(--pink-bold); filter:drop-shadow(0 0 14px var(--pink-bold)); transform:scale(1); }
+    100%{ opacity:0; color:var(--pink-bold); filter:drop-shadow(0 0 20px var(--pink-bold)); transform:scale(1.25); }
   }
+
+  /* 2. a marca aparece no lugar dele */
+  .boot-logo{
+    width:88px; height:auto; object-fit:contain; margin-top:-44px;
+    opacity:0; animation: bootMarca .7s ease-out .75s forwards;
+  }
+  @keyframes bootMarca{
+    from{ opacity:0; transform:scale(.94); }
+    to  { opacity:1; transform:none; }
+  }
+
+  /* 3. os pontinhos girando, estilo sistema moderno */
+  .boot-pontos{
+    margin-top:34px; height:6px; width:52px; position:relative;
+    opacity:0; animation: bootFade .5s ease-out 1.15s forwards;
+  }
+  .boot-pontos i{
+    position:absolute; top:0; left:0; width:5px; height:5px; border-radius:50%;
+    background:rgba(255,255,255,.75);
+    animation: bootPonto 1.5s cubic-bezier(.6,.05,.4,.95) infinite;
+  }
+  .boot-pontos i:nth-child(2){ animation-delay:.14s; }
+  .boot-pontos i:nth-child(3){ animation-delay:.28s; }
+  .boot-pontos i:nth-child(4){ animation-delay:.42s; }
+  .boot-pontos i:nth-child(5){ animation-delay:.56s; }
+  @keyframes bootPonto{
+    0%  { transform:translateX(0);    opacity:0; }
+    18% { opacity:1; }
+    82% { opacity:1; }
+    100%{ transform:translateX(52px); opacity:0; }
+  }
+
+  .boot-txt{
+    margin-top:26px; font-family:'Segoe UI', sans-serif;
+    font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:rgba(255,255,255,.42);
+    opacity:0; animation: bootFade .5s ease-out 1.25s forwards;
+  }
+  @keyframes bootFade{ from{opacity:0} to{opacity:1} }
+
+  /* sem animacao: mostra tudo parado e sai rapido */
+  @media (prefers-reduced-motion: reduce){
+    .estrela-gira{ animation: none !important; }
+    .boot-power{ display:none; }
+    .boot-logo{ margin-top:0; opacity:1; animation:none; }
+    .boot-pontos{ display:none; }
+    .boot-txt{ opacity:1; animation:none; }
+    #preloader.is-done{ animation:none; opacity:0; visibility:hidden; transition:opacity .3s ease; }
+  }
+
+  /* ================================================================ */
+  /* ===== MODO EMBUTIDO ============================================ */
+  /* Quando a página abre dentro da janela da mesa (?embutido=1), a
+     casca dela some: quem dá moldura agora é a janela.               */
+  /* ================================================================ */
+  body.embutido{ background:transparent !important; }
+  body.embutido #chrome-fixed,
+  body.embutido #preloader,
+  body.embutido #scrollProgress,
+  body.embutido #bg-fixed,
+  body.embutido #cursorGlow{ display:none !important; }
+  body.embutido #app{ opacity:1 !important; }
+  /* a coluna de conteúdo mora em x:777, à direita da barra lateral que
+     acabou de sumir; aqui ela encosta na esquerda */
+  body.embutido #page-scale{ margin-left:-777px; }
+  /* o cartao nascia em top:221 pra passar por baixo do cabecalho que
+     nao existe mais aqui dentro */
+  body.embutido #page-scale > .abs{ top:0 !important; }
+  /* o conteudo vinha embrulhado num card-panel; dentro da janela isso
+     vira cartao dentro de cartao — quem da a moldura agora e a janela */
+  body.embutido #page-scale > .card-panel{
+    background:none !important; border:none !important; border-radius:0 !important;
+    backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+    box-shadow:none !important;
+  }
+  /* a revelacao ao rolar nunca dispara embutido, porque o quadro cresce
+     ate a altura total e nao rola por dentro */
+  body.embutido .reveal,
+  body.embutido [class*="reveal"]{ opacity:1 !important; transform:none !important; }
+  body.embutido #page-scale-wrapper{ overflow:visible; }
+  body.embutido{ overflow-x:hidden; }
 
   /* ===== Barra de progresso de scroll ===== */
   #scrollProgress{ position:fixed; top:0; left:0; width:100%; height:3px; z-index:9998; background: rgba(255,255,255,0.05); pointer-events:none; }
@@ -163,13 +247,6 @@
   }
 
   /* ===== Glow sutil que segue o cursor ===== */
-  #cursorGlow{
-    position:fixed; top:0; left:0; width:520px; height:520px; border-radius:50%;
-    background: radial-gradient(circle, rgba(255,45,160,0.13), transparent 70%);
-    transform: translate(-50%,-50%); pointer-events:none; z-index:3;
-    mix-blend-mode: screen; opacity:0; transition: opacity .4s ease; will-change: transform;
-  }
-  @media (hover:none), (pointer:coarse){ #cursorGlow{ display:none; } }
 
   /* ===== Microinterações: header, nav, pills ===== */
   .logo-link{ display:block; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
@@ -192,14 +269,78 @@
   .nav-item .icon-ring{ transition: filter .2s ease, transform .3s cubic-bezier(.34,1.56,.64,1); }
   .nav-item:hover .icon-ring{ transform: scale(1.08); }
 
-  .float-idle{ animation: floatY 6.5s ease-in-out infinite; }
-  .float-idle-delay{ animation: floatY 6.5s ease-in-out infinite; animation-delay: -3s; }
+  .float-idle, .float-idle-delay{ animation: none; }
   @keyframes floatY{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
 
-  .mouse-hint-icon{ animation: mouseBob 1.8s ease-in-out infinite; }
+  .mouse-hint-icon{ animation: none; }
   @keyframes mouseBob{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(4px); } }
 
-  .twinkle{ animation: twinkleSpin 9s linear infinite; }
+  /* Entrada do "OLA": cada letra cai em cascata com squash-and-stretch
+     no pouso; o acento chicoteia por ultimo. Toca uma vez ao carregar
+     a pagina, nao em loop. */
+  .letra-ola{ transform-box: fill-box; transform-origin: center; opacity: 0; animation: ola-cair 0.85s cubic-bezier(.32,.1,.36,1) forwards; animation-play-state: paused; }
+  html.mesa-pronta .letra-ola{ animation-play-state: running; }
+  /* na palavra, a ordem e O, L, A — as letras caem nessa sequencia */
+  #ola-o{ animation-delay: 0s; }
+  #ola-l{ animation-delay: .12s; }
+  /* o A cai por ultimo e, dai em diante, fica pulando em cima do L */
+  #ola-a{ transform-origin: center bottom;
+    animation: ola-cair .85s cubic-bezier(.32,.1,.36,1) .24s forwards,
+               ola-pula 3.2s cubic-bezier(.34,0,.36,1) 1.4s infinite; }
+  #ola-acento{
+    transform-origin: 22% 100%;
+    animation: ola-acento-flick .4s ease-out .5s forwards,
+               ola-acento-batida 3.2s cubic-bezier(.2,.7,.3,1) 1.4s infinite; }
+
+  /* a estrela rosa do "Olá" gira sem parar */
+  .estrela-gira{ transform-box: fill-box; transform-origin: center;
+    animation: estrelaGira 12s linear infinite; }
+  @keyframes estrelaGira{ to{ transform: rotate(360deg); } }
+
+
+  /* O pulo do Á, a partir dos cinco quadros que a Celeste desenhou:
+       422 repouso  Y 90.290
+       423 agacha   Y 105.290  (+15,00)
+       424 sobe     Y  75.770  (-14,52)
+       425 batida   Y  75.770  — o acento gira
+       426 pousa    Y  91.742  (+1,45)
+     O giro do acento no arquivo dela é 66°; em looping isso deita ele e
+     ele deixa de ler como acento, então aqui vai contido em 30°.
+     O acento reage DEPOIS da batida, nunca junto — é o atraso que faz
+     parecer que levou a pancada em vez de estar preso no Á. */
+  @keyframes ola-pula{
+    0%, 56%{ transform: translateY(0) scale(1, 1); }
+    62%{ transform: translateY(15px) scale(1.07, .9); }
+    71%{ transform: translateY(-14.5px) scale(.95, 1.08); }
+    78%{ transform: translateY(-14.5px) scale(1, 1); }
+    87%{ transform: translateY(1.45px) scale(1.09, .89); }
+    93%{ transform: translateY(0) scale(.98, 1.03); }
+    100%{ transform: translateY(0) scale(1, 1); }
+  }
+  @keyframes ola-acento-batida{
+    0%, 74%{ transform: translateY(0) rotate(0deg); }
+    80%{ transform: translateY(-9px) rotate(30deg); }
+    87%{ transform: translateY(-4px) rotate(19deg); }
+    93%{ transform: translateY(0) rotate(-7deg); }
+    97%{ transform: translateY(0) rotate(3deg); }
+    100%{ transform: translateY(0) rotate(0deg); }
+  }
+
+  @keyframes ola-cair{
+    0%{ opacity:0; transform: translateY(-260px) scale(1,1) rotate(-8deg); }
+    55%{ opacity:1; transform: translateY(0) scale(1,1) rotate(2deg); }
+    68%{ transform: translateY(6px) scale(1.14,0.82) rotate(0deg); }
+    80%{ transform: translateY(-10px) scale(0.94,1.08) rotate(-1deg); }
+    90%{ transform: translateY(2px) scale(1.03,0.98) rotate(0.5deg); }
+    100%{ opacity:1; transform: translateY(0) scale(1,1) rotate(0deg); }
+  }
+  @keyframes ola-acento-flick{
+    0%{ opacity:0; transform: translate(6px,-10px) rotate(30deg) scale(.4); }
+    60%{ opacity:1; transform: translate(-2px,2px) rotate(-14deg) scale(1.15); }
+    100%{ opacity:1; transform: translate(0,0) rotate(0deg) scale(1); }
+  }
+
+  .twinkle{ animation: none; }
   @keyframes twinkleSpin{
     0%{ transform: rotate(0deg) scale(1); opacity:.35; }
     50%{ transform: rotate(180deg) scale(1.25); opacity:.7; }
@@ -224,7 +365,6 @@
       transition-duration:.001ms !important; scroll-behavior:auto !important;
     }
     #conteudo.reveal-target{ opacity:1 !important; transform:none !important; }
-    #cursorGlow{ display:none !important; }
   }
 
   /* ================================================================ */
@@ -376,19 +516,23 @@
 <body>
 
 <!-- ============ TELA DE CARREGAMENTO ============ -->
-<div id="preloader" role="status" aria-live="polite">
-  <div class="preloader-inner">
-    <img class="preloader-logo" src="assets/logo.png" alt="" />
-    <div class="preloader-bar"><div class="preloader-bar-fill" id="preloaderFill"></div></div>
-    <span class="preloader-pct" id="preloaderPct">Carregando 0%</span>
+<div id="preloader" role="status" aria-live="polite" aria-label="Ligando o computador">
+  <div class="boot-inner">
+    <svg class="boot-power" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="3"
+              stroke-linecap="round" stroke-dasharray="88 25" transform="rotate(-70 24 24)"/>
+      <path d="M24 8v16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <img class="boot-logo" src="assets/logo.png" alt="" />
+    <div class="boot-pontos" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <span class="boot-txt">Ligando o computador</span>
   </div>
 </div>
 
 <!-- ============ BARRA DE PROGRESSO DE SCROLL ============ -->
 <div id="scrollProgress"><div id="scrollProgressFill"></div></div>
-
-<!-- ============ GLOW QUE SEGUE O CURSOR ============ -->
-<div id="cursorGlow"></div>
 
 <div id="app">
 
@@ -403,10 +547,10 @@
       <img src="assets/logo.png" alt="Celeste Gouvea — logo" style="width:100%; height:100%; object-fit:contain;" />
     </a>
 
-    <a href="#conteudo" class="abs pill segoe" style="left:952px; top:40px; width:277px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
+    <a href="#conteudo" class="abs pill segoe skip-link" style="left:952px; top:40px; width:277px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
       <img src="assets/icons/icone-teclado.png" alt="" style="width:26px; height:18px;" /> Ir para o Conteúdo <span style="opacity:.6">[Alt + 1]</span>
     </a>
-    <a href="#menu" class="abs pill segoe" style="left:1256px; top:40px; width:240px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
+    <a href="#menu" class="abs pill segoe skip-link" style="left:1256px; top:40px; width:240px; height:42px; font-size:calc(16px * var(--font-scale)); color:var(--text-dimmer); gap:8px;">
       <img src="assets/icons/icone-teclado.png" alt="" style="width:26px; height:18px;" /> Ir para o Menu <span style="opacity:.6">[Alt + 2]</span>
     </a>
 
@@ -423,10 +567,44 @@
     </button>
 
     <!-- SIDEBAR -->
-    <div class="abs card-panel" style="left:64px; top:227px; width:540px; height:650px; background:rgba(13,13,13,0.72); border-color: rgba(230,57,155,0.25);"></div>
+    <div class="abs card-panel" style="left:64px; top:227px; width:540px; height:725px; background:rgba(13,13,13,0.72); border-color: rgba(230,57,155,0.25);"></div>
 
     <img src="assets/img-ferramentas.png" alt="" class="abs float-idle-delay" style="left:92px; top:255px; width:56px; height:305px; opacity:.9; pointer-events:none;" />
-    <img src="assets/img-ilustracao.png" alt="Ilustração: 'Olá' e retrato de Celeste, designer, com estrelas decorativas" class="abs float-idle" style="left:140px; top:255px; width:412px; height:auto;" />
+    <svg class="abs float-idle" style="left:140px; top:255px; width:412px; height:auto;" role="img" aria-label="Ilustração: 'Olá' e retrato de Celeste, designer, com estrelas decorativas" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 410.191 211.723">
+  <g id="Grupo_329" data-name="Grupo 329" transform="translate(-140.092 -258.277)">
+    <g transform="translate(-198.923 76.277)"><path id="ola-estrela" class="estrela-gira" data-name="Caminho 6" d="M339.015,229.624l23.544-12.033-15.922-20.924,24.21,10.667L377.494,182l6.648,25.334,24.21-10.667L392.43,217.591l23.544,12.033-26.5.759,5.147,25.671-17.125-19.977-17.125,19.977,5.147-25.671Z" fill="#fe80f1" fill-rule="evenodd"/></g>
+    <g transform="translate(-151.457 90.29)"><path id="ola-a" class="letra-ola" d="M483.164,213.01c7.953.046,12.759-.685,19.241,4.725,6.53,6.5,6.7,18.758,7.432,28.613.553,12.864,1.628,25.884.427,38.748a32.821,32.821,0,0,1-1.882,9.061,11.879,11.879,0,0,1-7.051,7.282c-6.957,2.042-33.425,1.636-40.951,1.356-4.965-.187-11.368-1.061-13.787-5.972-3.668-9.45-2.782-27.476-1.249-38.079,2.341-14.205,30.593-13.66,44.27-13.456,2.182.125,4.349-1.435,2.8-3.494-1.5-1.544-24.634-1.153-26.769-1.231-4.427-.062-9.059.28-13.519.078-7.416-.094-6.767-3.852-7.019-9.777-.08-3.852-.048-7.625.11-10.588.237-4.07,1.122-6.035,5.724-6.642,3.921-.608,28.269-.546,32.143-.608h.08Zm-3.321,46.9c-2.846.842-2.782,8.81-1.834,11.054a3.133,3.133,0,0,0,5.582.937c.854-1.186.916-3.057,1.011-4.882.032-1.9.222-4.193-.648-5.6a3.592,3.592,0,0,0-4.047-1.544h-.064Z" fill="#d9d9d9" fill-rule="evenodd"/></g>
+    <g transform="translate(-165.471 90.742)"><path id="ola-l" class="letra-ola" d="M522.667,317.9c3.648,4.972,1.532,22.256,1.674,28.844-.317,7.983-.537,14.351-10.485,14.492-27.114.722-55.033,1.459-81.973.173-5.322-.549-12.57,1.443-16.613-2.917-1.626-2.085-1.546-5.473-1.484-8.156,1.263-42.5-2.479-85.995.253-128.216.253-6.775,6.98-8.187,12.6-8.078,4.989.235,14.654-.987,18.175,2.243,1.374,1.411,1.9,3.858,2.021,5.9.916,16.735-.411,34.537-.742,51.867-.142,7.4-.126,14.712.315,21.817.237,3.466.521,7.246,2.274,10.3,2.874,5.145,9.428,5.834,14.78,6.321,15.887,1.427,32.767.847,48.763,2.149,3.443.454,7.8.643,10.359,3.152l.08.078Z" fill="#d9d9d9" fill-rule="evenodd"/></g>
+    <g transform="translate(-133.375 79.441)"><path id="ola-acento" class="letra-ola" d="M513.118,206.955c-5.466,5.778-10.837,11.882-16.536,16.989a4.733,4.733,0,0,1-2.8,1.358c-2.373-.093-5.309-3.889-7.151-5.558-2-1.921-3.857-4.763-1.561-7.246,7.6-8.634-.2-.53,8.245-8.619h.015c8.073-8.447,5.544-6.229,14.178-13.818,2.483-2.3,5.325-.437,7.246,1.561,1.67,1.827,5.466,4.779,5.558,7.151a4.9,4.9,0,0,1-1.374,2.8c-5.107,5.7-.578.437-6.372,5.917h-.015c-.515.5-1.015.985-1.514,1.468-2.155,2.078-4.263,4.169-6.231,6.309l-.078.077c-2.155,2,1.313-1.467-.8.735-.485.515,9.649-9.6,9.165-9.1Z" fill="#d9d9d9" fill-rule="evenodd"/></g>
+    <g transform="translate(-191.69 90.29)"><path id="ola-o" class="letra-ola" d="M390.083,213.087c11.7-.314,26.872-.282,34.737,9.2,3.783,5.24,4.732,11.188,5.792,17.763,1.693,12.287,1.409,24.386,1.915,36.515.886,23.837,2.342,48.645-2.707,72.136-2.739,11.879-11.791,14.468-23.9,14.86-10.777.486-23.438,1.146-34.706-1.381-6.314-1.429-9.669-4.3-11.727-10.687-3.228-9.98-3.306-21.843-3.829-32.388-.791-28.229-2.01-60.461,4.336-88.125,3.877-14.782,14.544-17.246,29.941-17.873h.142ZM393.2,266.8c-8.307,2.245-5.222,28.733-5.285,36.014.3,4.44-.4,4.864,2.6,8.5,2.168,2.511,7.042,2.245,8.83-.674,1.6-2.464,1.994-5.415,2.374-8.223a100.77,100.77,0,0,0-.126-25.091c-.539-4.378-2.548-11.66-8.277-10.545l-.112.031Z" fill="#d9d9d9" fill-rule="evenodd"/></g>
+    <path id="Caminho_42" data-name="Caminho 42" d="M535.015,261a6.672,6.672,0,0,1,1.452,2.9" transform="translate(-110.32 111.989)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_43" data-name="Caminho 43" d="M536.1,261.553a5.193,5.193,0,0,1,3.038-.5c1.23.225,1.543.883.557,1.638a8.425,8.425,0,0,1-2.762,1.2c-1.581.023-2.409.023-3.019-.012-1.111-.076-1.192-.2-.225-.726a13.317,13.317,0,0,0,2.4-1.591Z" transform="translate(-111.224 111.989)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_44" data-name="Caminho 44" d="M530.467,257.9a5.185,5.185,0,0,1-1.452-2.9" transform="translate(-113.033 109.276)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_45" data-name="Caminho 45" d="M531.782,257.535a9.117,9.117,0,0,1-3.573.3c-1.413-.24-1.606-1.035-.395-1.789a9.153,9.153,0,0,1,3.427-1.05c5.983.494,5.8-.126.55,2.543Z" transform="translate(-113.937 109.276)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_46" data-name="Caminho 46" d="M593.015,263.9a5.935,5.935,0,0,1,1.365-2.826c.026-.026.061-.052.087-.078" transform="translate(-92.101 111.989)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_47" data-name="Caminho 47" d="M594.984,263.9a11.364,11.364,0,0,1-3.248-1.118c-2.182-1.333,1.127-2.068,2.884-1.684a5.169,5.169,0,0,1,1.035.254l-.054.042.646.224.5.347-.054.042a10.125,10.125,0,0,0,2.434,1.24c2.275.8-2.479.607-4.146.649Z" transform="translate(-93.005 111.989)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_48" data-name="Caminho 48" d="M599.015,253c2.667,2.419.844,5.808.844,5.808" transform="translate(-89.389 108.372)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_49" data-name="Caminho 49" d="M600.086,252.457c3.848-1.921,7.507,2.649,4.581,5.612a4.925,4.925,0,0,1-3.826,1.178c-1.488-1.215-2.338-1.808-2.94-2.28-1.1-.9-1.227-.812-.094-1.674a10.066,10.066,0,0,0,2.28-2.829Z" transform="translate(-90.293 107.92)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_50" data-name="Caminho 50" d="M661.094,329.275a54.2,54.2,0,0,1-6.57,1.278,30.536,30.536,0,0,1-12.707-1.686c-1.866-.687-3.449-1.849-5.278-2.564,2.236,10.824,8.778,21.129,19.045,25.759-6.195,3.039-14.224,2.49-20.316-.642,2.635,7.9-.443,15.308-8.19,18.382-.479.19-9.723,1.607-9.287.147.407-1.381,1.467-2.249,1.685-4.265a12.6,12.6,0,0,0-1.3-7.166c-.065.052-.131.1-.2.147-9.373,6.851-28.221,9.327-39.425,7.179-4.465-.854-8.916-2.541-12.19-5.769,2.156-2.2,4.77-3.725,6.571-6.325,2.294-3.315,3.4-7.574,3.746-12.029a30.982,30.982,0,0,1-12.648,11.159c-.21-1.015.545-1.533.922-2.256.174-.328.864-1.372-.08-.942-3.935,5.011-12.852,8.926-12.1,16,.218,2.015,1.278,2.884,1.684,4.265.436,1.461-2.759.044-3.238-.147-7.747-3.074-10.832-10.48-8.19-18.382-6.091,3.132-14.121,3.681-20.316.642,10.267-4.631,16.809-14.936,19.045-25.759-1.83.716-3.412,1.877-5.278,2.564a30.536,30.536,0,0,1-12.707,1.686,54.2,54.2,0,0,1-6.571-1.278c-.726-.694.225-.716.6-.883,1.5-.687,3.456-.957,5.068-1.716,5.33-2.49,11.124-8.458,12.431-14.33a21.38,21.38,0,0,0-.436-10.159l-1.278-.27,1.147-.241a74.242,74.242,0,0,1-1.866-8.15l-1.06,3.395a29.925,29.925,0,0,0-.508,13.3c.348,1.854,1.343,3.607,1.358,5.441-2.468-.957-5.22-4.228-6.636-6.523-8.75-14.1-4.975-30.959,2.781-44.529a31.615,31.615,0,0,1-12.7,2.527l4.828-3.871c.334-.306.668-.613.995-.919a28.393,28.393,0,0,1-11.914-1.191l10.019-4.178c7.683-3.82,12.286-12.489,17.1-20.684a29.519,29.519,0,0,1-3.841.315,28.623,28.623,0,0,1-3.107-.424c-.37-.065-5.839-1.292-4.75-2.169a12.368,12.368,0,0,0,3.537-.489c15.878-3.855,17.846-19.063,28.44-28.936,8.429-7.859,24-13.365,33.406-4.156l2.759,4.163c2.425-6.909,10.048-12.583,17.359-12.6-3.412,2.943-6.592,6.5-7.71,10.985,11.508-2.892,20.671,3.52,26.487,12.957a132.32,132.32,0,0,1,6.425,12.488,132.091,132.091,0,0,1,7.05,11.322A28.351,28.351,0,0,0,653.7,247.1c.719.3,3.717.995,3.855,1.14.537.562-1,1-1.292,1.111a18.807,18.807,0,0,1-5.781,1.242,24.754,24.754,0,0,0,7.792,6.39l10.019,4.178a29.544,29.544,0,0,1-20.432-1q.251.69.457,1.4c.182.621.363,1.265.53,1.928,8.191,13.76,12.431,31.171,3.436,45.654-1.417,2.294-4.169,5.566-6.637,6.523.014-1.834,1.009-3.587,1.358-5.441a29.926,29.926,0,0,0-.508-13.3l-1.06-3.395a72.412,72.412,0,0,1-1.83,8l1.844.388-2.047.431a21.192,21.192,0,0,0-.4,10c1.307,5.872,7.1,11.84,12.431,14.33,1.612.759,3.572,1.03,5.068,1.716.37.167,1.321.189.6.883" transform="translate(-121.622 80.797)" fill="#fff" fill-rule="evenodd"/>
+    <path id="Caminho_51" data-name="Caminho 51" d="M661.094,329.275a54.2,54.2,0,0,1-6.57,1.278,30.536,30.536,0,0,1-12.707-1.686c-1.866-.687-3.449-1.849-5.278-2.564,2.236,10.824,8.778,21.129,19.045,25.759a20.013,20.013,0,0,1-5.2,1.672,24.279,24.279,0,0,1-15.112-2.314c2.635,7.9-.443,15.308-8.19,18.382-.479.19-9.723,1.607-9.287.147.407-1.381,1.467-2.249,1.685-4.265a12.6,12.6,0,0,0-1.3-7.166c-.065.052-.131.1-.2.147-9.373,6.851-28.221,9.327-39.425,7.179-4.465-.854-8.916-2.541-12.19-5.769,2.156-2.2,4.77-3.725,6.571-6.325,2.294-3.315,3.4-7.574,3.746-12.029a30.982,30.982,0,0,1-12.648,11.159c-.21-1.015.545-1.533.922-2.256.174-.328.864-1.372-.08-.942-3.935,5.011-12.852,8.926-12.1,16,.218,2.015,1.278,2.884,1.684,4.265.436,1.461-2.759.044-3.238-.147-7.747-3.074-10.832-10.48-8.19-18.382-6.091,3.132-14.121,3.681-20.316.642,10.267-4.631,16.809-14.936,19.045-25.759-1.83.716-3.412,1.877-5.278,2.564a30.536,30.536,0,0,1-12.707,1.686,54.2,54.2,0,0,1-6.571-1.278c-.726-.694.225-.716.6-.883,1.5-.687,3.456-.957,5.068-1.716,5.33-2.49,11.124-8.458,12.431-14.33a21.38,21.38,0,0,0-.436-10.159l-1.278-.27,1.147-.241a74.242,74.242,0,0,1-1.866-8.15l-1.06,3.395a29.925,29.925,0,0,0-.508,13.3c.348,1.854,1.343,3.607,1.358,5.441-2.468-.957-5.22-4.228-6.636-6.523-8.75-14.1-4.975-30.959,2.781-44.529a31.615,31.615,0,0,1-12.7,2.527l4.828-3.871c.334-.306.668-.613.995-.919a28.393,28.393,0,0,1-11.914-1.191l10.019-4.178c7.683-3.82,12.286-12.489,17.1-20.684a29.519,29.519,0,0,1-3.841.315,28.623,28.623,0,0,1-3.107-.424c-.37-.065-5.839-1.292-4.75-2.169a12.368,12.368,0,0,0,3.537-.489c15.878-3.855,17.846-19.063,28.44-28.936,8.429-7.859,24-13.365,33.406-4.156l2.759,4.163c2.425-6.909,10.048-12.583,17.359-12.6-3.412,2.943-6.592,6.5-7.71,10.985,11.508-2.892,20.671,3.52,26.487,12.957a132.32,132.32,0,0,1,6.425,12.488,132.091,132.091,0,0,1,7.05,11.322A28.351,28.351,0,0,0,653.7,247.1c.719.3,3.717.995,3.855,1.14.537.562-1,1-1.292,1.111a18.807,18.807,0,0,1-5.781,1.242,24.754,24.754,0,0,0,7.792,6.39l10.019,4.178a29.544,29.544,0,0,1-20.432-1q.251.69.457,1.4c.182.621.363,1.265.53,1.928,8.191,13.76,12.431,31.171,3.436,45.654-1.417,2.294-4.169,5.566-6.637,6.523.014-1.834,1.009-3.587,1.358-5.441a29.926,29.926,0,0,0-.508-13.3l-1.06-3.395a72.412,72.412,0,0,1-1.83,8l1.844.388-2.047.431a21.192,21.192,0,0,0-.4,10c1.307,5.872,7.1,11.84,12.431,14.33,1.612.759,3.572,1.03,5.068,1.716C660.869,328.56,661.82,328.581,661.094,329.275Z" transform="translate(-121.622 80.797)" fill="none" stroke="#d9d9d9" stroke-linejoin="round" stroke-width="6"/>
+    <path id="Caminho_52" data-name="Caminho 52" d="M563.388,344.758c-.215-1.015.531-1.532.912-2.262.171-.328.852-1.372-.08-.935-3.887,5.008-12.694,8.913-11.948,15.993.208,2.014,1.262,2.875,1.663,4.262.424,1.453-2.724.045-3.2-.145-7.652-3.073-10.694-10.474-8.091-18.371-6.025,3.131-13.948,3.678-20.067.635,10.141-4.628,16.6-14.926,18.813-25.736-1.808.716-3.37,1.876-5.214,2.561a29.843,29.843,0,0,1-12.55,1.687,53.205,53.205,0,0,1-6.491-1.278c-.717-.7.222-.723.588-.89,1.477-.687,3.414-.957,5.005-1.716,5.265-2.489,10.98-8.451,12.271-14.32,1.535-6.977-1.484-12.087-2.4-18.817l-1.047,3.395a30.355,30.355,0,0,0-.508,13.291c.344,1.854,1.326,3.607,1.347,5.438-2.438-.955-5.156-4.225-6.562-6.518-9.775-15.926-3.73-35.392,5.937-49.647a29.213,29.213,0,0,1-21.752,1.693l9.9-4.175c16.9-8.489,18.7-41.064,41.333-38.787,5.859.591,14.006,7.191,15.778,12.875,1.642,5.285-4.44,6.241-7.632,9.446-10.944,10.956-10.908,38.093-6.884,52.136,4.453,15.547,22.254,26.693,15.821,44.122a30.375,30.375,0,0,1-14.955,16.058Z" transform="translate(-121.622 88.934)" fill="#bc1b6f" fill-rule="evenodd"/>
+    <path id="Caminho_53" data-name="Caminho 53" d="M584.124,341.239c.218-1.014-.539-1.532-.924-2.262-.174-.328-.866-1.372.08-.934,3.942,5.007,18.958-1.169,8.06,19.51a19.805,19.805,0,0,0-1.689,4.262c-.428,1.453,8.826.045,9.312-.145,7.763-3.073,10.847-10.474,8.206-18.371,6.112,3.131,14.149,3.678,20.355.635-10.286-4.628-16.833-14.926-19.081-25.736,1.833.716,3.42,1.876,5.289,2.561a30.674,30.674,0,0,0,12.73,1.687,54.674,54.674,0,0,0,6.584-1.278c.728-.7-.225-.723-.6-.89-1.5-.687-3.463-.957-5.078-1.716-5.341-2.489-11.137-8.451-12.447-14.32-1.557-6.977,1.506-12.087,2.429-18.817l1.063,3.395a29.947,29.947,0,0,1,.515,13.291c-.349,1.854-1.346,3.607-1.368,5.438,2.474-.955,5.23-4.225,6.656-6.518,9.916-15.926,3.784-35.392-6.023-49.647a30.021,30.021,0,0,0,22.064,1.693L630.223,248.9c-17.147-8.489-18.972-41.064-41.924-38.787-5.943.591-14.208,7.191-16,12.875-1.666,5.285,4.5,6.241,7.739,9.446,11.1,10.956,11.065,38.093,6.984,52.136-4.518,15.547-18.506,26.51-11.988,43.94,2.531,6.759,2.582,9.758,9.107,12.721Z" transform="translate(-93.594 88.934)" fill="#bc1b6f" fill-rule="evenodd"/>
+    <path id="Caminho_54" data-name="Caminho 54" d="M587.417,281c1.1,10.324,1.895,22.948,11.37,29.034,4.558,2.924,8.85,2.351,1.249,8-9.267,6.884-27.894,9.383-38.969,7.223-4.414-.86-8.815-2.557-12.052-5.805,2.139-2.211,4.723-3.748,6.5-6.363,5.153-7.584,4.256-20.091,2.283-28.621a45.17,45.17,0,0,0,7.824.264L580.433,283a55.5,55.5,0,0,0,6.992-2Z" transform="translate(-103.992 121.03)" fill="#f98fc1" fill-rule="evenodd"/>
+    <path id="Caminho_55" data-name="Caminho 55" d="M586.96,291.916a46.1,46.1,0,0,1-6.427,3.312c-8.377,3.514-16.649,2.74-24.151-.636a59.7,59.7,0,0,0-1.368-8.129,49.538,49.538,0,0,0,8.14.276L578.592,285a57.824,57.824,0,0,0,7.281-2c.322,2.863.61,5.9,1.073,8.923Z" transform="translate(-101.279 121.934)" fill="#f66ab2" fill-rule="evenodd"/>
+    <path id="Caminho_56" data-name="Caminho 56" d="M542.988,275.419c-4.838,5.255-11.078-3.6-13.259-7.59-2.409-4.406-3.83-10.886-1.6-15.582,2.088-4.4,6.992-5.689,10.713-2.4l3.1,3.266c.052,7.424.7,14.878,1.037,22.308Z" transform="translate(-113.937 106.112)" fill="#fa9cc6" fill-rule="evenodd"/>
+    <path id="Caminho_57" data-name="Caminho 57" d="M591.015,275.419c4.838,5.255,11.078-3.6,13.259-7.59,2.409-4.406,3.832-10.886,1.6-15.582-2.087-4.4-6.992-5.689-10.713-2.4l-3.1,3.266c-.051,7.424-.7,14.878-1.037,22.308Z" transform="translate(-93.006 106.112)" fill="#fa9cc6" fill-rule="evenodd"/>
+    <path id="Caminho_58" data-name="Caminho 58" d="M578.806,204.006c22.733-.311,40.969,11.977,45.8,34.379,6.341,29.437-3.929,73.838-34.489,86.785-23.455,9.935-46.109-14.972-52.354-35.307-11.5-37.462-9.44-85.156,41.041-85.85Z" transform="translate(-111.676 86.222)" fill="#fa9cc6" fill-rule="evenodd"/>
+    <path id="Caminho_59" data-name="Caminho 59" d="M643.924,286.555a21.72,21.72,0,0,0-5.81-11.757,10.355,10.355,0,0,1-.087,2.01,19.763,19.763,0,0,1-4.6,9.909c-.343.386-2.7,2.665-3.073,2.249a21.779,21.779,0,0,0-2.971-17.815c-2.037-3.241-4.512-4.886-6.89-7.631a39.625,39.625,0,0,1-6.3-9.99c-.6-.051-.321,1.056-.277,1.406.5,4.391,2.643,9.276,4.162,13.411-.788.751-6.848-3.844-7.76-4.667-8.081-7.259-12.271-18.639-13.9-29.159-2.175,1.23-4.613,2.672-5.5,5.155l-3.883-3.693-2.891-1.462c-2.3,11.612-3.337,24.076.642,35.442l-2.752-2.57a45.326,45.326,0,0,1-8.394-16.44l-1.774-8.052c-3.065,8.824-8.569,17.677-17.452,21.58l3.174-6.014.219-1.07c-4.657,8-12.11,16.156-8.24,26.093-3.913-.938-6.475-5.015-7.439-8.692-.444-.4-2.409,2.148-2.723,2.6-3.46,5.023-4.241,11.846-3.094,17.7a5.855,5.855,0,0,1-1.943-2.089c-6.285-9.553-4.146-22.723,0-32.706l-6.992,3.823a31.89,31.89,0,0,1-13.366,2.781l4.854-3.858c8.182-7.31,13.336-16.717,18.081-26.436.094-.62-.007-.437-.482-.481-1.278-.132-3.482.428-5.182.348a29.119,29.119,0,0,1-3.132-.423c-.372-.065-5.868-1.288-4.773-2.169a12.743,12.743,0,0,0,3.555-.481c15.964-3.851,17.941-19,28.592-28.846,8.474-7.834,24.139-13.324,33.585-4.15l2.775,4.15c2.438-6.887,10.1-12.552,17.452-12.559-3.431,2.935-6.627,6.48-7.751,10.95,11.576-2.875,20.78,3.51,26.635,12.916,7.665,12.3,9.052,24.805,24.11,31.061.723.3,3.73.989,3.87,1.136.54.553-1.008.99-1.3,1.107a20.944,20.944,0,0,1-12.913.5c1.716,3.858,3.709,7.609,4.927,11.672,2.432,8.081,3.716,20.342-.6,27.929-.481.851-1.379,2.512-2.394,2.606-.138-1.7.19-3.648,0-5.316Z" transform="translate(-119.813 80.797)" fill="#f82288" fill-rule="evenodd"/>
+    <g transform="translate(-105.348 107.016)"><path id="ola-olho" data-name="Caminho 60" d="M554.727,259.525a18.246,18.246,0,0,1-.65,5,12.914,12.914,0,0,0-7.411,0,18.2,18.2,0,0,1-.651-5c0-5.259,1.946-9.525,4.356-9.525s4.356,4.266,4.356,9.525" fill-rule="evenodd"/></g>
+    <path id="Caminho_61" data-name="Caminho 61" d="M589.7,264.521c-1.058-.473-2.088-1.063-3.139-1.618-3.849-2.1-7.961-4.661-12.544-6.672,3.594-3.671,10.25-6.672,17.425-6.177a34.609,34.609,0,0,0-12.026,5.7,38.475,38.475,0,0,1,10.277,8.756Z" transform="translate(-92.69 107.016)" fill-rule="evenodd"/>
+    <path id="Caminho_62" data-name="Caminho 62" d="M584.015,271.79l11.355-2.434L597.806,258l2.435,11.356L611.6,271.79l-11.362,2.442-2.435,11.357-2.437-11.357Z" transform="translate(-88.17 110.633)" fill="#d9d9d9" fill-rule="evenodd"/>
+    <path id="Caminho_63" data-name="Caminho 63" d="M525.015,271.79l11.953-2.434L539.54,258l2.563,11.356,11.953,2.434L542.1,274.232l-2.563,11.357-2.572-11.357Z" transform="translate(-114.841 110.633)" fill="#d9d9d9" fill-rule="evenodd"/>
+    <path id="Caminho_64" data-name="Caminho 64" d="M536.015,251.113c.337-3.344,6.713-8.111,13.2-8.081,6.453-.449,13.012,3.9,12.935,7.844,0,0-.022.023-.029.016-8.057-6.489-16.144-4.464-20.531-2.46-4.652,2.193-5.6,4.356-5.577,2.688Z" transform="translate(-109.869 103.852)" fill="#1a180c" fill-rule="evenodd"/>
+    <path id="Caminho_65" data-name="Caminho 65" d="M599.149,249.464c-.36-4.44-7.513-8.236-13.909-7.329-6.5.459-12.232,5.621-12.225,8.57,0,0,.022.016.028,0a19.079,19.079,0,0,1,20.2-3.648c4.847,1.909,5.971,4.618,5.907,2.4Z" transform="translate(-93.142 103.4)" fill="#1a180c" fill-rule="evenodd"/>
+    <path id="Caminho_66" data-name="Caminho 66" d="M614.015,214.438l7.77-1.668,1.669-7.77,1.668,7.77,7.77,1.668-7.77,1.668-1.668,7.77-1.669-7.77Z" transform="translate(-82.608 86.674)" fill="#fe80f1" fill-rule="evenodd"/>
+    <path id="Caminho_67" data-name="Caminho 67" d="M492.015,279.247l12.551-2.695,2.7-12.552,2.695,12.552,12.552,2.695-12.552,2.7-2.695,12.551-2.7-12.551Z" transform="translate(-129.759 113.345)" fill="#fe80f1" fill-rule="evenodd"/>
+  </g>
+</svg>
 
     <p class="abs" style="left:169px; top:465px; width:378px; font-size:calc(24px * var(--font-scale)); line-height:1.45; font-weight:400; color:var(--text-dim); margin:0;">
       Prazer! Sou <span style="color:var(--pink-light); font-weight:500;">Celeste</span>, designer com foco em e-learnings e animadora digital.<br/>
@@ -464,8 +642,18 @@
         <img class="seta-hover abs" src="assets/icons/icone-seta-hover.png" style="left:0;top:0;width:14px;height:26px;" alt="" />
       </span>
     </a>
+    <div class="abs" style="left:169px; top:854px; width:352px; border-top:1px solid rgba(255,255,255,0.1);"></div>
 
-    <div class="abs pill" style="left:110px; top:920px; width:428px; height:55px; font-size:calc(20px * var(--font-scale)); font-weight:400; color:var(--text-mouse); gap:12px; padding:0 20px;">
+    <a href="assets/curriculo-celeste-araujo.pdf" target="_blank" rel="noopener" download="Curriculo-Celeste-Araujo.pdf" class="abs nav-item" style="left:100px; top:870px; width:440px; height:43px;">
+      <img class="icon-ring abs" src="assets/icons/icone-alvo.png" alt="" style="left:70px; top:0; width:41px; height:42px;" />
+      <span class="abs" style="left:129px; top:9px; font-size:calc(22px * var(--font-scale)); color:var(--text-dim);">Baixar currículo</span>
+      <span class="abs" style="left:406px; top:8px; width:14px; height:26px;">
+        <img class="seta-normal abs" src="assets/icons/icone-seta-normal.png" style="left:0;top:0;width:14px;height:26px;" alt="" />
+        <img class="seta-hover abs" src="assets/icons/icone-seta-hover.png" style="left:0;top:0;width:14px;height:26px;" alt="" />
+      </span>
+    </a>
+
+    <div class="abs pill" style="left:110px; top:997px; width:428px; height:55px; font-size:calc(20px * var(--font-scale)); font-weight:400; color:var(--text-mouse); gap:12px; padding:0 20px;">
       <img src="assets/icons/icone-mouse.png" alt="" class="mouse-hint-icon" style="width:16px; height:22px;" />
       <span style="opacity:0.3; font-weight:100;">|</span>
       Navegue pelo menu ou role o feed.
@@ -500,8 +688,12 @@
 
 
 <script>
-  const DESIGN_WIDTH = 1920;
-  const CHROME_HEIGHT = 1010;
+  /* embutido na janela da mesa: a régua deixa de ser a tela de 1920 e
+     passa a ser a própria coluna de conteúdo */
+  const EMBUTIDO = new URLSearchParams(location.search).has('embutido');
+  if (EMBUTIDO) document.body.classList.add('embutido');
+  const DESIGN_WIDTH = EMBUTIDO ? 1020 : 1920;
+  const CHROME_HEIGHT = 1090;
   const MIN_SCALE = 0.68;
   const MAX_SCALE = 1;
 
@@ -516,7 +708,8 @@
       return;
     }
     const scaleByWidth = window.innerWidth / DESIGN_WIDTH;
-    const scaleByHeight = window.innerHeight / CHROME_HEIGHT;
+    /* embutido, a janela rola: a altura não precisa caber de uma vez */
+    const scaleByHeight = EMBUTIDO ? Infinity : window.innerHeight / CHROME_HEIGHT;
     const rawScale = Math.min(scaleByWidth, scaleByHeight);
     const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, rawScale));
     document.documentElement.style.setProperty('--scale', scale);
@@ -572,47 +765,52 @@
     }
   });
 
-  /* ===== Tela de carregamento ===== */
+  /* ===== Ligando o computador =====
+     So roda quando a pessoa entra no site. Navegar entre as paginas
+     internas nao liga o computador de novo -- ele ja esta ligado. */
   window.scrollTo(0,0);
-  (function initPreloader(){
+  (function initBoot(){
     const preloader = document.getElementById('preloader');
-    const fill = document.getElementById('preloaderFill');
-    const pct = document.getElementById('preloaderPct');
     const app = document.getElementById('app');
+    if (!preloader) return;
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let progress = 0;
+
+    let jaLigado = false;
+    try { jaLigado = sessionStorage.getItem('pc-ligado') === '1'; } catch(e){}
+
+    /* solta as animacoes que esperam a pagina aparecer (a queda do "Olá") */
+    const mesaPronta = () => document.documentElement.classList.add('mesa-pronta');
+
+    /* ja ligou nesta visita: pula a tela inteira */
+    if (jaLigado){
+      preloader.remove();
+      app.classList.add('is-visible');
+      mesaPronta();
+      return;
+    }
+
+    const DURACAO = reduceMotion ? 260 : 2100;  /* tempo da animacao de boot */
     let pageLoaded = false;
-    let minTimeElapsed = reduceMotion;
+    let tempoOk = false;
 
-    function paint(){
-      fill.style.width = progress + '%';
-      pct.textContent = 'Carregando ' + Math.floor(progress) + '%';
+    function desliga(){
+      if (!(pageLoaded && tempoOk)) return;
+      try { sessionStorage.setItem('pc-ligado', '1'); } catch(e){}
+      preloader.classList.add('is-done');
+      app.classList.add('is-visible');
+      setTimeout(() => { preloader.remove(); mesaPronta(); }, reduceMotion ? 320 : 600);
     }
-    function tick(){
-      if (progress < 90){
-        progress += (90 - progress) * 0.05 + 0.35;
-        if (progress > 90) progress = 90;
-        paint();
-      }
-      if (!(pageLoaded && minTimeElapsed)){ requestAnimationFrame(tick); }
-    }
-    function finish(){
-      progress = 100; paint();
-      setTimeout(() => {
-        preloader.classList.add('is-done');
-        app.classList.add('is-visible');
-        setTimeout(() => { preloader.remove(); }, 650);
-      }, reduceMotion ? 0 : 250);
-    }
-    function checkDone(){ if (pageLoaded && minTimeElapsed) finish(); }
 
-    if (reduceMotion){ progress = 100; paint(); }
-    else {
-      requestAnimationFrame(tick);
-      setTimeout(() => { minTimeElapsed = true; checkDone(); }, 700);
+    setTimeout(() => { tempoOk = true; desliga(); }, DURACAO);
+
+    if (document.readyState === 'complete'){
+      pageLoaded = true; desliga();
+    } else {
+      window.addEventListener('load', () => { pageLoaded = true; desliga(); });
     }
-    if (document.readyState === 'complete'){ pageLoaded = true; checkDone(); }
-    else { window.addEventListener('load', () => { pageLoaded = true; checkDone(); }); }
+    /* rede lenta nao pode prender a pessoa na tela preta */
+    setTimeout(() => { pageLoaded = true; desliga(); }, 6000);
   })();
 
   /* ===== Revelação de conteúdo ao rolar ===== */
@@ -643,23 +841,7 @@
   updateScrollProgress();
 
   /* ===== Glow sutil que acompanha o cursor ===== */
-  (function initCursorGlow(){
-    const glow = document.getElementById('cursorGlow');
-    if (!glow || window.matchMedia('(hover:none), (pointer:coarse)').matches) return;
-    let tx = window.innerWidth / 2, ty = window.innerHeight / 2, gx = tx, gy = ty, active = false;
-    window.addEventListener('mousemove', (e) => {
-      tx = e.clientX; ty = e.clientY;
-      if (!active){ glow.style.opacity = '1'; active = true; }
-    }, { passive: true });
-    document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
-    function loop(){
-      gx += (tx - gx) * 0.12;
-      gy += (ty - gy) * 0.12;
-      glow.style.transform = 'translate(' + gx + 'px, ' + gy + 'px) translate(-50%,-50%)';
-      requestAnimationFrame(loop);
-    }
-    loop();
-  })();
+  
 
   /* ===== Transição suave entre páginas ===== */
   document.querySelectorAll('a[href]').forEach(a => {
