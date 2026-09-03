@@ -821,6 +821,30 @@
   }
   .fita-item:hover .nm{ color:#fff; }
 
+  /* O seletor de idioma. Fica no dock, que é o que sobrou de barra de
+     sistema — num computador de verdade o indicador de teclado mora
+     exatamente aí. Três rótulos, não um menu: com três opções, abrir
+     uma lista custa mais cliques do que mostrar as três. */
+  .dock-idioma{
+    display:flex; align-items:center; gap:1px; margin-left:4px;
+    font-family:'Azeret Mono','Consolas',monospace;
+  }
+  .dock-idioma button{
+    padding:5px 7px; border:none; background:none; cursor:pointer;
+    font-family:inherit; font-size:9.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:rgba(255,255,255,.4);
+    border-radius:5px; transition: color .16s ease, background .16s ease;
+  }
+  .dock-idioma button:hover{ color:rgba(255,255,255,.85); background:rgba(255,255,255,.07); }
+  .dock-idioma button[aria-pressed="true"]{ color:var(--pink-bold); }
+  .dock-idioma button:focus-visible{ outline:2px solid var(--pink-light); outline-offset:1px; }
+  /* aviso de que as descrições longas seguem em português */
+  .so-pt{
+    grid-column:1 / -1; margin:14px 0 0;
+    font-family:'Azeret Mono','Consolas',monospace; font-size:9.5px;
+    letter-spacing:.05em; line-height:1.7; color:rgba(255,255,255,.34);
+  }
+
   /* ---------- dock: só os ícones em linha, sem cápsula ---------- */
   .dock{
     position:absolute; left:50%; transform:translateX(-50%); bottom:24px; z-index:65;
@@ -3001,6 +3025,12 @@ o resto você descobre clicando.
 
     <!-- ---------- dock ---------- -->
     <div class="dock" role="toolbar" aria-label="Atalhos">
+      <span class="dock-idioma" id="dockIdioma" role="group" aria-label="Idioma / Language">
+        <button data-idioma="pt" aria-pressed="true">pt</button>
+        <button data-idioma="en" aria-pressed="false">en</button>
+        <button data-idioma="es" aria-pressed="false">es</button>
+      </span>
+      <span class="dock-sep" aria-hidden="true"></span>
       <button class="dock-item destaque" data-abrir-pasta="elearning" aria-label="Projetos">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round">
           <path d="M3 7.5a2 2 0 0 1 2-2h4.2l1.8 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>
@@ -3104,6 +3134,88 @@ o resto você descobre clicando.
     const win = document.getElementById('win');
     if (!win) return;
 
+    /* ================= IDIOMAS =================
+       Fase 1: a casca do site — pastas, mesa, janela, menus e o painel
+       do resumo. As descrições dos projetos e os rótulos das telas de
+       galeria seguem em português, com um aviso na pasta; são ~250
+       blocos de texto que são a voz profissional dela e não podem sair
+       de tradução automática sem revisão.
+       ========================================== */
+    const IDIOMAS = ['pt', 'en', 'es'];
+    const DIC = {
+      en: {
+        'E-learning':'E-learning', 'Apresentações':'Presentations',
+        'Animação':'Animation', 'Outros':'Other',
+        'projetos':'projects', 'projeto':'project',
+        'itens':'items', 'item':'item',
+        'Projetos':'Projects', 'pasta':'folder',
+        'Resumo profissional':'Résumé', 'Currículo.pdf':'Resume.pdf',
+        'Lixeira':'Trash', 'leiame.txt':'readme.txt',
+        'Buscar projeto…':'Search projects…', 'Arrumar ícones':'Tidy icons',
+        'Preferências…':'Preferences…', 'Sobre a Celeste':'About Celeste',
+        'Bom dia! Que bom te ver por aqui.':'Good morning! Glad you stopped by.',
+        'Boa tarde! Fica à vontade.':'Good afternoon! Make yourself at home.',
+        'Boa noite! Chegou na hora boa.':'Good evening! You came at a good time.',
+        'Ainda acordada? Bem-vinda ao meu computador.':'Still up? Welcome to my computer.',
+        'Sou a Celeste — designer com foco em e-learnings e animadora digital.':
+          'I am Celeste — a designer focused on e-learning and digital animation.',
+        'Lixeira de um designer':'A designer\u2019s trash',
+        'arquivo_final nunca é o arquivo final':'final_file is never the final file',
+        'nome':'name', 'tamanho':'size', 'apagado':'deleted',
+        'itens · 2,9 GB':'items · 2.9 GB',
+        'esvaziar a lixeira não está disponível — eu não consigo apagar nada':
+          'emptying the trash is unavailable — I cannot delete anything',
+        'CLIENTE':'CLIENT', 'PROJETO':'PROJECT', 'ANO':'YEAR', 'CATEGORIA':'CATEGORY',
+        'outros projetos de':'more projects in',
+        'Os materiais desta pasta tratam de temas genéricos de conhecimento comum e/ou retratam situações fictícias.':
+          'The materials in this folder cover generic, common-knowledge topics and/or depict fictional situations.',
+        'produção e configuração por mim':'produced and built by me',
+        'As descrições dos projetos e as legendas das telas seguem em português.':
+          'Project descriptions and screen captions remain in Portuguese.'
+      },
+      es: {
+        'E-learning':'E-learning', 'Apresentações':'Presentaciones',
+        'Animação':'Animación', 'Outros':'Otros',
+        'projetos':'proyectos', 'projeto':'proyecto',
+        'itens':'elementos', 'item':'elemento',
+        'Projetos':'Proyectos', 'pasta':'carpeta',
+        'Resumo profissional':'Currículum', 'Currículo.pdf':'Curriculum.pdf',
+        'Lixeira':'Papelera', 'leiame.txt':'leeme.txt',
+        'Buscar projeto…':'Buscar proyecto…', 'Arrumar ícones':'Ordenar iconos',
+        'Preferências…':'Preferencias…', 'Sobre a Celeste':'Sobre Celeste',
+        'Bom dia! Que bom te ver por aqui.':'¡Buenos días! Qué bueno verte por aquí.',
+        'Boa tarde! Fica à vontade.':'¡Buenas tardes! Ponte cómoda.',
+        'Boa noite! Chegou na hora boa.':'¡Buenas noches! Llegaste en buen momento.',
+        'Ainda acordada? Bem-vinda ao meu computador.':'¿Todavía despierta? Bienvenida a mi computadora.',
+        'Sou a Celeste — designer com foco em e-learnings e animadora digital.':
+          'Soy Celeste — diseñadora enfocada en e-learning y animación digital.',
+        'Lixeira de um designer':'La papelera de una diseñadora',
+        'arquivo_final nunca é o arquivo final':'archivo_final nunca es el archivo final',
+        'nome':'nombre', 'tamanho':'tamaño', 'apagado':'eliminado',
+        'itens · 2,9 GB':'elementos · 2,9 GB',
+        'esvaziar a lixeira não está disponível — eu não consigo apagar nada':
+          'vaciar la papelera no está disponible — no consigo borrar nada',
+        'CLIENTE':'CLIENTE', 'PROJETO':'PROYECTO', 'ANO':'AÑO', 'CATEGORIA':'CATEGORÍA',
+        'outros projetos de':'más proyectos de',
+        'Os materiais desta pasta tratam de temas genéricos de conhecimento comum e/ou retratam situações fictícias.':
+          'Los materiales de esta carpeta tratan temas genéricos de conocimiento común y/o retratan situaciones ficticias.',
+        'produção e configuração por mim':'producción y configuración por mí',
+        'As descrições dos projetos e as legendas das telas seguem em português.':
+          'Las descripciones de los proyectos y los rótulos de las pantallas siguen en portugués.'
+      }
+    };
+    let idioma = (function(){
+      try { return localStorage.getItem('mesa-idioma') || 'pt'; } catch(e){ return 'pt'; }
+    })();
+    /* devolve a tradução, ou o próprio texto quando não há — assim uma
+       chave que falte aparece em português em vez de sumir */
+    function T(txt){
+      if (idioma === 'pt') return txt;
+      const d = DIC[idioma];
+      return (d && d[txt] !== undefined) ? d[txt] : txt;
+    }
+    window.__t = T;
+
     const CATS = {
       elearning:    { nome:'E-learning',    cara:'06', hover:'02', obj:'tela'   },
       apresentacoes:{ nome:'Apresentações', cara:'02', hover:'05', obj:'slide'  },
@@ -3206,18 +3318,18 @@ o resto você descobre clicando.
         const n = porCategoria(id).length;
         return '<button class="mesa-icone" data-chave="' + id + '" data-pasta="' + id + '" data-cara="' + c.cara + '" data-hover="' + c.hover + '">'
           + '<span class="arte">' + svgPasta(c) + '</span>'
-          + '<span class="rotulo">' + c.nome + '</span>'
-          + '<span class="conta">' + n + (n === 1 ? ' projeto' : ' projetos') + '</span>'
+          + '<span class="rotulo">' + T(c.nome) + '</span>'
+          + '<span class="conta">' + n + ' ' + T(n === 1 ? 'projeto' : 'projetos') + '</span>'
           + '</button>';
       }).join('');
 
       const docs =
         '<button class="mesa-icone" data-chave="resumo" data-pagina="resumo-profissional.html?embutido=1" data-titulo="Resumo profissional">'
         + '<span class="arte">' + svgDoc('doc') + '</span>'
-        + '<span class="rotulo">Resumo<br>profissional</span></button>'
+        + '<span class="rotulo">' + T('Resumo profissional').replace(' ', '<br>') + '</span></button>'
         + '<a class="mesa-icone" data-chave="curriculo" href="assets/curriculo-celeste-araujo.pdf" target="_blank" rel="noopener" download="Curriculo-Celeste-Araujo.pdf">'
         + '<span class="arte">' + svgDoc('pdf') + '</span>'
-        + '<span class="rotulo">Currículo.pdf</span></a>';
+        + '<span class="rotulo">' + T('Currículo.pdf') + '</span></a>';
 
       icones.innerHTML = pastas + docs;
 
@@ -3304,12 +3416,20 @@ o resto você descobre clicando.
       if (temCliente){
         const nota = document.createElement('p');
         nota.className = 'pasta-aviso';
-        nota.textContent = 'Os materiais desta pasta tratam de temas genéricos de '
-          + 'conhecimento comum e/ou retratam situações fictícias.';
+        nota.textContent = T('Os materiais desta pasta tratam de temas genéricos de '
+          + 'conhecimento comum e/ou retratam situações fictícias.');
         grade.appendChild(nota);
       }
-      trilha(['Projetos', CATS[cat].nome], cat);
-      meta.textContent = lista.length + (lista.length === 1 ? ' item' : ' itens');
+      /* fora do português, avisa que o texto longo não foi traduzido */
+      if (idioma !== 'pt'){
+        const so = document.createElement('p');
+        so.className = 'so-pt';
+        so.textContent = T('As descrições dos projetos e as legendas das telas '
+          + 'seguem em português.');
+        grade.appendChild(so);
+      }
+      trilha([T('Projetos'), nomeDaCategoria(cat)], cat);
+      meta.textContent = lista.length + ' ' + T(lista.length === 1 ? 'item' : 'itens');
       btVoltar.disabled = true;
       mostrarJanela();
       corpoJan.scrollTop = 0;
@@ -3413,7 +3533,7 @@ o resto você descobre clicando.
     const FERRAMENTA = {
       elearning: 'Articulate Storyline'
     };
-    const CREDITO = 'produção e configuração por mim';
+    const CREDITO = () => T('produção e configuração por mim');
     function porAviso(){
       document.querySelectorAll('.proj-janela .proj-corpo').forEach(function(corpo){
         const p = Array.from(corpo.children).find(function(e){ return e.tagName === 'P'; });
@@ -3428,7 +3548,7 @@ o resto você descobre clicando.
         if (!fer) return;
         const nota = document.createElement('span');
         nota.className = 'aviso-ficcao';
-        nota.innerHTML = '<b>' + fer + '</b> · ' + CREDITO;
+        nota.innerHTML = '<b>' + fer + '</b> · ' + CREDITO();
         p.appendChild(nota);
       });
     }
@@ -3569,7 +3689,7 @@ o resto você descobre clicando.
       fita.className = 'fita tem';
       fita.innerHTML =
         '<div class="fita-cab">'
-        + '<p class="fita-rot">outros projetos de ' + nomeDaCategoria(cat) + '</p>'
+        + '<p class="fita-rot">' + T('outros projetos de') + ' ' + nomeDaCategoria(cat) + '</p>'
         + '<span class="fita-setas">'
         +   '<button data-ir="-1" aria-label="Ver os anteriores">'
         +     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>'
@@ -3607,7 +3727,7 @@ o resto você descobre clicando.
       requestAnimationFrame(medirSetas);
       setTimeout(medirSetas, 260);
     }
-    const nomeDaCategoria = c => (CATS[c] && CATS[c].nome) || c;
+    const nomeDaCategoria = c => T((CATS[c] && CATS[c].nome) || c);
 
     function fecharProjeto(){
       win.classList.remove('curso-aberto');
@@ -3675,6 +3795,39 @@ o resto você descobre clicando.
     tique();
     setInterval(tique, 20000);
 
+    /* Trocar de idioma redesenha o que está na tela em vez de recarregar
+       a página: recarregar apagaria a janela aberta e devolveria a pessoa
+       para a mesa vazia, que é justamente onde ela não estava. */
+    function aplicarIdioma(novo, redesenhar){
+      idioma = novo;
+      try { localStorage.setItem('mesa-idioma', novo); } catch(e){}
+      document.documentElement.lang = novo === 'pt' ? 'pt-BR' : novo;
+      document.querySelectorAll('#dockIdioma button').forEach(b => {
+        b.setAttribute('aria-pressed', String(b.dataset.idioma === novo));
+      });
+      /* o currículo tem um arquivo por idioma; se ainda não existe,
+         o link continua no português em vez de quebrar */
+      const cv = 'assets/curriculo-celeste-araujo'
+        + (novo === 'pt' ? '' : '-' + novo) + '.pdf';
+      document.querySelectorAll('a[href*="curriculo-celeste-araujo"]').forEach(a => {
+        a.dataset.cvPt = a.dataset.cvPt || a.getAttribute('href');
+      });
+      if (!redesenhar) return;
+      montarIcones();
+      if (window.__saudar) window.__saudar();
+      /* as notas de ferramenta já impressas ficariam no idioma antigo */
+      document.querySelectorAll('.aviso-ficcao').forEach(n => n.remove());
+      porAviso();
+      /* devolve a pessoa para onde ela estava */
+      if (projetoAtivo) abrirProjeto(projetoAtivo);
+      else if (pastaAtual) abrirPasta(pastaAtual);
+    }
+    document.getElementById('dockIdioma').addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (b && b.dataset.idioma !== idioma) aplicarIdioma(b.dataset.idioma, true);
+    });
+    aplicarIdioma(idioma, false);
+
     montarIcones();
 
     /* o bloco de comportamentos conversa com a janela por aqui */
@@ -3697,6 +3850,11 @@ o resto você descobre clicando.
     const win  = document.getElementById('win');
     const M    = window.__mesa;
     if (!mesa || !win || !M) return;
+
+    /* Este bloco não enxerga o T do initMesa — são dois fechamentos
+       diferentes. A ponte é o window.__t, que o initMesa já publicou
+       antes daqui rodar. */
+    const M_t = txt => (window.__t ? window.__t(txt) : txt);
 
     const guardar = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
     const lembrar = (k, padrao) => {
@@ -3797,18 +3955,20 @@ o resto você descobre clicando.
     })();
 
     /* ============ 7. a saudação depende da hora ============ */
-    (function saudar(){
+    function saudar(){
       const alvo = document.getElementById('mesaSaudacao');
       if (!alvo) return;
       const h = new Date().getHours();
-      const txt =
-        h < 5  ? 'Boa madrugada — tá acordado até agora?' :
-        h < 12 ? 'Bom dia! Que bom te ver por aqui.' :
-        h < 18 ? 'Boa tarde! Fica à vontade.' :
-        h < 23 ? 'Boa noite! Chegou na hora boa.' :
-                 'Boa madrugada — tá acordado até agora?';
-      alvo.textContent = txt;
-    })();
+      alvo.textContent =
+        h < 5  ? M_t('Ainda acordada? Bem-vinda ao meu computador.') :
+        h < 12 ? M_t('Bom dia! Que bom te ver por aqui.') :
+        h < 18 ? M_t('Boa tarde! Fica à vontade.') :
+        h < 23 ? M_t('Boa noite! Chegou na hora boa.') :
+                 M_t('Ainda acordada? Bem-vinda ao meu computador.');
+    }
+    saudar();
+    /* o seletor de idioma repinta a saudação por aqui */
+    window.__saudar = saudar;
 
     /* ============ 2. arrastar as pastas (posição guardada) ============ */
     /* No celular a mesa é uma coluna que rola, não um tabuleiro: nada de
@@ -3992,12 +4152,12 @@ o resto você descobre clicando.
         ]);
       } else {
         abrirMenu(x, y, [
-          { t:'Buscar projeto…', k:CMD, faz: abrirBusca },
-          { t:'Arrumar ícones', faz: arrumar },
+          { t:__t('Buscar projeto…'), k:CMD, faz: abrirBusca },
+          { t:__t('Arrumar ícones'), faz: arrumar },
           { sep:true },
-          { t:'Preferências…', faz: abrirPrefs },
+          { t:__t('Preferências…'), faz: abrirPrefs },
           { sep:true },
-          { t:'Sobre a Celeste', faz: () => M.abrirResumo() }
+          { t:__t('Sobre a Celeste'), faz: () => M.abrirResumo() }
         ]);
       }
     });
@@ -4443,14 +4603,17 @@ o resto você descobre clicando.
           + '<span class="tam">' + a[2] + '</span><span class="qd">' + a[3] + '</span></div>';
       }).join('');
 
-      M.abrirAvulso('Lixeira',
+      M.abrirAvulso(M_t('Lixeira'),
         '<div class="lix">'
-        + '<h2>Lixeira de um designer</h2>'
-        + '<p class="sub">arquivo_final nunca é o arquivo final</p>'
-        + '<div class="lix-cab"><span>nome</span><span>tamanho</span><span>apagado</span></div>'
+        + '<h2>' + M_t('Lixeira de um designer') + '</h2>'
+        + '<p class="sub">' + M_t('arquivo_final nunca é o arquivo final') + '</p>'
+        + '<div class="lix-cab"><span>' + M_t('nome') + '</span><span>' + M_t('tamanho')
+        + '</span><span>' + M_t('apagado') + '</span></div>'
         + linhas
-        + '<div class="lix-rod"><span>' + LIXO.length + ' itens · 2,9 GB</span>'
-        + '<span class="dir">esvaziar a lixeira não está disponível — eu não consigo apagar nada</span></div>'
+        + '<div class="lix-rod"><span>' + LIXO.length + ' ' + M_t('itens · 2,9 GB') + '</span>'
+        + '<span class="dir">'
+        + M_t('esvaziar a lixeira não está disponível — eu não consigo apagar nada')
+        + '</span></div>'
         + '</div>');
     }
 
