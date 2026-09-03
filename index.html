@@ -467,6 +467,17 @@
     .cs-itens{ grid-template-columns:1fr; }
   }
 
+  /* O aviso de ficção. Vive dentro do <p> da descrição, como bloco, e
+     não como irmão dele: assim entra na altura que o JS já mede para
+     posicionar a tira de vizinhos, sem precisar diagramar mais nada. */
+  .aviso-ficcao{
+    display:block; margin-top:20px; padding-left:13px;
+    box-shadow: inset 2px 0 0 rgba(255,255,255,.16);
+    font-family:'Azeret Mono','Consolas',monospace;
+    font-size:10.5px; letter-spacing:.05em; line-height:1.7;
+    color:rgba(255,255,255,.42); text-transform:none;
+  }
+
   /* ---------- Resumo: painel ---------- */
   .pn{
     height:100%; padding:18px 20px; display:grid; gap:12px;
@@ -1541,19 +1552,8 @@
   .gal-bar button{ pointer-events: auto; }
   .gal-label{ color: #fff; font-weight: 600; letter-spacing: .02em; }
   .gal-count{ color: rgba(255,255,255,0.55); }
-  .gal-download{
-    margin-left: auto; pointer-events: auto;
-    color: rgba(255,255,255,0.75); text-decoration: none;
-    font-size: 13px; letter-spacing: .04em;
-    border: 1px solid rgba(255,255,255,0.22); border-radius: 6px;
-    padding: 4px 10px;
-    transition: color .15s ease, border-color .15s ease;
-  }
-  .gal-download:hover{ color: #fff; border-color: var(--pink-light); }
-  /* Quem empurra para a direita é o primeiro dos dois: o link de
-     download quando existe, senão o próprio botão de ampliar. */
+  /* sem o link de download, quem empurra para a direita é o ampliar */
   .gal-bar > .gal-expand{ margin-left: auto; }
-  .gal-download ~ .gal-expand{ margin-left: 0; }
   /* Barra de progresso dos itens em video. Fica acima da gal-bar e
      aparece so quando a tela atual e um video. */
   .gal-progresso{
@@ -2027,8 +2027,6 @@
           <div class="gal-bar">
             <span class="gal-label">Capa</span>
             <span class="gal-count">1 / 11</span>
-            <a class="gal-download" href="assets/missao-seja-um-estrategista.pdf" target="_blank" rel="noopener"
-               download="Missao-Seja-um-Estrategista-telas.pdf" title="Baixar as telas em PDF">PDF &darr;</a>
             <button class="gal-expand" aria-label="Ampliar tela">&#9974;</button>
           </div>
         </div>
@@ -3265,6 +3263,23 @@ o resto você descobre clicando.
       f.style.fontSize = '';
       f.querySelectorAll(':scope > img').forEach(i => i.style.display = '');
     }
+
+    /* Todo projeto ganha a mesma nota de rodapé: o que está na tela é
+       demonstração, não caso real de cliente. Entra no fim da descrição
+       de cada um, uma vez só. */
+    const AVISO = 'Este material trata de temas genéricos e retrata '
+                + 'situações fictícias.';
+    function porAviso(){
+      document.querySelectorAll('.proj-janela .proj-corpo').forEach(function(corpo){
+        const p = Array.from(corpo.children).find(function(e){ return e.tagName === 'P'; });
+        if (!p || p.querySelector('.aviso-ficcao')) return;
+        const nota = document.createElement('span');
+        nota.className = 'aviso-ficcao';
+        nota.textContent = AVISO;
+        p.appendChild(nota);
+      });
+    }
+    porAviso();
 
     function pecas(corpo){
       const f = Array.from(corpo.children);
