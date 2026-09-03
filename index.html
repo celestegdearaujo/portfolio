@@ -1635,26 +1635,39 @@
      com faixa lateral. */
   .gal-img.is-retrato, .gal-video.is-retrato{ object-fit: contain; }
 
+  /* As setas do cartão saíram. Elas existiam quando eram a única forma
+     de navegar; com a trilha no topo — que mostra onde você está e leva
+     a qualquer tela num clique — viraram a terceira maneira de fazer a
+     mesma coisa, cobrindo a arte e disputando o rosa com a própria
+     trilha. Continuam existindo o teclado e o arraste.
+     Ficam no DOM, invisíveis: o JS ainda as usa como alvo de clique
+     programático e o leitor de tela ainda as anuncia. */
   .gal-nav{
-    position: absolute; top: 50%;
-    width: 54px; height: 54px; border-radius: 50%;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.18);
-    color: #fff; font-size: 30px; line-height: 1; padding-bottom: 4px;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 3; cursor: pointer;
-    /* ficavam invisíveis até o hover: a galeria parecia uma imagem
-       estática e ninguém descobria que dava pra navegar */
-    opacity: .55;
-    transform: translateY(-50%);
-    transition: opacity .25s ease, background .2s ease, border-color .2s ease;
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 1px; height: 1px; padding: 0; margin: 0; border: 0;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+    background: none; color: transparent; z-index: 3; cursor: pointer;
   }
-  .gallery-card:hover .gal-nav,
-  .gal-nav:focus-visible{ opacity: 1; }
-  .gal-nav:hover{ background: var(--pink-bold); border-color: var(--pink-bold); color: #000; }
-  .gal-nav[disabled]{ opacity: 0 !important; pointer-events: none; }
+  .gal-nav:focus-visible{
+    width: 44px; height: 44px; clip-path: none; overflow: visible;
+    border-radius: 8px; color: #fff; font-size: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(10,9,13,.85);
+    box-shadow: inset 0 0 0 2px var(--pink-light);
+  }
   .gal-prev{ left: 18px; }
   .gal-next{ right: 18px; }
+  /* a dica de que dá pra navegar, já que não há mais botão visível */
+  .gal-dica{
+    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    z-index: 3; pointer-events: none;
+    font-family: 'Azeret Mono','Consolas',monospace; font-size: 9px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(255,255,255,.28);
+    opacity: 0; transition: opacity .25s ease;
+  }
+  .gallery-card:hover .gal-dica{ opacity: 1; }
+  @media (max-width: 900px){ .gal-dica{ display: none; } }
 
   /* A trilha: um segmento por tela, no topo do cartão. Diz onde você
      está no espaço, e não em número, e cada segmento é um atalho — pra
@@ -1788,14 +1801,17 @@
   }
   .gal-lb-bar .gal-lb-nav:first-child{ grid-column: 1; grid-row: 1 / span 2; }
   .gal-lb-bar .gal-lb-nav:last-child{ grid-column: 3; grid-row: 1 / span 2; }
+  /* No ampliado as setas ficam — ali elas não cobrem arte, moram na
+     barra. Mas perdem o círculo: fio e glifo, como o resto do site. */
   .gal-lb-nav{
-    width: 44px; height: 44px; border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06);
-    color: #fff; font-size: 24px; line-height: 1; padding-bottom: 3px;
+    width: 34px; height: 34px; border: none; background: none;
+    color: rgba(255,255,255,.6); font-size: 24px; line-height: 1; padding-bottom: 3px;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
-    transition: background .2s ease, border-color .2s ease;
+    border-radius: 8px;
+    transition: color .18s ease, background .18s ease;
   }
-  .gal-lb-nav:hover{ background: var(--pink-bold); border-color: var(--pink-bold); color: #000; }
+  .gal-lb-nav:hover{ color: var(--pink-light); background: rgba(255,255,255,.07); }
+  .gal-lb-nav:focus-visible{ outline: 2px solid var(--pink-light); outline-offset: 1px; }
   #galLightboxClose{
     position: absolute; top: 22px; right: 26px;
     width: 44px; height: 44px; border-radius: 50%;
@@ -5309,6 +5325,14 @@ o resto você descobre clicando.
 
     /* a trilha nasce aqui e não no HTML: são dez galerias, e o número
        de segmentos é o tamanho de cada uma */
+    /* sem seta visível, a dica conta que dá pra navegar — some no toque,
+       onde o gesto de arrastar já é a expectativa */
+    const dica = document.createElement('span');
+    dica.className = 'gal-dica';
+    dica.setAttribute('aria-hidden', 'true');
+    dica.textContent = '← → ou arraste';
+    card.appendChild(dica);
+
     const trilha = document.createElement('div');
     trilha.className = 'gal-trilha';
     trilha.innerHTML = telas.map((tela, n) =>
@@ -5453,6 +5477,7 @@ o resto você descobre clicando.
        contador "1 / 1" é ruído. */
     if (telas.length < 2){
       trilha.style.display = 'none';
+      dica.style.display = 'none';
       card.querySelector('.gal-prev').style.display = 'none';
       card.querySelector('.gal-next').style.display = 'none';
       count.style.display = 'none';
