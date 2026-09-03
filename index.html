@@ -3070,7 +3070,7 @@
         <span class="nome">leiame.txt</span>
         <button class="lei-x" id="leiameFechar" title="Fechar" aria-label="Fechar leiame.txt">✕</button>
       </div>
-      <div class="lei-corpo"><b>oi, esse é o meu computador.</b>
+      <div class="lei-corpo" id="leiameCorpo"><b>oi, esse é o meu computador.</b>
 fica à vontade pra abrir tudo —
 nada aqui quebra, e a lixeira
 tem coisa que não deu certo.
@@ -3230,6 +3230,13 @@ o resto você descobre clicando.
           'I am Celeste — a designer focused on e-learning and digital animation.',
         'SOBRE_HTML': 'I am <span class="destaque">Celeste</span> — a designer focused on '
                     + 'e-learning and digital animation.',
+        'LEIAME_HTML': '<b>hi, this is my computer.</b>\n'
+          + 'make yourself at home — nothing\n'
+          + 'here breaks, and the trash has\n'
+          + 'the things that did not work out.\n\n'
+          + 'the four folders are the projects.\n'
+          + 'the rest you find by clicking.\n\n'
+          + '— celeste',
         'Lixeira de um designer':'A designer\u2019s trash',
         'arquivo_final nunca é o arquivo final':'final_file is never the final file',
         'nome':'name', 'tamanho':'size', 'apagado':'deleted',
@@ -3262,6 +3269,13 @@ o resto você descobre clicando.
           'Soy Celeste — diseñadora enfocada en e-learning y animación digital.',
         'SOBRE_HTML': 'Soy <span class="destaque">Celeste</span> — diseñadora enfocada en '
                     + 'e-learning y animación digital.',
+        'LEIAME_HTML': '<b>hola, esta es mi computadora.</b>\n'
+          + 'ponte cómoda — aquí nada se\n'
+          + 'rompe, y la papelera tiene\n'
+          + 'cosas que no salieron bien.\n\n'
+          + 'las cuatro carpetas son los proyectos.\n'
+          + 'el resto lo descubres haciendo clic.\n\n'
+          + '— celeste',
         'Lixeira de um designer':'La papelera de una diseñadora',
         'arquivo_final nunca é o arquivo final':'archivo_final nunca es el archivo final',
         'nome':'nombre', 'tamanho':'tamaño', 'apagado':'eliminado',
@@ -3288,6 +3302,7 @@ o resto você descobre clicando.
       return (d && d[txt] !== undefined) ? d[txt] : txt;
     }
     window.__t = T;
+    window.__cv = () => pintarCv();
 
     const CATS = {
       elearning:    { nome:'E-learning',    cara:'06', hover:'02', obj:'tela'   },
@@ -3868,6 +3883,35 @@ o resto você descobre clicando.
     tique();
     setInterval(tique, 20000);
 
+    /* O currículo tem um arquivo por idioma. Todo link para ele — o ícone
+       da mesa, o dock e o botão do painel — aponta para a versão do idioma
+       escolhido, e o nome do arquivo baixado acompanha.
+       Roda DEPOIS de qualquer redesenho: elemento recriado nasce com o
+       caminho do template, que é o português. */
+    function pintarCv(){
+      const cv = 'assets/curriculo-celeste-araujo'
+        + (idioma === 'pt' ? '' : '-' + idioma) + '.pdf';
+      const nome = 'Celeste-Araujo-'
+        + (idioma === 'en' ? 'Resume' : idioma === 'es' ? 'Curriculum' : 'Curriculo')
+        + '.pdf';
+      document.querySelectorAll('a[href*="curriculo-celeste-araujo"]').forEach(a => {
+        a.setAttribute('href', cv);
+        if (a.hasAttribute('download')) a.setAttribute('download', nome);
+      });
+    }
+
+    /* O leiame é texto pré-formatado com um cursor piscando no fim. O
+       cursor é um <span> irmão do texto, então reescrevo só o texto e
+       recoloco o cursor. O original fica guardado em data-pt. */
+    function pintarLeiame(){
+      const el = document.getElementById('leiameCorpo');
+      if (!el) return;
+      const cursor = el.querySelector('.lei-cursor');
+      const marca = cursor ? cursor.outerHTML : '';
+      if (!el.dataset.pt) el.dataset.pt = el.innerHTML.replace(marca, '');
+      el.innerHTML = (idioma === 'pt' ? el.dataset.pt : T('LEIAME_HTML')) + marca;
+    }
+
     /* Trocar de idioma redesenha o que está na tela em vez de recarregar
        a página: recarregar apagaria a janela aberta e devolveria a pessoa
        para a mesa vazia, que é justamente onde ela não estava. */
@@ -3878,13 +3922,7 @@ o resto você descobre clicando.
       document.querySelectorAll('#dockIdioma button').forEach(b => {
         b.setAttribute('aria-pressed', String(b.dataset.idioma === novo));
       });
-      /* o currículo tem um arquivo por idioma; se ainda não existe,
-         o link continua no português em vez de quebrar */
-      const cv = 'assets/curriculo-celeste-araujo'
-        + (novo === 'pt' ? '' : '-' + novo) + '.pdf';
-      document.querySelectorAll('a[href*="curriculo-celeste-araujo"]').forEach(a => {
-        a.dataset.cvPt = a.dataset.cvPt || a.getAttribute('href');
-      });
+      pintarCv();
       const sobre0 = document.getElementById('mesaSobre');
       if (sobre0){
         sobre0.dataset.pt = sobre0.dataset.pt || sobre0.innerHTML;
@@ -3892,6 +3930,7 @@ o resto você descobre clicando.
       }
       const rot0 = document.getElementById('lixeiraRotulo');
       if (rot0) rot0.textContent = T('Lixeira');
+      pintarLeiame();
       if (!redesenhar) return;
       montarIcones();
       if (window.__saudar) window.__saudar();
@@ -3903,12 +3942,14 @@ o resto você descobre clicando.
       }
       const rotLixo = document.getElementById('lixeiraRotulo');
       if (rotLixo) rotLixo.textContent = T('Lixeira');
+      pintarLeiame();
       /* as notas de ferramenta já impressas ficariam no idioma antigo */
       document.querySelectorAll('.aviso-ficcao').forEach(n => n.remove());
       porAviso();
       /* devolve a pessoa para onde ela estava */
       if (projetoAtivo) abrirProjeto(projetoAtivo);
       else if (pastaAtual) abrirPasta(pastaAtual);
+      pintarCv();
     }
     document.getElementById('dockIdioma').addEventListener('click', e => {
       const b = e.target.closest('button');
@@ -4577,6 +4618,7 @@ o resto você descobre clicando.
       if (g) g.style.height = '100%';
 
       animarPainel();
+      if (window.__cv) window.__cv();
     }
 
     /* A entrada dos dados. Os cartões e os chips são CSS puro; as barras e
@@ -4828,6 +4870,7 @@ o resto você descobre clicando.
       });
     } else {
       soltarDaGrade();
+      pintarCv();
     }
   })();
 
