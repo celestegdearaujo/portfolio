@@ -2116,7 +2116,7 @@
       <!-- ===== CURSO 7: MISSÃO SEJA UM ESTRATEGISTA (card com PDF) === -->
       <!-- posição/tamanho definidos ao abrir como janela (ver initHub) -->
       <!-- ============================================================ -->
-      <div id="course-7" class="abs card-panel course-card proj-janela" data-category="elearning" data-year="2026" data-order="7" data-title="Missão: Seja um Estrategista" style="left:450px; top:70px; width:1020px; display:none;">
+      <div id="course-7" class="abs card-panel course-card proj-janela" data-category="outros" data-ferramenta="Figma" data-year="2026" data-order="7" data-title="Missão: Seja um Estrategista" style="left:450px; top:70px; width:1020px; display:none;">
         <div class="proj-titlebar" data-hub-drag>
           <span class="hub-icone-mini">🗂️</span>
           <span class="hub-nome">Missão: Seja um Estrategista</span>
@@ -3388,7 +3388,9 @@ o resto você descobre clicando.
                 + 'comum e/ou retrata situações fictícias.';
     /* A ferramenta por categoria, e o crédito de quem produziu. Só
        entram nas categorias em que a ferramenta é conhecida — inventar
-       ferramenta num portfólio é pior do que não dizer nada. */
+       ferramenta num portfólio é pior do que não dizer nada.
+       Um projeto pode declarar a sua em data-ferramenta, e essa vence:
+       nem toda peça de uma pasta sai da mesma ferramenta. */
     const FERRAMENTA = {
       elearning: 'Articulate Storyline'
     };
@@ -3398,7 +3400,7 @@ o resto você descobre clicando.
         const p = Array.from(corpo.children).find(function(e){ return e.tagName === 'P'; });
         if (!p || p.querySelector('.aviso-ficcao')) return;
         const proj = corpo.closest('.proj-janela');
-        const fer  = proj && FERRAMENTA[proj.dataset.category];
+        const fer  = proj && (proj.dataset.ferramenta || FERRAMENTA[proj.dataset.category]);
         /* o aviso de ficção é sobre material de cliente. Em projeto
            autoral não há cliente para proteger, e a nota só polui. */
 
