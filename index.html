@@ -3503,6 +3503,7 @@ o resto você descobre clicando.
     document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharListaPastas(); });
 
     function abrirPasta(cat){
+      window.__vista = { tipo:'pasta', cat: cat };
       pastaAtual = cat;
       fecharProjeto();
       const lista = porCategoria(cat);
@@ -3764,6 +3765,7 @@ o resto você descobre clicando.
     }
 
     function abrirProjeto(card){
+      window.__vista = { tipo:'projeto', id: card && card.id };
       if (projetoAtivo) projetoAtivo.style.display = 'none';
       projetoAtivo = card;
       card.classList.add('in-view'); /* sem isso ficaria opacity:0, herança do scroll-reveal antigo */
@@ -3851,6 +3853,7 @@ o resto você descobre clicando.
       if (projetoAtivo && pastaAtual) abrirPasta(pastaAtual);
     }
     function fecharJanela(){
+      window.__vista = null;
       fecharListaPastas();
       win.classList.remove('aberta', 'maximizada', 'minimizada', 'solta');
       win.style.cssText = '';
@@ -3993,6 +3996,15 @@ o resto você descobre clicando.
       if (rot0) rot0.textContent = T('Lixeira');
       pintarLeiame();
       if (!redesenhar) return;
+      /* Recarrega em vez de repintar. A repintura deixava a janela
+         avulsa aberta no idioma antigo — o estado misturado que a
+         Celeste viu. O que está aberto volta depois do recarregamento. */
+      try {
+        sessionStorage.setItem('mesa-vista',
+          JSON.stringify(window.__vista || null));
+      } catch(e){}
+      location.reload();
+      return;
       montarIcones();
       if (window.__saudar) window.__saudar();
       /* dois textos que vivem no HTML e não passam por nenhum desenho */
@@ -4599,6 +4611,7 @@ o resto você descobre clicando.
 
     /* ---------- O resumo, em painel ---------- */
     function abrirResumo(){
+      window.__vista = { tipo:'resumo' };
       /* a contagem vem dos projetos de verdade, não de um número escrito */
       const cats = [['E-learning','elearning'], ['Apresentações','apresentacoes'],
                     ['Animação','animacao'], ['Outros','outros']];
@@ -4732,6 +4745,7 @@ o resto você descobre clicando.
 
     /* ---------- Preferências: espelha os controles escondidos ---------- */
     function abrirPrefs(){
+      window.__vista = { tipo:'prefs' };
       const clicar = id => { const b = document.getElementById(id); if (b) b.click(); };
       const parede = document.getElementById('parede');
       const TONS = [
@@ -4799,6 +4813,7 @@ o resto você descobre clicando.
       PDF:'#e5252a', MP4:'#ff6b9d', PNG:'#7ed957', FIG:'#a259ff', ASE:'#ffd166' };
 
     function abrirLixeira(){
+      window.__vista = { tipo:'lixeira' };
       const linhas = LIXO.map(function(a){
         return '<div class="lix-ln"><span class="nm">'
           + '<span class="ic" style="background:' + (CORES_ARQ[a[1]] || '#888') + '">' + a[1] + '</span>'
@@ -4919,6 +4934,28 @@ o resto você descobre clicando.
 
     window.__mesa.abrirPrefs = abrirPrefs;
     window.__mesa.abrirResumo = abrirResumo;
+
+    /* Reabre o que estava na tela antes da troca de idioma. Roda no fim
+       de tudo, quando as duas metades do site já existem. */
+    (function voltarPraVista(){
+      let v = null;
+      try {
+        v = JSON.parse(sessionStorage.getItem('mesa-vista') || 'null');
+        sessionStorage.removeItem('mesa-vista');
+      } catch(e){ return; }
+      if (!v || !v.tipo) return;
+      const abrir = {
+        pasta:   function(){ if (v.cat) M.abrirPasta(v.cat); },
+        projeto: function(){
+          const p = v.id && document.getElementById(v.id);
+          if (p) M.abrirProjeto(p);
+        },
+        resumo:  function(){ abrirResumo(); },
+        lixeira: function(){ abrirLixeira(); },
+        prefs:   function(){ abrirPrefs(); }
+      }[v.tipo];
+      if (abrir) requestAnimationFrame(function(){ try { abrir(); } catch(e){} });
+    })();
 
     /* som ao fechar a janela pelo ✕ */
     document.getElementById('winFechar').addEventListener('click', somFechar);
