@@ -3199,6 +3199,11 @@ o resto você descobre clicando.
      1020px de largura; aqui ele é reduzido por transform pra caber na
      janela, sem reescrever nada de dentro dos projetos.
      ================================================================ */
+  /* O tradutor visível de qualquer lugar do arquivo. O T de verdade vive
+     dentro do initMesa, que publica a si mesmo em window.__t; este é o
+     atalho para os blocos que rodam fora daquele fechamento. */
+  function __tr(txt){ return window.__t ? window.__t(txt) : txt; }
+
   (function initMesa(){
     const win = document.getElementById('win');
     if (!win) return;
@@ -3244,6 +3249,7 @@ o resto você descobre clicando.
         'esvaziar a lixeira não está disponível — eu não consigo apagar nada':
           'emptying the trash is unavailable — I cannot delete anything',
         'CLIENTE':'CLIENT', 'PROJETO':'PROJECT', 'ANO':'YEAR', 'CATEGORIA':'CATEGORY',
+        'Ir para a tela':'Go to screen', 'Tela':'Screen',
         'outros projetos de':'more projects in',
         'Os materiais desta pasta tratam de temas genéricos de conhecimento comum e/ou retratam situações fictícias.':
           'The materials in this folder cover generic, common-knowledge topics and/or depict fictional situations.',
@@ -3283,6 +3289,7 @@ o resto você descobre clicando.
         'esvaziar a lixeira não está disponível — eu não consigo apagar nada':
           'vaciar la papelera no está disponible — no consigo borrar nada',
         'CLIENTE':'CLIENTE', 'PROJETO':'PROYECTO', 'ANO':'AÑO', 'CATEGORIA':'CATEGORÍA',
+        'Ir para a tela':'Ir a la pantalla', 'Tela':'Pantalla',
         'outros projetos de':'más proyectos de',
         'Os materiais desta pasta tratam de temas genéricos de conhecimento comum e/ou retratam situações fictícias.':
           'Los materiales de esta carpeta tratan temas genéricos de conocimiento común y/o retratan situaciones ficticias.',
@@ -3291,6 +3298,17 @@ o resto você descobre clicando.
           'Las descripciones de los proyectos y los rótulos de las pantallas siguen en portugués.'
       }
     };
+    /* As descrições dos projetos, por idioma. Guardadas por id de
+       projeto e não pelo texto: o texto é longo e tem marcação de
+       destaque no meio, e casar por texto quebraria a cada revisão. */
+    const DESC = {
+      en: {"course-7":"Interface design for a course built as a mission, where the learner advances through a city-map, unlocking territories at each stage. The system covers cover screen, menus, submenus, highlight screens in light and dark versions, cards and carousel — all from a single futuristic HUD language, with score, progress and navigation always in view.","course-8":"Onboarding deck for managers newly arrived in the segment, built on the Santander Empresas identity: red and cream, hand-drawn type in the highlights and the brand flame used as a mask over the portraits. The system resolves cover, contents, module dividers, network and territory diagrams, timeline and closing.","course-9":"In-person training for relationship managers, with art direction far more dramatic than the onboarding: absolute black, incandescent red and high-contrast photography. Objects staged in each scene — a compass, a chess king, a dartboard, a lightbulb — carry the idea of each block without needing text.","course-11":"A four-module training programme for micro-entrepreneurs, with its own visual system inside the Santander universe: textured paper background, photo cut-outs with rounded corners and a yellow stroke that works as a highlight mark. The screens here come from all four modules, chosen to show the system without repeating structure.","course-10":"Team building material for GOL, in a teal and white palette that steps away from the corporate red of the other projects. The composition uses circular cut-outs over photography and the wing symbol as a rhythm element between sections. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Every screen is animated — which is why each gallery item is a video, not a still.\u003c/em>","course-12":"Support material for a supervisor training programme: pre-work, mind map and checklist. The identity is a deep blue with gradient and streaks of light, and each piece resolves a different format — the mind map in landscape, for reading on screen; the checklist in A4 portrait, to print and tick by hand.","course-13":"A course on the bank’s rewards programme, built around service cases: the learner takes on the manager’s role and answers customer messages, choosing between options that change where the conversation goes. The recording shows the full path — opening, content, the branching dialogues and the closing with feedback.","course-14":"A fire safety course built entirely in the language of social media: every screen is a post, with likes, comments and hashtags, and the learner scrolls the feed following Alex discover first-hand why what you do when an alarm goes off decides the outcome. The format turns a dry mandatory-training subject into something you read without effort.","course-15":"A training path for ramp staff, in orange and teal over photography of real operations. The course covers accessibility and wheelchair handling, hold loading and the aircraft’s centre of gravity, alternating explanatory screens with drag-and-choose interactions. Same client as the Team Building, with a very different visual identity.","course-19":"A finance business case built as a game: the learner enters Banco Ouri Finance and advances through a scored mission, with a points-and-lives HUD always in view, scoreboard screens that celebrate or penalise each choice, puzzle pieces that lock in with every correct answer and medals at the close. Art direction is neon red on black, with glow and reflection treated as material. \u003cem style=\"font-style:normal; color:var(--pink-light);\">One of the items is a recorded run of the course, with the quiz and scoring loop.\u003c/em>","course-20":"The document Revvo sends when inviting a freelancer onto a project: it lays out the brief, the deadline and the fee, and closes with the invoicing and confidentiality terms. The challenge was making a contractual document read like an invitation — hence the black with an orange-to-blue gradient in the header bands, which gives presence without costing legibility. \u003cem style=\"font-style:normal; color:var(--pink-light);\">It is a blank template: the fields come filled with XXXX.\u003c/em>","course-21":"Digital collage: impossible scenes assembled from unrelated photographs, where the work is in making parts that never met look like they share the same light. Cutting out, blending edges, colour correction per layer and shadow painted by hand. \u003cspan class=\"pink-bold\">This is where I train my eye on what does not exist yet.\u003c/span>","course-18":"Aircraft performance training for flight dispatchers — 101 slides, of which these 18 show the system. The material solves a hard design problem: explaining gradient calculation, obstacle limits and take-off speeds without becoming a textbook. It uses isometric aircraft, trajectory diagrams, runway illustration and 3D terrain visualisation, all tied together by chapter dividers in orange and teal.","course-17":"Two cabin safety trainings for crew — first aid and emergency teams — sharing one visual system: warm orange over operational photography, circular cut-outs and line icons. The challenge here is the opposite of the usual: a technical, regulatory subject that has to stay legible under pressure without turning into a dry manual.","course-16":"A course on complaint management at Reclame Aqui: what the platform is, how a consumer moves through the journey of a complaint and how a company answers within the deadline. It is built entirely as road navigation — the learner chooses which way to go by clicking the speech bubbles — and closes with a recap quiz. The customer-reply texts appear as templates, with the name as a placeholder.","course-2":"A hands-on, dynamic and interactive learning journey through the Gluon Universe. On a space mission across orbital bases and planets, participants explore what the platform is, its benefits and how it connects people, processes and technology. Videos, infographics and challenges make complex content lighter, more visual and more engaging.","course-3":"A character design study for the animated series Burnout Academy: from defining the concept and the colour palette through to the full model sheet, the facial expressions and Bob’s colour key — a nerdy, anxious, perfectionist teenager trying to survive his own school-corporate universe.","course-4":"An environment study starting from Bob’s bedroom: from the character description and his inner conflict through to building the space, with a wide shot, a high-angle view and a single vanishing point. The scene “Leaving On Time — Attempt #37” translates the character’s anxiety and perfectionism through the objects in the room, from the noticeboard to the sticky notes and the bin full of discarded ideas.","course-5":"The series bible for the original show Burnout Academy, a satirical comedy about an elite school that turns teenagers into miniature executives. The document brings together premise, tone, narrative universe, character profiles, market viability and the full production pipeline for a 2D cut-out series aimed at a young-adult audience.","course-6":"An animation test exploring movement, timing and character expressiveness within the 2D aesthetic. A hands-on exercise in acting and lipsync applied to the visual style proposed for the project."},
+      es: {"course-7":"Diseño de interfaz de un curso en formato de misión, donde el participante avanza por una ciudad-mapa desbloqueando territorios en cada etapa. El sistema cubre portada, menús, submenús, pantallas de destaque en versión clara y oscura, tarjetas y carrusel — todo partiendo de un mismo lenguaje de HUD futurista, con puntuación, progreso y navegación siempre visibles.","course-8":"Presentación de integración para gerentes recién llegados al segmento, construida sobre la identidad de Santander Empresas: rojo y crema, tipografía de trazo manual en los destaques y la llama de la marca usada como máscara en los retratos. El sistema resuelve portada, sumario, divisores de módulo, diagramas de red y territorio, línea de tiempo y cierre.","course-9":"Formación presencial para gerentes de relación, con una dirección de arte bastante más dramática que la del onboarding: negro absoluto, rojo incandescente y fotografía de alto contraste. Objetos en escena — brújula, rey de ajedrez, diana con dardos, bombilla — cargan la idea de cada bloque sin necesitar texto.","course-11":"Programa de formación en cuatro módulos para microemprendedores, con un sistema visual propio dentro del universo Santander: fondo de papel texturizado, recortes de foto con esquinas redondeadas y un trazo amarillo que funciona como marca de destaque. Las pantallas aquí vienen de los cuatro módulos, elegidas para mostrar el sistema sin repetir estructura.","course-10":"Material de team building para GOL, en una paleta de verde azulado y blanco que se aleja del rojo corporativo de los otros proyectos. La composición usa recortes circulares sobre fotografía y el símbolo del ala como elemento de ritmo entre las secciones. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Todas las pantallas tienen animación — por eso cada elemento de la galería es un video, no una imagen fija.\u003c/em>","course-12":"Materiales de apoyo de un programa de capacitación de supervisores: pre-work, mapa mental y checklist. La identidad es un azul profundo con degradado y trazos de luz, y cada pieza resuelve un formato diferente — el mapa mental en horizontal, para leer en pantalla; el checklist en A4 vertical, para imprimir y marcar a mano.","course-13":"Curso sobre el programa de recompensas del banco, construido en torno a casos de atención: el participante asume el papel de la gerente y responde a mensajes de clientes, eligiendo entre alternativas que cambian el rumbo de la conversación. La grabación muestra el recorrido completo — apertura, contenido, los diálogos con decisión y el cierre con feedback.","course-14":"Curso de seguridad contra incendios construido enteramente en el lenguaje de las redes sociales: cada pantalla es un post, con likes, comentarios y hashtags, y el participante recorre el feed acompañando a Alex descubrir en la práctica por qué la actitud ante una alarma decide el desenlace. La elección de formato convierte un tema árido de formación obligatoria en algo que se lee sin esfuerzo.","course-15":"Itinerario de formación para el personal de rampa, en naranja y verde azulado sobre fotografía de operación real. El curso cubre accesibilidad y manejo de sillas de ruedas, carga en la bodega y centro de gravedad de la aeronave, alternando pantallas explicativas con interacciones de arrastrar y elegir. Es el mismo cliente del Team Building, con una identidad visual muy diferente.","course-19":"Business case de finanzas construido como juego: el participante entra en el Banco Ouri Finance y avanza por una misión puntuada, con HUD de puntos y vidas siempre visible, pantallas de marcador que celebran o penalizan la elección, piezas de rompecabezas que encajan con cada acierto y medallas en el cierre. La dirección de arte es rojo neón sobre negro, con brillo y reflejo tratados como material. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Uno de los elementos es un fragmento grabado del curso funcionando, con el ciclo de quiz y puntuación.\u003c/em>","course-20":"Documento que Revvo envía al invitar a un freelance a un proyecto: presenta la demanda, el plazo y el importe, y cierra con las condiciones de facturación y confidencialidad. El desafío era hacer que un documento contractual pareciera una invitación — de ahí el negro con degradado de naranja a azul en las franjas de cabecera, que da presencia sin quitar legibilidad. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Es una plantilla en blanco: los campos vienen rellenados con XXXX.\u003c/em>","course-21":"Collage digital: escenas imposibles montadas a partir de fotos sueltas, donde el trabajo está en hacer que partes que nunca se encontraron parezcan de la misma luz. Recorte, mezcla de bordes, corrección de color por capa y sombra pintada a mano. \u003cspan class=\"pink-bold\">Es donde entreno el ojo para lo que todavía no existe.\u003c/span>","course-18":"Formación de performance de aeronave para despachadores de vuelo — 101 diapositivas, de las cuales estas 18 muestran el sistema. El material resuelve un problema difícil de diseño: explicar cálculo de gradiente, límite de obstáculo y velocidades de despegue sin volverse un manual. Usa isométricos de la aeronave, diagramas de trayectoria, ilustración de pista y visualización 3D de terreno, todo amarrado por divisores de capítulo en naranja y teal.","course-17":"Dos formaciones de seguridad de cabina para tripulantes — primeros auxilios y equipos de emergencia — que comparten el mismo sistema visual: naranja cálido sobre fotografía de operación, recortes circulares e iconos de trazo. El desafío aquí es el opuesto del habitual: tema técnico y normativo, que necesita ser legible bajo presión, sin volverse un manual árido.","course-16":"Curso sobre la gestión de reclamaciones en Reclame Aqui: qué es la plataforma, cómo el consumidor recorre el trayecto de una reclamación y cómo la empresa responde dentro del plazo. La construcción es toda en navegación por carretera — el participante elige por dónde seguir haciendo clic en los globos — y cierra con un quiz de fijación. Los textos de respuesta al cliente aparecen como plantilla, con el nombre como marcador.","course-2":"Un recorrido de aprendizaje práctico, dinámico e interactivo por el Universo Gluon. En una misión espacial por bases orbitales y planetas, los participantes exploran qué es la plataforma, sus beneficios y cómo conecta personas, procesos y tecnología. Los videos, infografías y desafíos vuelven los contenidos complejos más ligeros, visuales y envolventes.","course-3":"Un estudio de creación de personaje para la serie animada Burnout Academy: desde la definición del concepto y la paleta de colores hasta la construcción del model sheet completo, las expresiones faciales y el color key de Bob — un adolescente nerd, ansioso y perfeccionista intentando sobrevivir a su propio universo escolar-corporativo.","course-4":"Estudio de ambientación a partir del cuarto de Bob: desde la descripción del personaje y su conflicto interno hasta la construcción del espacio, con plano general, ángulo en picado y punto de fuga único. La escena «Salir a Tiempo — Intento #37» traduce la ansiedad y el perfeccionismo del personaje a través de los objetos del cuarto, del tablero de notas a los post-its y a la papelera llena de ideas descartadas.","course-5":"Biblia de animación de la serie autoral Burnout Academy, una comedia satírica sobre una escuela de elite que transforma adolescentes en ejecutivos en miniatura. El documento reúne argumento, lenguaje, universo narrativo, perfiles de personajes, viabilidad comercial y cadena de producción completa de una serie 2D cut-out dirigida al público joven-adulto.","course-6":"Prueba de animación explorando movimiento, timing y expresividad de los personajes dentro de la estética 2D. Un ejercicio práctico de actuación y lipsync aplicado al estilo visual propuesto para el proyecto."}
+    };
+
+    /* Os rótulos das telas de galeria: [inglês, espanhol]. */
+    const ROTULOS = {"Capa":["Cover","Portada"],"Preencher nome":["Enter name","Escribir nombre"],"Subtela":["Subscreen","Subpantalla"],"Menu — mapa estratégico":["Menu — strategic map","Menú — mapa estratégico"],"Menu — introdução":["Menu — introduction","Menú — introducción"],"Submenu":["Submenu","Submenú"],"Tela escura":["Dark screen","Pantalla oscura"],"Destaque claro":["Light highlight","Destaque claro"],"Destaque escuro":["Dark highlight","Destaque oscuro"],"Cards":["Cards","Tarjetas"],"Carrossel":["Carousel","Carrusel"],"Abertura":["Opening","Apertura"],"Sumário":["Contents","Sumario"],"Divisor de módulo":["Module divider","Divisor de módulo"],"Nossa missão":["Our mission","Nuestra misión"],"Rede de apoio":["Support network","Red de apoyo"],"Linha do tempo":["Timeline","Línea de tiempo"],"Etapas da visita":["Visit stages","Etapas de la visita"],"Ecossistema de produtos":["Product ecosystem","Ecosistema de productos"],"Recursos comerciais":["Sales resources","Recursos comerciales"],"Encerramento":["Closing","Cierre"],"Quebra-gelo":["Icebreaker","Rompehielos"],"Alta performance":["High performance","Alto rendimiento"],"Preparação":["Preparation","Preparación"],"Divisor — soluções":["Divider — solutions","Divisor — soluciones"],"Atividade em grupo":["Group activity","Actividad en grupo"],"Divisor — benefícios":["Divider — benefits","Divisor — beneficios"],"Conversão de vendas":["Sales conversion","Conversión de ventas"],"Abertura de caso":["Case opening","Apertura de caso"],"Citação":["Quote","Cita"],"Três tempos":["Three stages","Tres tiempos"],"Agradecimento":["Thank you","Agradecimiento"],"Jornada":["Journey","Recorrido"],"Agenda":["Agenda","Agenda"],"Referência — propósito":["Reference — purpose","Referencia — propósito"],"Gestor e dono":["Manager and owner","Gestor y dueño"],"Cadeia de valor":["Value chain","Cadena de valor"],"Cadeia de valor — Prospera":["Value chain — Prospera","Cadena de valor — Prospera"],"Citação — vendas":["Quote — sales","Cita — ventas"],"O que faz um negócio durar":["What makes a business last","Qué hace que un negocio dure"],"Produtividade":["Productivity","Productividad"],"Fatores":["Factors","Factores"],"Matriz SWOT":["SWOT matrix","Matriz SWOT"],"Pausa":["Break","Pausa"],"Referência — Toyota":["Reference — Toyota","Referencia — Toyota"],"Os cinco porquês":["The five whys","Los cinco porqués"],"Citação — execução":["Quote — execution","Cita — ejecución"],"Visão sistêmica":["Systems thinking","Visión sistémica"],"Cenários":["Scenarios","Escenarios"],"Produtividade — cadeia":["Productivity — chain","Productividad — cadena"],"Matriz GUT":["GUT matrix","Matriz GUT"],"GUT — gravidade":["GUT — severity","GUT — gravedad"],"GUT — tendência":["GUT — trend","GUT — tendencia"],"GUT — resultado":["GUT — result","GUT — resultado"],"GUT — exemplo":["GUT — example","GUT — ejemplo"],"GUT — tabela":["GUT — table","GUT — tabla"],"Agenda — módulo II":["Agenda — module II","Agenda — módulo II"],"Ambidestria":["Ambidexterity","Ambidestreza"],"Matriz e SWOT":["Matrix and SWOT","Matriz y SWOT"],"Canvas":["Canvas","Canvas"],"Proposta de valor":["Value proposition","Propuesta de valor"],"Fechamento — módulo II":["Closing — module II","Cierre — módulo II"],"Referência — pesquisa":["Reference — research","Referencia — investigación"],"Citação — constância":["Quote — consistency","Cita — constancia"],"Barreiras":["Barriers","Barreras"],"Círculo de influência":["Circle of influence","Círculo de influencia"],"Curva da mudança":["Change curve","Curva del cambio"],"Pergunta — gestão":["Question — management","Pregunta — gestión"],"Consolidação":["Consolidation","Consolidación"],"Percurso do curso":["Course walkthrough","Recorrido del curso"],"Lago":["Lake","Lago"],"Aquário":["Aquarium","Acuario"],"Enchente":["Flood","Inundación"],"Céu submerso":["Submerged sky","Cielo sumergido"],"Página 1":["Page 1","Página 1"],"Valores":["Values","Valores"],"Propósito":["Purpose","Propósito"],"Público-alvo":["Target audience","Público objetivo"],"Material integrante":["Included material","Material integrante"],"Capítulo 01":["Chapter 01","Capítulo 01"],"Fatores da performance":["Performance factors","Factores del rendimiento"],"Cadeia de fatores":["Chain of factors","Cadena de factores"],"Fluxo":["Flow","Flujo"],"Soma de fatores":["Sum of factors","Suma de factores"],"Gradiente":["Gradient","Gradiente"],"Cálculo do slope":["Slope calculation","Cálculo de la pendiente"],"Slope positivo":["Positive slope","Pendiente positiva"],"Vento de cauda":["Tailwind","Viento de cola"],"Caso Pinnacle 3701":["Pinnacle 3701 case","Caso Pinnacle 3701"],"Fonte QRH":["QRH source","Fuente QRH"],"Vídeo do instrutor":["Instructor video","Video del instructor"],"Obstacle limit":["Obstacle limit","Obstacle limit"],"Improved Climb":["Improved Climb","Improved Climb"],"Eficiência da decolagem":["Take-off efficiency","Eficiencia del despegue"],"Objetivos":["Objectives","Objetivos"],"Quando usar":["When to use it","Cuándo usarlo"],"Ganho de peso":["Weight gain","Ganancia de peso"],"Primeiros socorros — capa":["First aid — cover","Primeros auxilios — portada"],"Diretrizes":["Guidelines","Directrices"],"Divisor":["Divider","Divisor"],"Trauma":["Trauma","Trauma"],"Diferenciação":["Differentiation","Diferenciación"],"Emergência a bordo":["In-flight emergency","Emergencia a bordo"],"Atuação em equipe":["Working as a team","Actuación en equipo"],"Equipes de emergência — capa":["Emergency teams — cover","Equipos de emergencia — portada"],"Colete":["Life vest","Chaleco"],"Sequência de saída":["Exit sequence","Secuencia de salida"],"Proteção respiratória":["Respiratory protection","Protección respiratoria"],"Verificação pré-voo":["Pre-flight check","Verificación previa al vuelo"],"Pre-work — capa":["Pre-work — cover","Pre-work — portada"],"Pre-work — conteúdo":["Pre-work — content","Pre-work — contenido"],"Mapa mental":["Mind map","Mapa mental"],"Checklist — capa":["Checklist — cover","Checklist — portada"],"Checklist — A4":["Checklist — A4","Checklist — A4"],"Tópicos":["Topics","Temas"],"Etapas":["Stages","Etapas"],"Cronograma":["Schedule","Cronograma"],"Divisor — time":["Divider — team","Divisor — equipo"],"Pergunta":["Question","Pregunta"],"Comunicação":["Communication","Comunicación"],"Divisor — equipe":["Divider — crew","Divisor — tripulación"],"Colaboração":["Collaboration","Colaboración"],"Blocos":["Blocks","Bloques"],"Ciclo":["Cycle","Ciclo"],"Participação":["Participation","Participación"],"Agenda I":["Agenda I","Agenda I"],"Agenda II":["Agenda II","Agenda II"],"Divisor — reflexão":["Divider — reflection","Divisor — reflexión"],"Pergunta final":["Final question","Pregunta final"],"Referência":["Reference","Referencia"],"Interação":["Interaction","Interacción"]};
+
     let idioma = (function(){
       try { return localStorage.getItem('mesa-idioma') || 'pt'; } catch(e){ return 'pt'; }
     })();
@@ -3299,7 +3317,10 @@ o resto você descobre clicando.
     function T(txt){
       if (idioma === 'pt') return txt;
       const d = DIC[idioma];
-      return (d && d[txt] !== undefined) ? d[txt] : txt;
+      if (d && d[txt] !== undefined) return d[txt];
+      const r = ROTULOS[txt];
+      if (r) return idioma === 'en' ? r[0] : r[1];
+      return txt;
     }
     window.__t = T;
     window.__cv = () => pintarCv();
@@ -3508,14 +3529,6 @@ o resto você descobre clicando.
           + 'conhecimento comum e/ou retratam situações fictícias.');
         grade.appendChild(nota);
       }
-      /* fora do português, avisa que o texto longo não foi traduzido */
-      if (idioma !== 'pt'){
-        const so = document.createElement('p');
-        so.className = 'so-pt';
-        so.textContent = T('As descrições dos projetos e as legendas das telas '
-          + 'seguem em português.');
-        grade.appendChild(so);
-      }
       trilha([T('Projetos'), nomeDaCategoria(cat)], cat);
       meta.textContent = lista.length + ' ' + T(lista.length === 1 ? 'item' : 'itens');
       btVoltar.disabled = true;
@@ -3641,7 +3654,6 @@ o resto você descobre clicando.
         p.appendChild(nota);
       });
     }
-    porAviso();
 
     function pecas(corpo){
       const f = Array.from(corpo.children);
@@ -3758,7 +3770,10 @@ o resto você descobre clicando.
       card.style.display = 'block';
       grade.style.display = 'none';
       painel.classList.add('ativo');
-      trilha(['Projetos', CATS[card.dataset.category].nome, card.dataset.title], card.dataset.category);
+      /* o título do projeto não traduz — é nome próprio — mas a raiz e
+         o nome da pasta sim */
+      trilha([T('Projetos'), nomeDaCategoria(card.dataset.category), card.dataset.title],
+             card.dataset.category);
       meta.textContent = card.dataset.year;
       btVoltar.disabled = false;
       mostrarJanela();
@@ -3800,9 +3815,14 @@ o resto você descobre clicando.
       const trilho = fita.querySelector('.fita-trilho');
       const setas  = fita.querySelectorAll('.fita-setas button');
       function medirSetas(){
+        /* a medida chega por rAF e por setTimeout; se o projeto trocar
+           antes de disparar, a tira já foi remontada e o cabeçalho
+           antigo não existe mais */
+        const cab = fita.querySelector('.fita-setas');
+        if (!cab || !trilho.isConnected) return;
         const sobra = trilho.scrollWidth - trilho.clientWidth;
         const cabe  = sobra > 2;
-        fita.querySelector('.fita-setas').style.display = cabe ? 'flex' : 'none';
+        cab.style.display = cabe ? 'flex' : 'none';
         if (!cabe) return;
         setas[0].disabled = trilho.scrollLeft < 4;
         setas[1].disabled = trilho.scrollLeft > sobra - 4;
@@ -3889,6 +3909,46 @@ o resto você descobre clicando.
        escolhido, e o nome do arquivo baixado acompanha.
        Roda DEPOIS de qualquer redesenho: elemento recriado nasce com o
        caminho do template, que é o português. */
+    /* Cada descrição vive num <p> dentro do projeto, e o aviso de
+       ficção é filho desse mesmo <p>. Então guardo o português sem o
+       aviso, troco só o texto, e quem recoloca o aviso é o porAviso(). */
+    /* A ficha de cada projeto — CLIENTE / PROJETO / ANO / CATEGORIA —
+       está escrita direto no HTML de cada um dos vinte. Traduz o rótulo
+       e, no caso da categoria, também o valor, que é nome de pasta.
+       O nome do cliente, o título e o ano ficam como estão: são nome
+       próprio e número. */
+    function pintarFichas(){
+      document.querySelectorAll('.proj-janela .segoe > span').forEach(function(sp){
+        const rot = sp.querySelector('.pink-bold');
+        if (!rot) return;
+        if (!rot.dataset.pt) rot.dataset.pt = rot.textContent.trim();
+        rot.textContent = T(rot.dataset.pt);
+        if (rot.dataset.pt !== 'CATEGORIA') return;
+        const proj = sp.closest('.proj-janela');
+        const no = sp.lastChild;
+        if (proj && no && no.nodeType === 3){
+          no.nodeValue = ' / ' + nomeDaCategoria(proj.dataset.category).toUpperCase();
+        }
+      });
+    }
+
+    function pintarDescricoes(){
+      document.querySelectorAll('.proj-janela').forEach(function(proj){
+        const corpo = proj.querySelector('.proj-corpo');
+        if (!corpo) return;
+        const p = Array.from(corpo.children).find(function(e){ return e.tagName === 'P'; });
+        if (!p) return;
+        if (!p.dataset.pt){
+          const copia = p.cloneNode(true);
+          const av = copia.querySelector('.aviso-ficcao');
+          if (av) av.remove();
+          p.dataset.pt = copia.innerHTML;
+        }
+        const traduzida = idioma !== 'pt' && DESC[idioma] && DESC[idioma][proj.id];
+        p.innerHTML = traduzida || p.dataset.pt;
+      });
+    }
+
     function pintarCv(){
       const cv = 'assets/curriculo-celeste-araujo'
         + (idioma === 'pt' ? '' : '-' + idioma) + '.pdf';
@@ -3945,8 +4005,12 @@ o resto você descobre clicando.
       if (rotLixo) rotLixo.textContent = T('Lixeira');
       pintarLeiame();
       /* as notas de ferramenta já impressas ficariam no idioma antigo */
-      document.querySelectorAll('.aviso-ficcao').forEach(n => n.remove());
+      pintarFichas();
+      pintarDescricoes();
       porAviso();
+      (window.__galerias || []).forEach(function(g){
+        try { g.repintarRotulos(); } catch(e){}
+      });
       /* devolve a pessoa para onde ela estava */
       if (projetoAtivo) abrirProjeto(projetoAtivo);
       else if (pastaAtual) abrirPasta(pastaAtual);
@@ -3959,6 +4023,14 @@ o resto você descobre clicando.
     aplicarIdioma(idioma, false);
 
     montarIcones();
+
+    /* Estas três só podem rodar aqui: pintarFichas depende do
+       nomeDaCategoria, que é const declarada acima mas depois do ponto
+       onde elas estavam — chamada de lá, caía na zona morta e levava o
+       script inteiro com ela. */
+    pintarFichas();
+    pintarDescricoes();
+    porAviso();
 
     /* o bloco de comportamentos conversa com a janela por aqui */
     window.__mesa = Object.assign(window.__mesa || {}, {
@@ -4871,8 +4943,9 @@ o resto você descobre clicando.
       });
     } else {
       soltarDaGrade();
-      pintarCv();
     }
+    /* este bloco não enxerga o pintarCv do initMesa: usa a ponte */
+    if (window.__cv) window.__cv();
   })();
 
 
@@ -5412,7 +5485,7 @@ o resto você descobre clicando.
     trilha.className = 'gal-trilha';
     trilha.innerHTML = telas.map((tela, n) =>
       '<button data-n="' + n + '" aria-label="Ir para a tela ' + (n + 1)
-      + ': ' + tela.label.replace(/"/g, '&quot;') + '"></button>').join('');
+      + ': ' + __tr(tela.label).replace(/"/g, '&quot;') + '"></button>').join('');
     card.appendChild(trilha);
     const segmentos = Array.from(trilha.children);
     trilha.addEventListener('click', e => {
@@ -5471,7 +5544,7 @@ o resto você descobre clicando.
       };
       pre.src = tela.src;
 
-      label.textContent = tela.label;
+      label.textContent = __tr(tela.label);
       count.textContent = (i + 1) + ' / ' + telas.length;
       segmentos.forEach((b, n) => b.classList.toggle('on', n === i));
       marcarTira(i);
@@ -5492,7 +5565,7 @@ o resto você descobre clicando.
           galLightboxImg.classList.remove('is-hidden');
           barraLightbox.esconder();
         }
-        galLightboxLabel.textContent = tela.label;
+        galLightboxLabel.textContent = __tr(tela.label);
         galLightboxCount.textContent = (i + 1) + ' / ' + telas.length;
       }
     }
@@ -5522,6 +5595,25 @@ o resto você descobre clicando.
     }
 
     const api = { ir, montarTira, get indice(){ return i; } };
+
+    /* Trocar de idioma não redesenha a galeria — ela é montada uma vez.
+       Então cada uma se registra sabendo repintar só os seus rótulos,
+       sem recarregar imagem nenhuma. */
+    api.repintarRotulos = function(){
+      label.textContent = __tr(telas[i].label);
+      segmentos.forEach(function(b, n){
+        b.setAttribute('aria-label', __tr('Ir para a tela') + ' ' + (n + 1)
+          + ': ' + __tr(telas[n].label));
+      });
+      if (galAtiva === api){
+        galLightboxLabel.textContent = __tr(telas[i].label);
+        const cx = document.getElementById('galLightboxTira');
+        if (cx) Array.from(cx.children).forEach(function(b, n){
+          b.setAttribute('aria-label', __tr('Tela') + ' ' + (n + 1));
+        });
+      }
+    };
+    (window.__galerias = window.__galerias || []).push(api);
 
     card.querySelector('.gal-prev').addEventListener('click', e => { e.stopPropagation(); ir(i - 1); });
     card.querySelector('.gal-next').addEventListener('click', e => { e.stopPropagation(); ir(i + 1); });
