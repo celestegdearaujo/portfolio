@@ -46,12 +46,6 @@
     background: linear-gradient(180deg, rgba(6,6,8,0.35) 0%, rgba(6,6,8,0.55) 55%, rgba(6,6,8,0.95) 100%);
   }
 
-  #page-scale-antigo{
-
-    position: relative; width: 1920px; height: 1000px; /* altura fixa, definida em DESIGN_HEIGHT no JS */
-    transform-origin: top left; transform: scale(var(--scale)); z-index: 5;
-  }
-
   .abs{ position:absolute; }
   .pink-bold{ color:var(--pink-bold); font-weight:700; }
   .segoe{ font-family:'Segoe UI', sans-serif; }
@@ -627,7 +621,7 @@
 
   @media (max-width: 980px){
     .pn{ grid-template-columns:1fr 1fr; grid-template-rows:none; height:auto; }
-    .pn-foto{ grid-row:auto; aspect-ratio:3/4; }
+    .pn-foto{ grid-column:auto; grid-row:auto; aspect-ratio:3/4; }
     .pn-sobre, .pn-faz, .pn-fer{ grid-column:1 / -1; grid-row:auto; }
     .pn-num, .pn-livre{ grid-column:auto; grid-row:auto; }
   }
@@ -1669,215 +1663,180 @@
     #galLightboxClose{ top: 12px; right: 14px; }
   }
 
-  /* Celular em pé: uma tela 16:9 deitada cabe em ~346px de largura e
-     fica ilegível. Girada 90°, passa a usar a ALTURA da tela e quase
-     dobra de tamanho. Fica absoluta dentro do palco para que o giro
-     não empurre o layout — transform não altera a caixa de layout. */
+  /* A dica de girar. Aparece só em celular em pé, e some assim que o
+     aparelho gira — o próprio sumiço confirma que deu certo. Fica presa
+     ao rodapé do visualizador para não cobrir a imagem. */
+  .gal-girar{ display:none; }
   @media (max-width: 1024px) and (orientation: portrait){
-    .gal-lb-stage{ position: relative; }
-    #galLightboxImg{
-      position: absolute; top: 50%; left: 50%;
-      max-width: none; max-height: none;
-      width: min(86vh, 165vw); height: auto;
-      transform-origin: center center;
-      transform: translate(-50%, -50%) rotate(90deg) scale(.96);
+    #galLightbox .gal-girar{
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      margin:0; padding:9px 15px; border-radius:99px;
+      font-family:'Azeret Mono','Consolas',monospace;
+      font-size:10.5px; letter-spacing:.08em; text-transform:lowercase;
+      color:rgba(255,255,255,.72); background:rgba(20,18,26,.85);
+      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+      animation: galGirarEntra .5s ease .6s both;
     }
-    #galLightbox.is-open #galLightboxImg{
-      transform: translate(-50%, -50%) rotate(90deg) scale(1);
+    #galLightbox .gal-girar svg{
+      width:15px; height:15px; flex:0 0 auto; color:var(--pink-light);
+      animation: galGirarGira 2.6s ease-in-out 1.2s infinite;
+    }
+  }
+  @keyframes galGirarEntra{ from{ opacity:0; transform:translateY(8px); } }
+  @keyframes galGirarGira{
+    0%, 62%, 100%{ transform:rotate(0deg); }
+    76%, 90%     { transform:rotate(-90deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #galLightbox .gal-girar, #galLightbox .gal-girar svg{ animation:none; }
+  }
+
+  /* Esta regra girava a imagem 90° sozinha, para ela usar a altura da
+     tela. Ficava maior, mas deitada — a pessoa tinha que inclinar a
+     cabeça — e vídeo nunca girava, só imagem, o que deixava a galeria
+     incoerente consigo mesma. Agora a mídia fica em pé e quem decide
+     girar é a pessoa, avisada pela dica. */
+  @media (max-width: 1024px) and (orientation: portrait){
+    .gal-lb-stage{
+      position: relative; display: flex;
+      align-items: center; justify-content: center;
+    }
+    #galLightboxImg, #galLightboxVideo{
+      max-width: 100%; max-height: 100%; width: auto; height: auto;
     }
   }
 
-  /* ================================================================ */
-  /* ===== LAYOUT EMPILHADO PARA TELAS PEQUENAS ====================== */
-  /* ================================================================ */
-  /* Tudo abaixo vive dentro de @media (max-width:1024px). Acima disso */
-  /* o layout de canvas 1920px escalado continua EXATAMENTE como era.  */
-  /*                                                                   */
-  /* Por que tanto !important: o layout original posiciona os elementos */
-  /* por style inline (left/top/width/height) e o JS ainda reescreve    */
-  /* top/height dos cards. Regra de folha de estilo so vence estilo     */
-  /* inline com !important - nao e gosto, e a unica forma de desligar   */
-  /* o posicionamento absoluto sem reescrever o HTML inteiro.           */
-  /*                                                                   */
-  /* Os filhos diretos viram position:relative (e nao static) de        */
-  /* proposito: assim qualquer filho absoluto interno - controles do    */
-  /* player, menus suspensos - continua ancorado no proprio container   */
-  /* em vez de escapar para o <body>.                                   */
-  /* ================================================================ */
-  @media (max-width: 1024px){
 
-    html, body{ overflow-x: hidden; }
 
-    /* ---- Containers saem do modo canvas e voltam ao fluxo normal ---- */
-    #chrome-fixed, #page-scale{
-      position: static !important;
-      left: 0 !important; top: 0 !important;
-      width: 100% !important; height: auto !important;
-      transform: none !important;
-      pointer-events: auto;
-    }
-    #page-scale-wrapper{ height: auto !important; }
+  /* ================================================================
+     CELULAR — a mesa vira tela inicial
 
-    #chrome-fixed{
-      display: flex; flex-wrap: wrap;
-      align-items: center; justify-content: center;
-      gap: 10px 12px;
-      padding: 26px 16px 10px;
-    }
-    #page-scale{
-      display: flex; flex-wrap: wrap;
-      align-items: center; justify-content: center;
-      gap: 10px;
-      padding: 10px 14px 48px;
+     No desktop tudo é posicionado em absoluto: ícones que se arrastam,
+     uma janela que flutua, um dock solto no rodapé. Num celular isso
+     não tem tradução — não há mouse pra arrastar nem espaço pra uma
+     janela flutuar dentro de outra.
+
+     Então a metáfora muda de aparelho, não de ideia: a área de trabalho
+     vira a tela inicial de um telefone. Os ícones descem numa grade que
+     rola, tocar abre em tela cheia como um aplicativo, e a barra de
+     baixo fica fixa. É o mesmo computador, na versão de bolso.
+
+     A consulta pega altura também: um celular deitado tem 812px de
+     largura e passaria pelo layout de desktop com 375px de altura.
+     ================================================================ */
+  @media (max-width: 900px), (max-height: 520px){
+
+    html, body{ height:auto; overflow:hidden auto; overscroll-behavior-y:none; }
+    #app{ height:auto; }
+
+    /* a mesa sai do modo tela-fixa e vira uma coluna que rola */
+    #mesa{
+      position:relative; inset:auto; overflow:visible;
+      min-height:100dvh; display:flex; flex-direction:column;
+      padding:0 16px calc(74px + env(safe-area-inset-bottom));
+      box-sizing:border-box;
     }
 
-    /* ---- Filhos diretos deixam de ser absolutos ---- */
-    #chrome-fixed > .abs,
-    #page-scale > .abs,
-    .proj-corpo > .abs{
-      position: relative !important;
-      left: auto !important; top: auto !important;
-      right: auto !important; bottom: auto !important;
-      width: auto !important; height: auto !important;
-      max-width: 100%;
+    /* o fundo não acompanha a rolagem: fica preso na tela */
+    .parede, .textura, .vinheta{ position:fixed; inset:0; }
+    .mesa-orb{ position:fixed; }
+
+    /* ---- 1. o cabeçalho: Olá + mascote ---- */
+    .mesa-ola{
+      position:static; order:1; width:100%; max-width:340px;
+      margin:22px auto 4px; text-align:center; padding:0;
+    }
+    .mesa-ola .ola-frase{ text-align:center; font-size:15px; line-height:1.5; margin-top:14px; }
+
+    /* ---- 2. os ícones, numa grade que rola ---- */
+    .mesa-icones{
+      position:static; order:2; inset:auto; width:100%; height:auto;
+      display:grid; grid-template-columns:repeat(3, 1fr); gap:4px 0;
+      margin:14px 0 0; pointer-events:auto;
+    }
+    .mesa-icone{
+      position:static !important; left:auto !important; top:auto !important;
+      width:auto; cursor:pointer; touch-action:manipulation;
+      padding:10px 4px; border-radius:12px;
+    }
+    .mesa-icone .arte{ width:100%; max-width:74px; height:62px; }
+    .mesa-icone .rotulo{ font-size:11.5px; line-height:1.25; }
+    .mesa-icone .conta{ font-size:9px; }
+    /* sem cursor não há hover: o toque responde no :active */
+    .mesa-icone:hover{ background:none; }
+    .mesa-icone:active{ background:rgba(255,255,255,.09); }
+    .mesa-icone:hover .arte svg, .mesa-icone:hover .cabeca{ transform:none; }
+
+    /* ---- 3. a lixeira entra na grade como mais um ícone ---- */
+    .lixeira{
+      position:static !important; left:auto !important; top:auto !important;
+      right:auto; bottom:auto; width:auto; margin:0;
+      padding:10px 4px; border-radius:12px; touch-action:manipulation;
+    }
+    .lixeira:hover{ background:none; }
+    .lixeira:active{ background:rgba(255,255,255,.09); }
+    .lixeira .arte, .lixeira svg{ max-width:74px; margin:0 auto; }
+
+    /* ---- 4. o recado, no fim da coluna ---- */
+    .leiame{
+      position:static !important; left:auto !important; top:auto !important;
+      right:auto; bottom:auto; order:4; width:100%;
+      margin:20px 0 0; opacity:1; cursor:default; touch-action:auto;
+    }
+    .leiame .lei-x{ display:none; }
+
+    /* ---- 5. a janela vira tela cheia ---- */
+    .janela{
+      position:fixed !important; inset:0 !important;
+      left:0 !important; top:0 !important; right:0 !important; bottom:0 !important;
+      width:auto !important; height:auto !important;
+      border-radius:0; z-index:90; transform:none !important;
+    }
+    .jan-topo{
+      cursor:default; touch-action:auto;
+      padding-top:calc(6px + env(safe-area-inset-top));
+    }
+    /* minimizar e maximizar não querem dizer nada aqui */
+    .jan-janelinha{ display:none !important; }
+    .jan-fechar{ width:34px; height:34px; font-size:17px; }
+    .jan-voltar{ padding:7px 10px; }
+    .jan-meta{ display:none; }
+    .jan-caminho{ font-size:11px; }
+    .jan-corpo{
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:calc(60px + env(safe-area-inset-bottom));
     }
 
-    /* ---- Divs decorativos e vazios somem: faixa do header,
-           painel de fundo da sidebar, divisorias ---- */
-    #chrome-fixed > div.abs:empty,
-    #page-scale > div.abs:empty{ display: none !important; }
+    /* ---- 6. o dock vira barra fixa do rodapé ---- */
+    .dock{
+      position:fixed; left:0; right:0; bottom:0; transform:none;
+      z-index:95; justify-content:space-around; gap:0;
+      padding:9px 8px calc(9px + env(safe-area-inset-bottom));
+      background:rgba(14,13,18,.92);
+      backdrop-filter:blur(20px) saturate(160%);
+      -webkit-backdrop-filter:blur(20px) saturate(160%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .dock-item{ width:44px; height:38px; }
+    .dock .dock-sep{ display:none; }
 
-    /* ...menos as ancoras dos skip-links, que precisam continuar
-       existindo para o Alt+1 / Alt+2 e o foco por teclado. */
-    #menu, #conteudo{
-      display: block !important;
-      flex: 0 0 100% !important;
-      width: 100% !important; height: 0 !important;
-      margin: 0 !important;
-    }
+    /* ---- 7. o que só existe com mouse ou teclado ---- */
+    .menu-mesa{ display:none !important; }
+    .busca-palco{ padding:16px; }
+    .sr-hint{ display:none; }
 
-    /* ---- Cabecalho ---- */
-    #chrome-fixed > .logo-link{
-      flex: 0 0 100%;
-      width: 106px !important; height: 56px !important;
-      margin: 0 auto 6px;
-    }
-    /* Pills "Ir para o Conteudo/Menu": em tela de toque nao ha teclado.
-       Os atalhos Alt+1/Alt+2 seguem ativos para quem usa teclado. */
-    #chrome-fixed > a[href="#conteudo"].pill,
-    #chrome-fixed > a[href="#menu"].pill{ display: none !important; }
-    /* Estrela decorativa do header e a tira de ferramentas (alt="") */
-    #chrome-fixed > img[alt=""]{ display: none !important; }
-    /* Dica "role o feed" com icone de mouse: sem sentido no touch */
-    #chrome-fixed > div.pill{ display: none !important; }
-
-    /* ---- Botoes de acessibilidade, lado a lado ---- */
-    #chrome-fixed > button.pill,
-    #chrome-fixed > .a11y-badge{
-      flex: 0 0 auto;
-      width: 46px !important; height: 46px !important;
-    }
-
-    /* ---- Ilustracao + bio ---- */
-    #chrome-fixed > .float-idle{
-      flex: 0 0 100%;
-      width: min(250px, 60vw) !important; height: auto !important;
-      margin: 10px auto 0;
-    }
-    #chrome-fixed > p{
-      flex: 0 0 100%;
-      width: 100% !important; max-width: 420px;
-      margin: 0 auto 6px !important;
-      text-align: center;
-      font-size: calc(18px * var(--font-scale)) !important;
-    }
-
-    /* ---- Menu: cada item vira um bloco tocavel de largura cheia ---- */
-    #chrome-fixed > .nav-item{
-      flex: 0 0 100%;
-      width: 100% !important; height: auto !important;
-      max-width: 420px; min-height: 54px;
-      margin: 0 auto;
-      display: flex !important; align-items: center; gap: 12px;
-      padding: 10px 16px;
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-    }
-    #chrome-fixed > .nav-item:hover,
-    #chrome-fixed > .nav-item:focus-visible{ transform: none; }
-    #chrome-fixed > .nav-item > .abs{
-      position: relative !important;
-      left: auto !important; top: auto !important;
-      width: auto !important; height: auto !important;
-    }
-    #chrome-fixed > .nav-item > img.icon-ring{
-      flex: 0 0 auto; width: 28px !important; height: 28px !important;
-    }
-    /* O span do rotulo (sem <img> dentro) ocupa o meio... */
-    #chrome-fixed > .nav-item > span.abs:not(:has(img)){
-      flex: 1 1 auto;
-      font-size: calc(18px * var(--font-scale)) !important;
-    }
-    /* ...e o span da seta mantem tamanho fixo, servindo de ancora
-       para as duas <img> absolutas de estado normal/hover. */
-    #chrome-fixed > .nav-item > span.abs:has(img){
-      flex: 0 0 14px;
-      width: 14px !important; height: 26px !important;
-    }
-
-    /* ---- Desktop hub: janelas arrastaveis nao fazem sentido em touch,
-       vira uma lista simples por categoria ---- */
-    #page-scale > .hub{
-      height: auto !important; padding: 18px !important; background: rgba(0,0,0,0.3) !important;
-    }
-    .hub-dica, .hub-icones, #hubJanelas, .hub-readme, .hub-taskbar{ display: none !important; }
-    .hub-mobile{ display: block !important; }
-
-    /* rotulo "Ordenar por:" - o proprio botao ja diz o que faz */
-    #page-scale > span.abs{ display: none !important; }
-    #page-scale > div.abs:has(.dropdown-menu){ flex: 0 0 auto; }
-    #page-scale > div.abs:has(#sortMenu) > #sortBtn{
-      width: auto !important; padding: 0 14px;
-      font-size: calc(15px * var(--font-scale)) !important;
-    }
-
-    /* ---- Conteudo do projeto aberto ---- */
-    .proj-corpo{
-      width: 100% !important; height: auto !important;
-      padding: 22px 16px 26px !important;
-      display: flex; flex-direction: column; align-items: center; gap: 18px;
-    }
-    .proj-corpo > .abs{ width: 100% !important; }
-
-    /* Ficha tecnica: CLIENTE / PROJETO / ANO / CATEGORIA */
-    .proj-corpo > div.segoe{
-      font-size: 13px !important;
-      column-gap: 10px !important;
-    }
-
-    /* Video e PDF: altura passa a vir da proporcao, nao de 496px fixos */
-    .proj-corpo > .video-card,
-    .proj-corpo > .pdf-card{
-      aspect-ratio: 945 / 496;
-      height: auto !important;
-      border-radius: 12px;
-    }
-    .video-card .v-play,
-    .pdf-card .pdf-open-btn{
-      width: 64px !important; height: 64px !important;
-      font-size: 26px !important;
-    }
-    .video-card .v-play{ margin: -32px 0 0 -32px !important; }
-
-    /* Descricao do projeto */
-    .proj-corpo > p{
-      text-align: left;
-      font-size: calc(16px * var(--font-scale)) !important;
-      line-height: 1.65 !important;
-    }
+    /* ---- 8. o projeto aberto ---- */
+    .proj-corpo{ padding:16px 14px 24px !important; }
+    .jan-pastas{ overflow-x:auto; scrollbar-width:none; }
+    .jan-pastas::-webkit-scrollbar{ display:none; }
   }
 
+  /* celular deitado: sobra pouca altura, o cabeçalho encolhe */
+  @media (max-height: 520px) and (orientation: landscape){
+    .mesa-ola{ max-width:250px; margin-top:12px; }
+    .mesa-icones{ grid-template-columns:repeat(6, 1fr); }
+  }
   /* ---- Celular estreito: a barra do player nao cabe inteira ---- */
   @media (max-width: 560px){
     .video-card .v-mute,
@@ -2968,6 +2927,16 @@ o resto você descobre clicando.
       <video id="galLightboxVideo" muted loop playsinline preload="none"></video>
       <div class="gal-progresso" id="galLightboxProgresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
     </div>
+    <p class="gal-girar" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round">
+        <rect x="8.5" y="2.5" width="7" height="19" rx="1.8"/>
+        <path d="M3.6 15.4a9 9 0 0 0 2.2 3.6"/>
+        <path d="M20.4 8.6a9 9 0 0 0-2.2-3.6"/>
+        <path d="M2.2 12.6 3.6 15.4l2.8-1.4"/>
+      </svg>
+      gire o celular para ver maior
+    </p>
     <div class="gal-lb-bar">
       <button id="galLightboxPrev" class="gal-lb-nav" aria-label="Tela anterior">‹</button>
       <span id="galLightboxLabel">—</span>
@@ -3646,6 +3615,11 @@ o resto você descobre clicando.
     })();
 
     /* ============ 2. arrastar as pastas (posição guardada) ============ */
+    /* No celular a mesa é uma coluna que rola, não um tabuleiro: nada de
+       soltar da grade nem de arrastar. A consulta pega a altura também
+       porque um celular deitado tem 812px de largura. */
+    const CELULAR = matchMedia('(max-width: 900px), (max-height: 520px)').matches;
+
     const BERCO = {};  /* onde cada ícone nasce, pra poder arrumar depois */
     function medirBerco(){
       mesa.querySelectorAll('.mesa-icone, .lixeira, .leiame').forEach(ic => {
@@ -3676,6 +3650,7 @@ o resto você descobre clicando.
 
     let pegou = null, ox = 0, oy = 0, andou = false;
     mesa.addEventListener('pointerdown', e => {
+      if (CELULAR) return;              /* no toque, tocar é abrir, não arrastar */
       if (e.button !== 0) return;
       const ic = e.target.closest('.mesa-icone, .lixeira, .leiame');
       if (!ic) { marcar(null); return; }
@@ -3757,6 +3732,7 @@ o resto você descobre clicando.
     });
 
     function arrumar(){
+      if (CELULAR) return;              /* a grade do celular já é arrumada */
       mesa.querySelectorAll('.mesa-icone, .lixeira, .leiame').forEach(ic => {
         const p = BERCO[ic.dataset.chave];
         if (!p) return;
@@ -4272,8 +4248,8 @@ o resto você descobre clicando.
 
       M.abrirAvulso('Lixeira',
         '<div class="lix">'
-        + '<h2>Coisas que não deram certo</h2>'
-        + '<p class="sub">testes, versões e projetos que ficaram pelo caminho</p>'
+        + '<h2>Lixeira de um designer</h2>'
+        + '<p class="sub">arquivo_final nunca é o arquivo final</p>'
         + '<div class="lix-cab"><span>nome</span><span>tamanho</span><span>apagado</span></div>'
         + linhas
         + '<div class="lix-rod"><span>' + LIXO.length + ' itens · 2,9 GB</span>'
@@ -4380,12 +4356,31 @@ o resto você descobre clicando.
 
     window.__mesa.abrirPrefs = abrirPrefs;
     window.__mesa.abrirResumo = abrirResumo;
-    window.__mesa.abrirResumo = abrirResumo;
 
     /* som ao fechar a janela pelo ✕ */
     document.getElementById('winFechar').addEventListener('click', somFechar);
 
-    soltarDaGrade();
+    if (CELULAR){
+      /* a lixeira vira a sétima célula da grade em vez de sobrar numa
+         fileira só dela; no desktop ela continua no canto de baixo */
+      const grade = document.getElementById('menu');
+      const lata  = document.getElementById('lixeira');
+      if (grade && lata) grade.appendChild(lata);
+
+      /* o toque abre direto. No desktop quem decide isso é o pointerup
+         do arrasto, que aqui está desligado — sem esta porta, tocar
+         num ícone não faria nada. */
+      mesa.addEventListener('click', e => {
+        const ic = e.target.closest('.mesa-icone, .lixeira');
+        if (!ic || ic.tagName === 'A') return;   /* documento é link */
+        marcar(ic);
+        if (ic.dataset.pasta)      { somAbrir(); M.abrirPasta(ic.dataset.pasta); }
+        else if (ic.dataset.pagina){ somAbrir(); M.abrirResumo(); }
+        else if (ic.classList.contains('lixeira')) { somAbrir(); abrirLixeira(); }
+      });
+    } else {
+      soltarDaGrade();
+    }
   })();
 
 
