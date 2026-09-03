@@ -2997,7 +2997,7 @@
       <!-- ===== CURSO 6: BURNOUT ACADEMY — TESTE DE ANIMAÇÃO (vídeo) == -->
       <!-- top é definido dinamicamente pelo JS logo abaixo do card 5   -->
       <!-- ============================================================ -->
-      <div id="course-6" class="abs card-panel course-card proj-janela" data-category="animacao" data-year="2025" data-order="5" data-title="Teste de Animação" style="left:450px; top:70px; width:1020px; display:none;">
+      <div id="course-6" class="abs card-panel course-card proj-janela" data-category="animacao" data-ferramenta="Adobe Animate" data-year="2025" data-order="5" data-title="Teste de Animação" style="left:450px; top:70px; width:1020px; display:none;">
         <div class="proj-titlebar" data-hub-drag>
           <span class="hub-icone-mini">🗂️</span>
           <span class="hub-nome">Teste de Animação</span>
@@ -3619,7 +3619,8 @@ o resto você descobre clicando.
        Um projeto pode declarar a sua em data-ferramenta, e essa vence:
        nem toda peça de uma pasta sai da mesma ferramenta. */
     const FERRAMENTA = {
-      elearning: 'Articulate Storyline'
+      elearning:     'Articulate Storyline',
+      apresentacoes: 'Microsoft PowerPoint'
     };
     const CREDITO = () => T('produção e configuração por mim');
     function porAviso(){
