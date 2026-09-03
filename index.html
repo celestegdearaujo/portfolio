@@ -575,23 +575,39 @@
   /* "o que eu faço" passa a ser o cartão alto e "ferramentas" o baixo:
      quatro grupos de ofícios precisam de altura, e os chips cabem em
      poucas linhas. */
-  .pn-fer{ grid-column:1 / span 2; grid-row:2; }
-  .pn-faz{ grid-column:1 / span 2; grid-row:3; }
+  .pn-faz{ grid-column:1 / span 2; grid-row:2; }
+  .pn-fer{ grid-column:1 / span 2; grid-row:3; }
   .pn-fer .pn-chips{ align-content:flex-start; }
-  .pn-faz-linha{ font-size:13.5px; color:rgba(255,255,255,.7); margin:0 0 15px; }
-  .pn-oficios{
-    display:grid; grid-template-columns:1fr 1fr; gap:18px 26px;
-    align-content:start; flex:1 1 auto;
+  /* as barras: uma por pasta, do tamanho do que ela guarda */
+  @keyframes pnBarra{ from{ width:0; } }
+  .pn-faz ul{ list-style:none; margin:0; padding:0; display:grid; gap:9px; }
+  .pn-faz li{ display:flex; align-items:center; gap:11px; font-size:14px; color:rgba(255,255,255,.84); }
+  .pn-faz .barra{ flex:1 1 auto; height:5px; border-radius:99px; background:rgba(255,255,255,.1); overflow:hidden; }
+  .pn-faz .barra i{
+    display:block; height:100%; border-radius:99px; background:var(--pink-bold);
+    width:var(--w); animation: pnBarra .8s cubic-bezier(.25,.9,.3,1) both;
   }
-  .pn-of{ min-width:0; animation: pnEntra .44s cubic-bezier(.2,.85,.3,1) both; }
-  .pn-of .rot{
-    display:block; margin:0 0 8px; padding-bottom:7px;
-    box-shadow: inset 0 -1px 0 rgba(255,255,255,.1);
+  .pn-faz .qt{
+    font-family:'Azeret Mono','Consolas',monospace; font-size:10.5px;
+    color:rgba(255,255,255,.45); flex:0 0 auto; width:16px; text-align:right;
+  }
+  .pn-faz .nm{ flex:0 0 auto; width:104px; }
+
+  /* As barras contam o que está publicado aqui, e isso é só uma parte do
+     que ela faz. Esta linha é o resto — sem virar uma segunda lista que
+     compete com as barras. */
+  .pn-alem{
+    margin-top:18px; padding-top:14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+    animation: pnEntra .44s cubic-bezier(.2,.85,.3,1) .5s both;
+  }
+  .pn-alem .rot{
+    display:block; margin-bottom:8px;
     font-family:'Azeret Mono','Consolas',monospace; font-size:8.5px;
     letter-spacing:.14em; text-transform:uppercase; color:var(--pink-light);
   }
-  .pn-of ul{ list-style:none; margin:0; padding:0; display:grid; gap:5px; }
-  .pn-of li{ font-size:12.5px; line-height:1.4; color:rgba(255,255,255,.76); }
+  .pn-alem p{ margin:0; font-size:12.5px; line-height:1.65; color:rgba(255,255,255,.72); }
+  .pn-alem b{ color:#fff; font-weight:500; }
 
   .pn-num{ grid-column:3; grid-row:2; }
   .pn-num .grande{ font-size:34px; line-height:1; color:#fff; letter-spacing:-.02em; }
@@ -646,7 +662,6 @@
     .pn{ grid-template-columns:1fr 1fr; grid-template-rows:none; height:auto; }
     .pn-foto{ grid-column:auto; grid-row:auto; aspect-ratio:3/4; }
     .pn-sobre, .pn-faz, .pn-fer{ grid-column:1 / -1; grid-row:auto; }
-    .pn-oficios{ gap:16px 20px; }
     .pn-num, .pn-livre{ grid-column:auto; grid-row:auto; }
   }
 
@@ -4229,30 +4244,12 @@ o resto você descobre clicando.
         return p.dataset.category === c[1]; }).length]; });
       const total = contas.reduce(function(a, c){ return a + c[1]; }, 0);
 
-      /* O que ela faz, e não o que este site guarda. As barras que
-         moravam aqui contavam os projetos publicados — respondiam
-         "o que tem nesta pasta", que é outra pergunta, e de quebra a
-         faziam parecer designer só de e-learning. A contagem continua
-         viva no cartão de números. */
-      const OFICIOS = [
-        ['aprendizagem digital',
-         ['e-learnings e trilhas', 'materiais educacionais',
-          'PDFs interativos', 'apresentações corporativas']],
-        ['editorial e impresso',
-         ['e-books e cartilhas', 'relatórios corporativos',
-          'folders, flyers e cartões', 'diagramação']],
-        ['marca e ambiente',
-         ['identidade visual', 'embalagens e adesivos',
-          'sinalização corporativa']],
-        ['movimento e interface',
-         ['animação 2D', 'motion e vídeo',
-          'interface e experiência']]
-      ];
-      const oficios = OFICIOS.map(function(g, i){
-        return '<div class="pn-of" style="animation-delay:' + (300 + i * 70) + 'ms">'
-          + '<span class="rot">' + g[0] + '</span><ul>'
-          + g[1].map(function(x){ return '<li>' + x + '</li>'; }).join('')
-          + '</ul></div>';
+      const maior = Math.max.apply(null, contas.map(function(c){ return c[1]; }));
+      const barras = contas.map(function(c, i){
+        return '<li><span class="nm">' + c[0] + '</span>'
+          + '<span class="barra"><i style="--w:' + Math.round(c[1] / maior * 100) + '%;'
+          + ' animation-delay:' + (260 + i * 80) + 'ms"></i></span>'
+          + '<span class="qt">' + c[1] + '</span></li>';
       }).join('');
 
       /* a lista de Informática do currículo, sem as genéricas de escritório,
@@ -4285,8 +4282,13 @@ o resto você descobre clicando.
         + '</div></div>'
 
         + '<div class="pn-c pn-faz"><h3>o que eu faço</h3>'
-        +   '<p class="pn-faz-linha">Todo tipo de material gráfico, impresso e digital.</p>'
-        +   '<div class="pn-oficios">' + oficios + '</div>'
+        +   '<ul>' + barras + '</ul>'
+        +   '<div class="pn-alem"><span class="rot">e também</span>'
+        +     '<p>Todo tipo de material gráfico, <b>impresso e digital</b>: e-books, '
+        +     'cartilhas, relatórios corporativos, PDFs interativos e materiais '
+        +     'educacionais · identidade visual, folders, flyers, cartões, embalagens, '
+        +     'adesivos e sinalização corporativa.</p>'
+        +   '</div>'
         + '</div>'
 
         + '<div class="pn-c pn-fer"><h3>ferramentas</h3>'
