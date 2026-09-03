@@ -471,6 +471,14 @@
      não como irmão dele: assim entra na altura que o JS já mede para
      posicionar a tira de vizinhos, sem precisar diagramar mais nada. */
   .aviso-ficcao b{ color:rgba(255,255,255,.72); font-weight:400; }
+  /* o aviso da pasta ocupa a linha inteira da grade, no fim de tudo */
+  .pasta-aviso{
+    grid-column:1 / -1; margin:22px 0 0; padding-top:16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+    font-family:'Azeret Mono','Consolas',monospace;
+    font-size:10px; letter-spacing:.05em; line-height:1.7;
+    color:rgba(255,255,255,.38);
+  }
   .aviso-ficcao{
     display:block; margin-top:20px; padding-left:13px;
     box-shadow: inset 2px 0 0 rgba(255,255,255,.16);
@@ -733,13 +741,40 @@
      título caber em duas linhas. */
   .fita{ display:none; position:absolute; z-index:3; }
   .fita.tem{ display:block; padding-top:16px; box-shadow: inset 0 1px 0 rgba(255,255,255,.1); }
+  /* O cabeçalho da tira: rótulo à esquerda, setas à direita. Elas ficam
+     aqui, e não sobre as miniaturas, porque a tira é uma fileira e não
+     uma imagem — não há arte para cobrir. */
+  .fita-cab{ display:flex; align-items:center; gap:12px; margin:0 0 12px; }
   .fita-rot{
-    display:block; margin:0 0 12px;
+    display:block; margin:0;
     font-family:'Azeret Mono','Consolas',monospace; font-size:9.5px;
     letter-spacing:.15em; text-transform:uppercase; color:var(--pink-light);
   }
+  .fita-setas{ margin-left:auto; display:flex; gap:2px; }
+  .fita-setas button{
+    width:26px; height:26px; padding:0; border:none; background:none;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    border-radius:6px; transition: background .16s ease, opacity .16s ease;
+  }
+  .fita-setas svg{
+    width:15px; height:15px; fill:none; stroke:rgba(255,255,255,.62);
+    stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;
+    transition: stroke .16s ease;
+  }
+  .fita-setas button:hover{ background:rgba(255,255,255,.08); }
+  .fita-setas button:hover svg{ stroke:var(--pink-light); }
+  .fita-setas button:focus-visible{ outline:2px solid var(--pink-light); outline-offset:1px; }
+  .fita-setas button[disabled]{ opacity:.22; pointer-events:none; }
   /* na coluna estreita ela quebra em linhas em vez de rolar de lado */
-  .fita-trilho{ display:flex; flex-wrap:wrap; gap:14px 10px; align-items:flex-start; }
+  /* Uma fileira só. Em duas linhas a tira empurrava a coluna e a janela
+     ganhava barra de rolagem — o projeto inteiro passava a rolar por
+     causa dos vizinhos. */
+  .fita-trilho{
+    display:flex; flex-wrap:nowrap; gap:10px; align-items:flex-start;
+    overflow-x:auto; scroll-behavior:smooth; scrollbar-width:none;
+    scroll-snap-type:x proximity;
+  }
+  .fita-item{ scroll-snap-align:start; }
   .fita-trilho::-webkit-scrollbar{ height:0; display:none; }
   .fita-item{
     flex:0 0 auto; width:100px; border:none; background:none; padding:0; cursor:pointer;
@@ -3242,6 +3277,18 @@ o resto você descobre clicando.
       grade.querySelectorAll('.jan-arq').forEach((bt, i) => {
         bt.addEventListener('click', () => abrirProjeto(lista[i]));
       });
+      /* Uma vez por pasta, no rodapé: vale para tudo que está ali dentro.
+         Só aparece se a pasta tiver material de cliente — numa pasta só
+         de trabalho autoral não há cliente para proteger. */
+      const temCliente = lista.some(c =>
+        (c.dataset.cliente || '').trim().toUpperCase() !== 'AUTORAL');
+      if (temCliente){
+        const nota = document.createElement('p');
+        nota.className = 'pasta-aviso';
+        nota.textContent = 'Os materiais desta pasta tratam de temas genéricos de '
+          + 'conhecimento comum e/ou retratam situações fictícias.';
+        grade.appendChild(nota);
+      }
       trilha(['Projetos', CATS[cat].nome], cat);
       meta.textContent = lista.length + (lista.length === 1 ? ' item' : ' itens');
       btVoltar.disabled = true;
@@ -3354,16 +3401,13 @@ o resto você descobre clicando.
         const fer  = proj && FERRAMENTA[proj.dataset.category];
         /* o aviso de ficção é sobre material de cliente. Em projeto
            autoral não há cliente para proteger, e a nota só polui. */
-        const ficha = corpo.querySelector('.segoe');
-        const eAutoral = !!ficha && ficha.textContent
-          .toUpperCase().replace(/\s+/g, ' ').indexOf('CLIENTE / AUTORAL') > -1;
-        const linhas = [];
-        if (fer) linhas.push('<b>' + fer + '</b> · ' + CREDITO);
-        if (!eAutoral) linhas.push(AVISO);
-        if (!linhas.length) return;
+
+        /* o aviso de ficção mora na pasta, não aqui: repetido em cada
+           projeto ele tomava mais espaço do que a informação que dá */
+        if (!fer) return;
         const nota = document.createElement('span');
         nota.className = 'aviso-ficcao';
-        nota.innerHTML = linhas.join('<br>');
+        nota.innerHTML = '<b>' + fer + '</b> · ' + CREDITO;
         p.appendChild(nota);
       });
     }
@@ -3503,7 +3547,14 @@ o resto você descobre clicando.
 
       fita.className = 'fita tem';
       fita.innerHTML =
-        '<p class="fita-rot">outros projetos de ' + nomeDaCategoria(cat) + '</p>'
+        '<div class="fita-cab">'
+        + '<p class="fita-rot">outros projetos de ' + nomeDaCategoria(cat) + '</p>'
+        + '<span class="fita-setas">'
+        +   '<button data-ir="-1" aria-label="Ver os anteriores">'
+        +     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>'
+        +   '<button data-ir="1" aria-label="Ver os próximos">'
+        +     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>'
+        + '</span></div>'
         + '<div class="fita-trilho">'
         + vizinhos.map((c, i) =>
             '<button class="fita-item" data-i="' + i + '" title="' + c.dataset.title + '">'
@@ -3513,6 +3564,27 @@ o resto você descobre clicando.
       fita.querySelectorAll('.fita-item').forEach((bt, i) => {
         bt.addEventListener('click', () => abrirProjeto(vizinhos[i]));
       });
+
+      /* as setas correm a fileira de duas em duas peças, e se apagam
+         quando não há mais para onde ir */
+      const trilho = fita.querySelector('.fita-trilho');
+      const setas  = fita.querySelectorAll('.fita-setas button');
+      function medirSetas(){
+        const sobra = trilho.scrollWidth - trilho.clientWidth;
+        const cabe  = sobra > 2;
+        fita.querySelector('.fita-setas').style.display = cabe ? 'flex' : 'none';
+        if (!cabe) return;
+        setas[0].disabled = trilho.scrollLeft < 4;
+        setas[1].disabled = trilho.scrollLeft > sobra - 4;
+      }
+      setas.forEach(bt => bt.addEventListener('click', () => {
+        const peca = (trilho.firstElementChild?.offsetWidth || 100) + 10;
+        trilho.scrollLeft += (+bt.dataset.ir) * peca * 2;
+      }));
+      trilho.addEventListener('scroll', medirSetas, { passive:true });
+      /* a medida só vale depois que a coluna tem largura */
+      requestAnimationFrame(medirSetas);
+      setTimeout(medirSetas, 260);
     }
     const nomeDaCategoria = c => (CATS[c] && CATS[c].nome) || c;
 
