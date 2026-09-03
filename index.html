@@ -821,23 +821,25 @@
   }
   .fita-item:hover .nm{ color:#fff; }
 
-  /* O seletor de idioma. Fica no dock, que é o que sobrou de barra de
-     sistema — num computador de verdade o indicador de teclado mora
-     exatamente aí. Três rótulos, não um menu: com três opções, abrir
-     uma lista custa mais cliques do que mostrar as três. */
-  .dock-idioma{
-    display:flex; align-items:center; gap:1px; margin-left:4px;
+  /* O seletor de idioma, no canto inferior direito da mesa — o lugar do
+     indicador de idioma num computador de verdade. Fora do dock: ali ele
+     disputava atenção com os atalhos, que são o que a pessoa veio usar.
+     Três rótulos, não um menu: com três opções, abrir uma lista custa
+     mais cliques do que mostrar as três. */
+  .idioma-canto{
+    position:absolute; right:20px; bottom:20px; z-index:66;
+    display:flex; align-items:center; gap:1px;
     font-family:'Azeret Mono','Consolas',monospace;
   }
-  .dock-idioma button{
+  .idioma-canto button{
     padding:5px 7px; border:none; background:none; cursor:pointer;
     font-family:inherit; font-size:9.5px; letter-spacing:.1em;
     text-transform:uppercase; color:rgba(255,255,255,.4);
     border-radius:5px; transition: color .16s ease, background .16s ease;
   }
-  .dock-idioma button:hover{ color:rgba(255,255,255,.85); background:rgba(255,255,255,.07); }
-  .dock-idioma button[aria-pressed="true"]{ color:var(--pink-bold); }
-  .dock-idioma button:focus-visible{ outline:2px solid var(--pink-light); outline-offset:1px; }
+  .idioma-canto button:hover{ color:rgba(255,255,255,.85); background:rgba(255,255,255,.07); }
+  .idioma-canto button[aria-pressed="true"]{ color:var(--pink-bold); }
+  .idioma-canto button:focus-visible{ outline:2px solid var(--pink-light); outline-offset:1px; }
   /* aviso de que as descrições longas seguem em português */
   .so-pt{
     grid-column:1 / -1; margin:14px 0 0;
@@ -1996,6 +1998,16 @@
     .dock-item{ width:44px; height:38px; }
     .dock .dock-sep{ display:none; }
 
+    /* o dock é barra fixa no rodapé: o seletor sobe pra não ficar por baixo */
+    .idioma-canto{
+      position:fixed; right:14px;
+      bottom:calc(70px + env(safe-area-inset-bottom));
+      background:rgba(14,13,18,.9);
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      border-radius:8px; padding:2px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+    }
+
     /* ---- 7. o que só existe com mouse ou teclado ---- */
     .menu-mesa{ display:none !important; }
     .busca-palco{ padding:16px; }
@@ -2149,8 +2161,8 @@
       
       <p>
         <span id="mesaSaudacao">Oi!</span><br />
-        Sou a <span class="destaque">Celeste</span> — designer com foco em
-        e-learnings e animadora digital.
+        <span id="mesaSobre">Sou a <span class="destaque">Celeste</span> — designer com foco em
+        e-learnings e animadora digital.</span>
       </p>
     </div>
 
@@ -3045,7 +3057,7 @@
         <path d="M23 13V9.5a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V13" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2.6" stroke-linejoin="round"/>
         <path d="M24 27v25M34 27v25" stroke="rgba(255,255,255,.3)" stroke-width="2.4" stroke-linecap="round"/>
       </svg>
-      <span class="rotulo">Lixeira</span>
+      <span class="rotulo" id="lixeiraRotulo">Lixeira</span>
       <span class="recado" aria-hidden="true">ei, esse eu quero guardar!</span>
     </button>
 
@@ -3081,13 +3093,13 @@ o resto você descobre clicando.
     </div>
 
     <!-- ---------- dock ---------- -->
+    <span class="idioma-canto" id="dockIdioma" role="group" aria-label="Idioma / Language">
+      <button data-idioma="pt" aria-pressed="true">pt</button>
+      <button data-idioma="en" aria-pressed="false">en</button>
+      <button data-idioma="es" aria-pressed="false">es</button>
+    </span>
+
     <div class="dock" role="toolbar" aria-label="Atalhos">
-      <span class="dock-idioma" id="dockIdioma" role="group" aria-label="Idioma / Language">
-        <button data-idioma="pt" aria-pressed="true">pt</button>
-        <button data-idioma="en" aria-pressed="false">en</button>
-        <button data-idioma="es" aria-pressed="false">es</button>
-      </span>
-      <span class="dock-sep" aria-hidden="true"></span>
       <button class="dock-item destaque" data-abrir-pasta="elearning" aria-label="Projetos">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round">
           <path d="M3 7.5a2 2 0 0 1 2-2h4.2l1.8 2H19a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>
@@ -3216,6 +3228,8 @@ o resto você descobre clicando.
         'Ainda acordada? Bem-vinda ao meu computador.':'Still up? Welcome to my computer.',
         'Sou a Celeste — designer com foco em e-learnings e animadora digital.':
           'I am Celeste — a designer focused on e-learning and digital animation.',
+        'SOBRE_HTML': 'I am <span class="destaque">Celeste</span> — a designer focused on '
+                    + 'e-learning and digital animation.',
         'Lixeira de um designer':'A designer\u2019s trash',
         'arquivo_final nunca é o arquivo final':'final_file is never the final file',
         'nome':'name', 'tamanho':'size', 'apagado':'deleted',
@@ -3246,6 +3260,8 @@ o resto você descobre clicando.
         'Ainda acordada? Bem-vinda ao meu computador.':'¿Todavía despierta? Bienvenida a mi computadora.',
         'Sou a Celeste — designer com foco em e-learnings e animadora digital.':
           'Soy Celeste — diseñadora enfocada en e-learning y animación digital.',
+        'SOBRE_HTML': 'Soy <span class="destaque">Celeste</span> — diseñadora enfocada en '
+                    + 'e-learning y animación digital.',
         'Lixeira de um designer':'La papelera de una diseñadora',
         'arquivo_final nunca é o arquivo final':'archivo_final nunca es el archivo final',
         'nome':'nombre', 'tamanho':'tamaño', 'apagado':'eliminado',
@@ -3869,9 +3885,24 @@ o resto você descobre clicando.
       document.querySelectorAll('a[href*="curriculo-celeste-araujo"]').forEach(a => {
         a.dataset.cvPt = a.dataset.cvPt || a.getAttribute('href');
       });
+      const sobre0 = document.getElementById('mesaSobre');
+      if (sobre0){
+        sobre0.dataset.pt = sobre0.dataset.pt || sobre0.innerHTML;
+        sobre0.innerHTML = novo === 'pt' ? sobre0.dataset.pt : T('SOBRE_HTML');
+      }
+      const rot0 = document.getElementById('lixeiraRotulo');
+      if (rot0) rot0.textContent = T('Lixeira');
       if (!redesenhar) return;
       montarIcones();
       if (window.__saudar) window.__saudar();
+      /* dois textos que vivem no HTML e não passam por nenhum desenho */
+      const sobre = document.getElementById('mesaSobre');
+      if (sobre){
+        sobre.dataset.pt = sobre.dataset.pt || sobre.innerHTML;
+        sobre.innerHTML = novo === 'pt' ? sobre.dataset.pt : T('SOBRE_HTML');
+      }
+      const rotLixo = document.getElementById('lixeiraRotulo');
+      if (rotLixo) rotLixo.textContent = T('Lixeira');
       /* as notas de ferramenta já impressas ficariam no idioma antigo */
       document.querySelectorAll('.aviso-ficcao').forEach(n => n.remove());
       porAviso();
