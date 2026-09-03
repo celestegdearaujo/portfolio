@@ -470,6 +470,7 @@
   /* O aviso de ficção. Vive dentro do <p> da descrição, como bloco, e
      não como irmão dele: assim entra na altura que o JS já mede para
      posicionar a tira de vizinhos, sem precisar diagramar mais nada. */
+  .aviso-ficcao b{ color:rgba(255,255,255,.72); font-weight:400; }
   .aviso-ficcao{
     display:block; margin-top:20px; padding-left:13px;
     box-shadow: inset 2px 0 0 rgba(255,255,255,.16);
@@ -726,18 +727,26 @@
   /* ---------- a tira de vizinhos, embaixo da mídia ---------- */
   /* o card do projeto entra no palco depois da tira e, sem z-index, pinta
      por cima dela: os cliques morriam no card em vez de chegar aqui */
+  /* A tira tinha rótulo e nomes desde sempre — o CSS escondia os dois,
+     e sem eles ela lia como três imagens soltas em vez de "outros
+     projetos desta pasta". Devolvidos, com as peças maiores para o
+     título caber em duas linhas. */
   .fita{ display:none; position:absolute; z-index:3; }
-  .fita.tem{ display:block; }
-  .fita-rot{ display:none; }
+  .fita.tem{ display:block; padding-top:16px; box-shadow: inset 0 1px 0 rgba(255,255,255,.1); }
+  .fita-rot{
+    display:block; margin:0 0 12px;
+    font-family:'Azeret Mono','Consolas',monospace; font-size:9.5px;
+    letter-spacing:.15em; text-transform:uppercase; color:var(--pink-light);
+  }
   /* na coluna estreita ela quebra em linhas em vez de rolar de lado */
-  .fita-trilho{ display:flex; flex-wrap:wrap; gap:6px; }
+  .fita-trilho{ display:flex; flex-wrap:wrap; gap:14px 10px; align-items:flex-start; }
   .fita-trilho::-webkit-scrollbar{ height:0; display:none; }
   .fita-item{
-    flex:0 0 auto; width:78px; border:none; background:none; padding:0; cursor:pointer;
+    flex:0 0 auto; width:100px; border:none; background:none; padding:0; cursor:pointer;
     font-family:inherit; text-align:left; display:block;
   }
   .fita-item .capa{
-    position:relative; width:78px; aspect-ratio:16/10; border-radius:5px; overflow:hidden;
+    position:relative; width:100px; aspect-ratio:16/10; border-radius:5px; overflow:hidden;
     background:rgba(255,255,255,.05);
     backdrop-filter:blur(14px) saturate(160%); -webkit-backdrop-filter:blur(14px) saturate(160%);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
@@ -745,13 +754,18 @@
   }
   .fita-item:hover .capa{ background:rgba(255,255,255,.09); }
   .fita-item .capa img{ width:100%; height:100%; object-fit:cover; display:block;
-    opacity:.62; transition:opacity .2s, transform .3s cubic-bezier(.2,.8,.3,1); }
+    opacity:.82; transition:opacity .2s, transform .3s cubic-bezier(.2,.8,.3,1); }
   .fita-item:hover .capa{ box-shadow: inset 0 0 0 1px rgba(255,45,160,.7); }
   .fita-item:hover .capa img{ opacity:1; transform:scale(1.05); }
   .fita-item:focus-visible .capa{ box-shadow: inset 0 0 0 2px var(--pink-light); }
-  /* o nome vira balãozinho no hover: na tira, legenda embaixo de cada
-     uma virava um paredão de texto */
-  .fita-item .nm{ display:none; }
+  /* O nome volta embaixo de cada uma. Em duas linhas no máximo: é o que
+     transforma três imagens soltas em três projetos com nome. */
+  .fita-item .nm{
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden; margin-top:7px; font-size:11px; line-height:1.3;
+    color:rgba(255,255,255,.62); transition:color .16s;
+  }
+  .fita-item:hover .nm{ color:#fff; }
 
   /* ---------- dock: só os ícones em linha, sem cápsula ---------- */
   .dock{
@@ -1463,8 +1477,31 @@
   .video-card:hover video{ transform: scale(1.04); filter: brightness(1.08); }
   .pdf-card img{ transition: transform .6s cubic-bezier(.22,1,.36,1), filter .4s ease; }
   .pdf-card:hover img{ transform: scale(1.045); filter: brightness(1.08); }
-  .pdf-open-btn{ transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease; }
-  .pdf-open-btn:hover{ transform: scale(1.06); }
+  /* O alvo redondo no meio da miniatura saiu: era branco a 15% com
+     desfoque e, sobre um PDF de fundo claro, virava mancha. No lugar,
+     duas coisas que nunca dependem do que está por baixo — um selo com
+     fundo próprio no canto, dizendo o que é e quantas páginas tem, e a
+     ação na barra de baixo, que já tem gradiente escuro garantido. */
+  .pdf-card{ cursor:pointer; }
+  .pdf-selo{
+    position:absolute; left:16px; top:16px; z-index:3;
+    display:flex; align-items:center; gap:8px;
+    padding:7px 12px; border-radius:8px; background:rgba(10,9,13,.84);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    font-family:'Azeret Mono','Consolas',monospace; font-size:10px;
+    letter-spacing:.11em; text-transform:uppercase; color:rgba(255,255,255,.85);
+  }
+  .pdf-selo i{ width:5px; height:5px; border-radius:50%; background:var(--pink-bold); }
+  .pdf-abrir{
+    margin-left:auto; display:flex; align-items:center; gap:7px; color:#fff;
+    padding:6px 13px; border-radius:8px; font-size:13px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.28);
+    transition: background .2s ease, box-shadow .2s ease;
+  }
+  .pdf-card:hover .pdf-abrir, .pdf-card:focus-visible .pdf-abrir{
+    background:var(--pink-bold); box-shadow:none;
+  }
+  .pdf-card:focus-visible{ outline:2px solid var(--pink-light); outline-offset:3px; }
   .v-play{ }
   .v-play:hover:not(.is-hidden){ transform: scale(1.05); background: rgba(255,255,255,0.24); }
 
@@ -1540,6 +1577,50 @@
   .gal-nav[disabled]{ opacity: 0 !important; pointer-events: none; }
   .gal-prev{ left: 18px; }
   .gal-next{ right: 18px; }
+
+  /* A trilha: um segmento por tela, no topo do cartão. Diz onde você
+     está no espaço, e não em número, e cada segmento é um atalho — pra
+     chegar na tela 9 era preciso clicar oito vezes na seta. */
+  .gal-trilha{
+    position:absolute; left:18px; right:18px; top:13px; z-index:4;
+    display:flex; gap:3px; pointer-events:auto;
+  }
+  .gal-trilha button{
+    flex:1 1 0; min-width:0; height:15px; position:relative;
+    background:none; border:none; padding:0; cursor:pointer;
+  }
+  .gal-trilha button::after{
+    content:''; position:absolute; left:0; right:0; top:6px; height:3px;
+    border-radius:99px; background:rgba(255,255,255,.26);
+    transition: background .18s ease;
+  }
+  .gal-trilha button:hover::after{ background:rgba(255,255,255,.6); }
+  .gal-trilha button.on::after{ background:var(--pink-bold); }
+  .gal-trilha button:focus-visible::after{ background:var(--pink-light); }
+
+  /* A tira de miniaturas mora no ampliado, que é onde há espaço e onde
+     alguém realmente folheia. No cartão ela roubaria a imagem. */
+  .gal-lb-tira{
+    display:flex; gap:8px; overflow-x:auto; padding:2px 4px 6px;
+    max-width:min(1100px, 92vw); scrollbar-width:none;
+  }
+  .gal-lb-tira::-webkit-scrollbar{ display:none; }
+  .gal-lb-tira button{
+    flex:0 0 84px; height:50px; border:none; padding:0; cursor:pointer;
+    border-radius:5px; overflow:hidden; background:rgba(255,255,255,.06);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    transition: box-shadow .16s ease;
+  }
+  .gal-lb-tira img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    opacity:.5; transition:opacity .16s ease;
+  }
+  .gal-lb-tira button:hover img{ opacity:.85; }
+  .gal-lb-tira button.on{ box-shadow: inset 0 0 0 2px var(--pink-bold); }
+  .gal-lb-tira button.on img{ opacity:1; }
+  @media (max-width: 900px){
+    .gal-lb-tira button{ flex:0 0 64px; height:38px; }
+  }
 
   .gal-bar{
     position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
@@ -2670,17 +2751,13 @@
           <span><span class="pink-bold">CATEGORIA</span> / ANIMAÇÃO</span>
         </div>
 
-        <div class="abs pdf-card" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
+        <div class="abs pdf-card" data-pdf-card data-pdf-src="assets/bob-character-design.pdf" data-pdf-title="Bob — Desenvolvimento de Personagem (Burnout Academy)" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
           <img src="assets/thumb-bob-character.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
-          <div class="abs" style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;">
-            <button class="pdf-open-btn" data-pdf-card
-                    data-pdf-src="assets/bob-character-design.pdf"
-                    data-pdf-title="Bob — Desenvolvimento de Personagem (Burnout Academy)"
-                    style="width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:38px; cursor:pointer;">📄</button>
-          </div>
+          <span class="pdf-selo"><i></i>PDF · 29 páginas</span>
           <div class="abs" style="left:0; right:0; bottom:0; padding:18px 24px; background:linear-gradient(0deg, rgba(0,0,0,.85), transparent); display:flex; align-items:center; gap:14px; font-size:15px; z-index:2;">
             <span style="font-size:18px;">📄</span>
             <span style="color:rgba(255,255,255,0.75);">bob-character-design.pdf</span>
+            <span class="pdf-abrir">abrir ↗</span>
           </div>
         </div>
 
@@ -2713,17 +2790,13 @@
           <span><span class="pink-bold">CATEGORIA</span> / ANIMAÇÃO</span>
         </div>
 
-        <div class="abs pdf-card" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
+        <div class="abs pdf-card" data-pdf-card data-pdf-src="assets/ambientacao-para-animacao.pdf" data-pdf-title="Ambientação para Animação — Quarto do Bob (Burnout Academy)" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
           <img src="assets/thumb-ambientacao.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
-          <div class="abs" style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;">
-            <button class="pdf-open-btn" data-pdf-card
-                    data-pdf-src="assets/ambientacao-para-animacao.pdf"
-                    data-pdf-title="Ambientação para Animação — Quarto do Bob (Burnout Academy)"
-                    style="width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:38px; cursor:pointer;">📄</button>
-          </div>
+          <span class="pdf-selo"><i></i>PDF · 12 páginas</span>
           <div class="abs" style="left:0; right:0; bottom:0; padding:18px 24px; background:linear-gradient(0deg, rgba(0,0,0,.85), transparent); display:flex; align-items:center; gap:14px; font-size:15px; z-index:2;">
             <span style="font-size:18px;">📄</span>
             <span style="color:rgba(255,255,255,0.75);">ambientacao-para-animacao.pdf</span>
+            <span class="pdf-abrir">abrir ↗</span>
           </div>
         </div>
 
@@ -2756,17 +2829,13 @@
           <span><span class="pink-bold">CATEGORIA</span> / ANIMAÇÃO</span>
         </div>
 
-        <div class="abs pdf-card" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
+        <div class="abs pdf-card" data-pdf-card data-pdf-src="assets/biblia-de-animacao-burnout-academy.pdf" data-pdf-title="Bíblia de Animação — Burnout Academy" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#141414;">
           <img src="assets/thumb-biblia.png" alt="" class="abs" style="inset:0; width:100%; height:100%; object-fit:cover;" />
-          <div class="abs" style="left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;">
-            <button class="pdf-open-btn" data-pdf-card
-                    data-pdf-src="assets/biblia-de-animacao-burnout-academy.pdf"
-                    data-pdf-title="Bíblia de Animação — Burnout Academy"
-                    style="width:100px; height:100px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:38px; cursor:pointer;">📄</button>
-          </div>
+          <span class="pdf-selo"><i></i>PDF · 17 páginas</span>
           <div class="abs" style="left:0; right:0; bottom:0; padding:18px 24px; background:linear-gradient(0deg, rgba(0,0,0,.85), transparent); display:flex; align-items:center; gap:14px; font-size:15px; z-index:2;">
             <span style="font-size:18px;">📄</span>
             <span style="color:rgba(255,255,255,0.75);">biblia-de-animacao-burnout-academy.pdf</span>
+            <span class="pdf-abrir">abrir ↗</span>
           </div>
         </div>
 
@@ -2925,6 +2994,7 @@ o resto você descobre clicando.
       <video id="galLightboxVideo" muted loop playsinline preload="none"></video>
       <div class="gal-progresso" id="galLightboxProgresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
     </div>
+    <div class="gal-lb-tira" id="galLightboxTira"></div>
     <p class="gal-girar" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
            stroke-linecap="round" stroke-linejoin="round">
@@ -3267,15 +3337,33 @@ o resto você descobre clicando.
     /* Todo projeto ganha a mesma nota de rodapé: o que está na tela é
        demonstração, não caso real de cliente. Entra no fim da descrição
        de cada um, uma vez só. */
-    const AVISO = 'Este material trata de temas genéricos e retrata '
-                + 'situações fictícias.';
+    const AVISO = 'Este material trata de temas genéricos de conhecimento '
+                + 'comum e/ou retrata situações fictícias.';
+    /* A ferramenta por categoria, e o crédito de quem produziu. Só
+       entram nas categorias em que a ferramenta é conhecida — inventar
+       ferramenta num portfólio é pior do que não dizer nada. */
+    const FERRAMENTA = {
+      elearning: 'Articulate Storyline'
+    };
+    const CREDITO = 'produção e configuração por mim';
     function porAviso(){
       document.querySelectorAll('.proj-janela .proj-corpo').forEach(function(corpo){
         const p = Array.from(corpo.children).find(function(e){ return e.tagName === 'P'; });
         if (!p || p.querySelector('.aviso-ficcao')) return;
+        const proj = corpo.closest('.proj-janela');
+        const fer  = proj && FERRAMENTA[proj.dataset.category];
+        /* o aviso de ficção é sobre material de cliente. Em projeto
+           autoral não há cliente para proteger, e a nota só polui. */
+        const ficha = corpo.querySelector('.segoe');
+        const eAutoral = !!ficha && ficha.textContent
+          .toUpperCase().replace(/\s+/g, ' ').indexOf('CLIENTE / AUTORAL') > -1;
+        const linhas = [];
+        if (fer) linhas.push('<b>' + fer + '</b> · ' + CREDITO);
+        if (!eAutoral) linhas.push(AVISO);
+        if (!linhas.length) return;
         const nota = document.createElement('span');
         nota.className = 'aviso-ficcao';
-        nota.textContent = AVISO;
+        nota.innerHTML = linhas.join('<br>');
         p.appendChild(nota);
       });
     }
@@ -3415,7 +3503,7 @@ o resto você descobre clicando.
 
       fita.className = 'fita tem';
       fita.innerHTML =
-        '<p class="fita-rot">mais de ' + nomeDaCategoria(cat) + '</p>'
+        '<p class="fita-rot">outros projetos de ' + nomeDaCategoria(cat) + '</p>'
         + '<div class="fita-trilho">'
         + vizinhos.map((c, i) =>
             '<button class="fita-item" data-i="' + i + '" title="' + c.dataset.title + '">'
@@ -4914,6 +5002,22 @@ o resto você descobre clicando.
     const barra = ligarProgresso(card.querySelector('.gal-progresso'), vid);
     const label = card.querySelector('.gal-label');
     const count = card.querySelector('.gal-count');
+
+    /* a trilha nasce aqui e não no HTML: são dez galerias, e o número
+       de segmentos é o tamanho de cada uma */
+    const trilha = document.createElement('div');
+    trilha.className = 'gal-trilha';
+    trilha.innerHTML = telas.map((tela, n) =>
+      '<button data-n="' + n + '" aria-label="Ir para a tela ' + (n + 1)
+      + ': ' + tela.label.replace(/"/g, '&quot;') + '"></button>').join('');
+    card.appendChild(trilha);
+    const segmentos = Array.from(trilha.children);
+    trilha.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      e.stopPropagation();
+      ir(+b.dataset.n);
+    });
     let i = 0;
     /* Cada navegação recebe um número. Sem isso, cliques rápidos deixam
        várias pré-cargas em voo e a última a TERMINAR vence — não a
@@ -4966,6 +5070,8 @@ o resto você descobre clicando.
 
       label.textContent = tela.label;
       count.textContent = (i + 1) + ' / ' + telas.length;
+      segmentos.forEach((b, n) => b.classList.toggle('on', n === i));
+      marcarTira(i);
       precarregar(i + 1);
       precarregar(i - 1);
 
@@ -4988,7 +5094,31 @@ o resto você descobre clicando.
       }
     }
 
-    const api = { ir, get indice(){ return i; } };
+    /* a tira só é montada quando o ampliado abre, e é remontada a cada
+       galeria — dez tiras vivas ao mesmo tempo seria desperdício */
+    function montarTira(){
+      const cx = document.getElementById('galLightboxTira');
+      if (!cx) return;
+      cx.innerHTML = telas.map((tela, n) =>
+        '<button data-n="' + n + '" aria-label="Tela ' + (n + 1) + '">'
+        + '<img src="' + tela.src + '" alt="" loading="lazy"></button>').join('');
+      cx.onclick = e => {
+        const b = e.target.closest('button');
+        if (b) ir(+b.dataset.n);
+      };
+      marcarTira(i);
+    }
+    function marcarTira(n){
+      const cx = document.getElementById('galLightboxTira');
+      if (!cx || galAtiva !== api) return;
+      Array.from(cx.children).forEach((b, k) => {
+        const ligado = k === n;
+        b.classList.toggle('on', ligado);
+        if (ligado) b.scrollIntoView({ block:'nearest', inline:'center', behavior:'smooth' });
+      });
+    }
+
+    const api = { ir, montarTira, get indice(){ return i; } };
 
     card.querySelector('.gal-prev').addEventListener('click', e => { e.stopPropagation(); ir(i - 1); });
     card.querySelector('.gal-next').addEventListener('click', e => { e.stopPropagation(); ir(i + 1); });
@@ -5018,6 +5148,7 @@ o resto você descobre clicando.
     /* Galeria de uma tela só: as setas não levam a lugar nenhum e o
        contador "1 / 1" é ruído. */
     if (telas.length < 2){
+      trilha.style.display = 'none';
       card.querySelector('.gal-prev').style.display = 'none';
       card.querySelector('.gal-next').style.display = 'none';
       count.style.display = 'none';
@@ -5039,6 +5170,12 @@ o resto você descobre clicando.
     document.getElementById('galLightboxPrev').style.display = mostraSetas;
     document.getElementById('galLightboxNext').style.display = mostraSetas;
     galLightboxCount.style.display = mostraSetas;
+    /* a tira só faz sentido quando há mais de uma tela */
+    const tira = document.getElementById('galLightboxTira');
+    if (tira){
+      tira.style.display = api.navegavel ? 'flex' : 'none';
+      if (api.navegavel && api.montarTira) api.montarTira();
+    }
     galLightbox.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     api.ir(api.indice); // preenche o lightbox com a tela atual
@@ -5050,6 +5187,8 @@ o resto você descobre clicando.
     galLightboxVideo.pause();
     galLightbox.classList.remove('is-open');
     document.body.style.overflow = '';
+    const tira = document.getElementById('galLightboxTira');
+    if (tira) tira.innerHTML = '';
     setTimeout(() => { galLightbox.style.display = 'none'; }, 320);
     galAtiva = null;
     if (galFocoAnterior && galFocoAnterior.focus) galFocoAnterior.focus();
