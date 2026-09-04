@@ -180,7 +180,6 @@
     position:absolute; overflow:visible; fill:var(--pink-light);
     transform:translate(-50%,-50%); transform-origin:center;
     animation: faiscaCintila 3.4s ease-in-out infinite;
-    filter: drop-shadow(0 0 5px rgba(255,45,160,.4));
   }
   .faisca:nth-child(3){ fill:#fff; }
   @keyframes faiscaCintila{
@@ -577,7 +576,12 @@
      poucas linhas. */
   .pn-faz{ grid-column:1 / span 2; grid-row:2; }
   .pn-fer{ grid-column:1 / span 2; grid-row:3; }
-  .pn-fer .pn-chips{ align-content:flex-start; }
+  /* São vinte e tantas ferramentas: mesmo justas elas podem passar da
+     altura da linha. Em vez de cortar a lista, a caixa rola — e a
+     barra fica escondida, como no resto do site. */
+  .pn-fer{ min-height:0; }
+  .pn-fer .pn-chips{ align-content:flex-start; max-height:100%; overflow-y:auto; scrollbar-width:none; }
+  .pn-fer .pn-chips::-webkit-scrollbar{ width:0; display:none; }
   /* as barras: uma por pasta, do tamanho do que ela guarda */
   @keyframes pnBarra{ from{ width:0; } }
   .pn-faz ul{ list-style:none; margin:0; padding:0; display:grid; gap:9px; }
@@ -652,9 +656,9 @@
     box-shadow: inset 0 0 0 1px rgba(255,45,160,.55);
   }
 
-  .pn-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pn-chips{ display:flex; flex-wrap:wrap; gap:6px; }
   .pn-chips span{
-    padding:8px 14px; border-radius:99px; font-size:12.5px; color:rgba(255,255,255,.75);
+    padding:5px 11px; border-radius:99px; font-size:11.5px; color:rgba(255,255,255,.75);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
   }
 
@@ -663,6 +667,35 @@
     .pn-foto{ grid-column:auto; grid-row:auto; aspect-ratio:3/4; }
     .pn-sobre, .pn-faz, .pn-fer{ grid-column:1 / -1; grid-row:auto; }
     .pn-num, .pn-livre{ grid-column:auto; grid-row:auto; }
+  }
+  /* O "sobre" é um flex com a bio de um lado e os fatos do outro, e os
+     fatos têm largura fixa de 400px. Numa coluna de 430 sobra nada pra
+     bio — era isso que empilhava uma palavra por linha. Aqui os dois
+     viram um em cima do outro, e o fio que os separava passa a ser
+     horizontal. */
+  @media (max-width: 760px){
+    /* align-items:flex-start vem de cima e, em coluna, encolhe a bio
+       até a largura da maior palavra. Em pilha, os dois esticam. */
+    .pn-duo{ flex-direction:column; align-items:stretch; gap:16px; }
+    .pn-fatos{
+      width:auto; padding-left:0; padding-top:14px;
+      grid-template-columns:1fr 1fr; gap:14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+    }
+  }
+  @media (max-width: 460px){
+    .pn-fatos{ grid-template-columns:1fr; gap:12px; }
+  }
+
+  /* No celular, duas colunas ainda são estreitas demais: o texto do
+     "sobre" caía numa coluna de sessenta pixels e virava uma palavra
+     por linha. Abaixo disto é uma coluna só. */
+  @media (max-width: 640px){
+    .pn{ grid-template-columns:1fr; gap:16px; padding:16px 16px 24px; }
+    .pn-foto, .pn-sobre, .pn-faz, .pn-fer, .pn-num, .pn-livre, .pn-c{
+      grid-column:1 / -1; grid-row:auto;
+    }
+    .pn-foto{ aspect-ratio:4/3; }
   }
 
   /* ---------- Preferências ---------- */
@@ -725,6 +758,11 @@
     letter-spacing:.13em; text-transform:uppercase; color:rgba(255,255,255,.3);
     box-shadow: inset 0 -1px 0 rgba(255,255,255,.08);
   }
+  /* a única linha da lixeira que faz alguma coisa: o bilhete que a
+     pessoa jogou fora pode ser pescado de volta */
+  .lix-ln.de-volta{ cursor:pointer; }
+  .lix-ln.de-volta:hover{ background:rgba(255,255,255,.06); }
+  .lix-ln.de-volta .nm span:last-child{ box-shadow: inset 0 -1px 0 rgba(255,255,255,.3); }
   .lix-ln{
     display:grid; grid-template-columns:minmax(0,2.6fr) .8fr .9fr; gap:16px; align-items:center;
     padding:9px 12px; border-radius:7px; font-size:var(--t-md); color:rgba(255,255,255,.72);
@@ -800,7 +838,11 @@
     font-family:inherit; text-align:left; display:block;
   }
   .fita-item .capa{
-    position:relative; width:100px; aspect-ratio:16/10; border-radius:5px; overflow:hidden;
+    /* sem display:block a caixa é inline, e aí largura e proporção não
+       valem: a miniatura de um projeto em retrato esticava e desalinhava
+       a fileira inteira */
+    display:block; position:relative; width:100px; aspect-ratio:16/10;
+    border-radius:5px; overflow:hidden;
     background:rgba(255,255,255,.05);
     backdrop-filter:blur(14px) saturate(160%); -webkit-backdrop-filter:blur(14px) saturate(160%);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
@@ -846,6 +888,114 @@
     font-family:'Azeret Mono','Consolas',monospace; font-size:9.5px;
     letter-spacing:.05em; line-height:1.7; color:rgba(255,255,255,.34);
   }
+
+  /* ================================================================ */
+  /* ===== A HOME: doodle, busca e atalhos, no meio da mesa ========== */
+  /* ================================================================ */
+  /* A mesa tinha um buraco no meio e a busca vivia escondida atrás de
+     um atalho de teclado. As duas coisas se resolvem juntas: no meio de
+     um computador, o que existe é a home do navegador. Nada aqui se
+     mexe sozinho — só responde a clique. */
+  /* centrada nos dois eixos: presa a um topo fixo, ela descia demais
+     em janela baixa e encostava no dock */
+  .home{
+    position:absolute; z-index:16;
+    left:50%; top:50%; transform:translate(-50%, -50%);
+    width:472px;
+    display:flex; flex-direction:column; align-items:center; gap:20px;
+  }
+
+  /* ---- o doodle ---- */
+  /* O nome é marca d'água, não manchete: apagado até alguém passar o
+     mouse. Quem manda na hierarquia agora é a barra de busca — é ela
+     que faz alguma coisa. A caixa tem a altura do próprio desenho:
+     com altura fixa a letra transbordava sobre a barra. */
+  .doodle{
+    position:relative; width:206px; padding:0; line-height:0;
+    background:none; border:none; cursor:pointer; display:block;
+    opacity:.62; filter:saturate(.5); transition: opacity .26s ease, filter .26s ease;
+  }
+  /* a cor só volta quando alguém chega perto: parado, o nome é marca
+     d'água; no hover ele acorda junto com a mascote */
+  .doodle:hover, .doodle:focus-visible{ opacity:1; filter:saturate(1); }
+  .dd-letras{
+    position:relative; width:100%; height:auto; display:block; overflow:visible;
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,.55));
+  }
+  /* Cada letra é um path, e elas se afastam do cursor uma a uma. A
+     volta é lenta e elástica; a fuga é quase instantânea, senão o
+     movimento chega atrasado e parece emperrado. */
+  /* sem transition: a interpolação agora é a mola do laço de animação.
+     Com as duas juntas, uma atrasava a outra e o movimento arrastava. */
+  .dd-letras path{ will-change: translate; }
+  /* a mascote cochilando em cima do nome */
+  .dd-dorme{ transition: opacity .2s ease; }
+  .dd-zzz{
+    position:absolute; pointer-events:none; opacity:0;
+    font-family:'Azeret Mono','Consolas',monospace; font-size:12px;
+    letter-spacing:.12em; color:rgba(255,255,255,.6);
+    animation: ddZzz 2.6s ease-in-out infinite;
+  }
+  .doodle:hover .dd-zzz{ animation:none; opacity:0; }
+  @keyframes ddZzz{
+    0%{ opacity:0; transform:translateY(4px); }
+    35%{ opacity:.9; }
+    100%{ opacity:0; transform:translateY(-14px); }
+  }
+  .doodle:focus-visible{ outline:2px solid var(--pink-light); outline-offset:8px; border-radius:14px; }
+
+  /* ---- a barra de busca ---- */
+  /* a barra é a coisa que faz algo nesta tela, então é ela que tem o
+     tamanho e o contorno */
+  .hm-busca{
+    width:100%; height:48px; border-radius:99px; cursor:text;
+    display:flex; align-items:center; gap:12px; padding:0 8px 0 18px;
+    background:rgba(20,18,26,.72);
+    backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.13), 0 14px 30px -18px rgba(0,0,0,.85);
+    transition: box-shadow .18s ease, background .18s ease;
+  }
+  .hm-busca:hover, .hm-busca:focus-visible{
+    background:rgba(26,23,34,.86);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.24), 0 16px 34px -16px rgba(0,0,0,.9);
+    outline:none;
+  }
+  .hm-busca svg{ width:16px; height:16px; flex:0 0 auto; color:rgba(255,255,255,.42); }
+  .hm-busca .ph{ flex:1 1 auto; font-size:14px; color:rgba(255,255,255,.42); }
+  .hm-busca kbd{
+    font-family:'Azeret Mono','Consolas',monospace; font-size:8.5px; line-height:1;
+    padding:5px 7px; border-radius:5px; color:rgba(255,255,255,.42);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+  }
+  .hm-busca:hover .ph, .hm-busca:hover svg{ color:rgba(255,255,255,.7); }
+
+  /* ---- os atalhos ---- */
+  .hm-atalhos{ display:flex; gap:18px; justify-content:center; margin-top:2px; }
+  .hm-at{
+    width:82px; padding:0; border:none; background:none; cursor:pointer;
+    font-family:inherit; display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+  .hm-at .capa{
+    width:42px; height:42px; border-radius:50%; overflow:hidden;
+    background:rgba(255,255,255,.07);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    transition: box-shadow .18s ease, transform .18s cubic-bezier(.3,1.4,.5,1);
+  }
+  .hm-at .capa img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hm-at:hover .capa{
+    transform:translateY(-3px);
+    box-shadow: inset 0 0 0 1px rgba(255,45,160,.7);
+  }
+  .hm-at .nm{
+    font-size:11px; line-height:1.25; color:rgba(255,255,255,.55); text-align:center;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+    transition: color .18s ease;
+  }
+  .hm-at:hover .nm{ color:rgba(255,255,255,.9); }
+  .hm-at:focus-visible{ outline:2px solid var(--pink-light); outline-offset:3px; border-radius:10px; }
+
+  /* abaixo disso a home esbarraria nos ícones e na lixeira */
+  @media (max-width: 1240px){ .home{ display:none; } }
 
   /* ---------- dock: só os ícones em linha, sem cápsula ---------- */
   .dock{
@@ -957,7 +1107,7 @@
 
   /* --- leiame.txt: um bloco de notas aberto na mesa --- */
   .leiame{
-    position:absolute; z-index:19; left:296px; bottom:112px; width:304px;
+    position:absolute; z-index:19; left:24px; bottom:26px; width:288px;
     border-radius:12px; overflow:hidden; cursor:grab; touch-action:none;
     background:rgba(20,18,26,.82);
     backdrop-filter:blur(26px) saturate(170%); -webkit-backdrop-filter:blur(26px) saturate(170%);
@@ -972,6 +1122,59 @@
     box-shadow: inset 0 -1px 0 rgba(255,255,255,.08);
   }
   .lei-topo svg{ width:13px; height:14px; flex:0 0 auto; }
+  .lei-pe{ display:flex; justify-content:flex-end; padding:0 14px 13px; }
+  .lei-li{
+    font-family:'Azeret Mono','Consolas',monospace; font-size:9px;
+    letter-spacing:.16em; text-transform:uppercase; cursor:pointer;
+    padding:6px 13px; border:none; border-radius:6px; background:none;
+    color:rgba(255,255,255,.55); box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+    transition: color .16s ease, box-shadow .16s ease;
+  }
+  .lei-li:hover{ color:#fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.36); }
+  /* Amassar e jogar fora. O papel encolhe girando, as bordas viram
+     irregulares — é isso que lê como bola de papel — e aí ele sobe num
+     arco e cai dentro da lixeira, que é onde ele passa a morar. */
+  /* Amassado, o bilhete precisa virar papel: a caixa dele é quase preta
+     e uma bolinha preta numa mesa preta é invisível — a animação rodava
+     e ninguém via. Aqui ele perde o vidro escuro e ganha cor de papel,
+     com vincos de sombra e luz. */
+  .leiame.amassando{
+    pointer-events:none;
+    background:#ded8e6; backdrop-filter:none; -webkit-backdrop-filter:none;
+    background-image:
+      radial-gradient(circle at 30% 34%, rgba(0,0,0,.16), transparent 42%),
+      radial-gradient(circle at 70% 62%, rgba(0,0,0,.18), transparent 44%),
+      radial-gradient(circle at 46% 76%, rgba(255,255,255,.75), transparent 40%),
+      radial-gradient(circle at 22% 68%, rgba(0,0,0,.12), transparent 36%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.2), 0 14px 30px -10px rgba(0,0,0,.85);
+    animation: leiAmassa 1.25s cubic-bezier(.35,0,.55,1) forwards;
+  }
+  .leiame.amassando .lei-topo, .leiame.amassando .lei-corpo, .leiame.amassando .lei-pe{
+    opacity:0; transition: opacity .16s ease;
+  }
+  @keyframes leiAmassa{
+    0%  { transform:none; border-radius:12px; background-color:rgba(20,18,26,.82); opacity:1; }
+    14% { background-color:#ded8e6; }
+    26% { transform:scale(.52) rotate(-16deg); border-radius:46% 54% 38% 62% / 54% 40% 60% 46%; }
+    34% { transform:scale(.40) rotate(12deg);  border-radius:60% 40% 58% 42% / 42% 60% 40% 58%; }
+    42% { transform:scale(.36) rotate(-7deg);  border-radius:44% 56% 62% 38% / 58% 44% 56% 42%; opacity:1; }
+    72% { transform:translate(calc(var(--dx) * .58), calc(var(--dy) * .5 - 150px))
+                    scale(.30) rotate(170deg); border-radius:52% 48% 46% 54% / 50% 52% 48% 50%; opacity:1; }
+    94% { transform:translate(var(--dx), var(--dy)) scale(.16) rotate(330deg);
+          border-radius:50%; opacity:1; }
+    100%{ transform:translate(var(--dx), calc(var(--dy) + 14px)) scale(.12) rotate(345deg);
+          border-radius:50%; opacity:0; }
+  }
+  .lixeira.recebeu svg{ animation: lataBate .45s cubic-bezier(.3,1.4,.5,1); }
+  @keyframes lataBate{
+    0%,100%{ transform:none; }
+    30%    { transform:translateY(3px) scale(1.06, .94); }
+    65%    { transform:translateY(-2px) scale(.97, 1.03); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .leiame.amassando{ animation:none; opacity:0; transition:opacity .2s; }
+    .lixeira.recebeu svg{ animation:none; }
+  }
   .lei-topo .nome{ flex:1 1 auto; }
   .lei-x{
     flex:0 0 auto; width:26px; height:23px; border:none; background:none; cursor:pointer;
@@ -979,8 +1182,8 @@
   }
   .lei-x:hover{ background:#c42b1c; color:#fff; }
   .lei-corpo{
-    padding:16px; white-space:pre-line;
-    font-family:'Consolas','SF Mono','Menlo',monospace; font-size:var(--t-sm); line-height:1.75;
+    padding:13px 15px; white-space:pre-line;
+    font-family:'Consolas','SF Mono','Menlo',monospace; font-size:11px; line-height:1.7;
     color:rgba(255,255,255,.72);
   }
   .lei-corpo b{ color:#fff; font-weight:400; }
@@ -1093,7 +1296,7 @@
 
   /* --- leiame.txt: um bloco de notas aberto na mesa --- */
   .leiame{
-    position:absolute; z-index:19; left:296px; bottom:112px; width:304px;
+    position:absolute; z-index:19; left:24px; bottom:26px; width:288px;
     border-radius:12px; overflow:hidden; cursor:grab; touch-action:none;
     background:rgba(20,18,26,.82);
     backdrop-filter:blur(26px) saturate(170%); -webkit-backdrop-filter:blur(26px) saturate(170%);
@@ -1108,6 +1311,59 @@
     box-shadow: inset 0 -1px 0 rgba(255,255,255,.08);
   }
   .lei-topo svg{ width:13px; height:14px; flex:0 0 auto; }
+  .lei-pe{ display:flex; justify-content:flex-end; padding:0 14px 13px; }
+  .lei-li{
+    font-family:'Azeret Mono','Consolas',monospace; font-size:9px;
+    letter-spacing:.16em; text-transform:uppercase; cursor:pointer;
+    padding:6px 13px; border:none; border-radius:6px; background:none;
+    color:rgba(255,255,255,.55); box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+    transition: color .16s ease, box-shadow .16s ease;
+  }
+  .lei-li:hover{ color:#fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.36); }
+  /* Amassar e jogar fora. O papel encolhe girando, as bordas viram
+     irregulares — é isso que lê como bola de papel — e aí ele sobe num
+     arco e cai dentro da lixeira, que é onde ele passa a morar. */
+  /* Amassado, o bilhete precisa virar papel: a caixa dele é quase preta
+     e uma bolinha preta numa mesa preta é invisível — a animação rodava
+     e ninguém via. Aqui ele perde o vidro escuro e ganha cor de papel,
+     com vincos de sombra e luz. */
+  .leiame.amassando{
+    pointer-events:none;
+    background:#ded8e6; backdrop-filter:none; -webkit-backdrop-filter:none;
+    background-image:
+      radial-gradient(circle at 30% 34%, rgba(0,0,0,.16), transparent 42%),
+      radial-gradient(circle at 70% 62%, rgba(0,0,0,.18), transparent 44%),
+      radial-gradient(circle at 46% 76%, rgba(255,255,255,.75), transparent 40%),
+      radial-gradient(circle at 22% 68%, rgba(0,0,0,.12), transparent 36%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.2), 0 14px 30px -10px rgba(0,0,0,.85);
+    animation: leiAmassa 1.25s cubic-bezier(.35,0,.55,1) forwards;
+  }
+  .leiame.amassando .lei-topo, .leiame.amassando .lei-corpo, .leiame.amassando .lei-pe{
+    opacity:0; transition: opacity .16s ease;
+  }
+  @keyframes leiAmassa{
+    0%  { transform:none; border-radius:12px; background-color:rgba(20,18,26,.82); opacity:1; }
+    14% { background-color:#ded8e6; }
+    26% { transform:scale(.52) rotate(-16deg); border-radius:46% 54% 38% 62% / 54% 40% 60% 46%; }
+    34% { transform:scale(.40) rotate(12deg);  border-radius:60% 40% 58% 42% / 42% 60% 40% 58%; }
+    42% { transform:scale(.36) rotate(-7deg);  border-radius:44% 56% 62% 38% / 58% 44% 56% 42%; opacity:1; }
+    72% { transform:translate(calc(var(--dx) * .58), calc(var(--dy) * .5 - 150px))
+                    scale(.30) rotate(170deg); border-radius:52% 48% 46% 54% / 50% 52% 48% 50%; opacity:1; }
+    94% { transform:translate(var(--dx), var(--dy)) scale(.16) rotate(330deg);
+          border-radius:50%; opacity:1; }
+    100%{ transform:translate(var(--dx), calc(var(--dy) + 14px)) scale(.12) rotate(345deg);
+          border-radius:50%; opacity:0; }
+  }
+  .lixeira.recebeu svg{ animation: lataBate .45s cubic-bezier(.3,1.4,.5,1); }
+  @keyframes lataBate{
+    0%,100%{ transform:none; }
+    30%    { transform:translateY(3px) scale(1.06, .94); }
+    65%    { transform:translateY(-2px) scale(.97, 1.03); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .leiame.amassando{ animation:none; opacity:0; transition:opacity .2s; }
+    .lixeira.recebeu svg{ animation:none; }
+  }
   .lei-topo .nome{ flex:1 1 auto; }
   .lei-x{
     flex:0 0 auto; width:26px; height:23px; border:none; background:none; cursor:pointer;
@@ -1115,8 +1371,8 @@
   }
   .lei-x:hover{ background:#c42b1c; color:#fff; }
   .lei-corpo{
-    padding:16px; white-space:pre-line;
-    font-family:'Consolas','SF Mono','Menlo',monospace; font-size:var(--t-sm); line-height:1.75;
+    padding:13px 15px; white-space:pre-line;
+    font-family:'Consolas','SF Mono','Menlo',monospace; font-size:11px; line-height:1.7;
     color:rgba(255,255,255,.72);
   }
   .lei-corpo b{ color:#fff; font-weight:400; }
@@ -1258,6 +1514,23 @@
     background:rgba(6,5,10,.5); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
   }
   .busca-palco.aberta{ display:flex; animation: menuAbre .14s ease-out; }
+  /* Aberta pela barra da home, a caixa nasce em cima da própria barra:
+     o campo fica onde o cursor já estava e a lista desce dali. Solta no
+     alto da tela, ela parecia outra coisa, sem relação com a barra. */
+  .busca-palco.na-home{ padding:0; align-items:flex-start; justify-content:flex-start; }
+  .busca-palco.na-home .busca-caixa{
+    position:absolute; width:auto; border-radius:24px;
+  }
+  .busca-palco.na-home .busca-caixa input{
+    height:48px; padding:0 20px; font-size:14px;
+    box-shadow:none;
+  }
+  .busca-palco.na-home .busca-lista:not(:empty){
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+    padding:8px 8px 4px;
+  }
+  .busca-palco.na-home .busca-rodape{ padding:7px 16px; }
+  .busca-palco.na-home .busca-rodape:has(+ *){ box-shadow:none; }
   .busca-caixa{
     width:min(560px, 84%); border-radius:16px; overflow:hidden;
     background:rgba(26,22,34,.96);
@@ -1438,14 +1711,8 @@
   .logo-link:hover, .logo-link:focus-visible{ transform: scale(1.07) rotate(-2deg); }
 
   .pill{ transition: all .15s ease, transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease; }
-  .pill:hover{ transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255,45,160,0.16); }
+  .pill:hover{ transform: translateY(-2px); }
   .pill:active{ transform: translateY(0) scale(.94); }
-
-  .a11y-badge{ animation: pulseGlow 3.2s ease-in-out infinite; }
-  @keyframes pulseGlow{
-    0%,100%{ box-shadow: 0 0 0 0 rgba(255,45,160,0.35); }
-    50%{ box-shadow: 0 0 16px 4px rgba(255,45,160,0.22); }
-  }
 
   .nav-item{ transition: transform .25s cubic-bezier(.22,1,.36,1); }
   .nav-item:hover, .nav-item:focus-visible{ transform: translateX(8px); }
@@ -1592,6 +1859,19 @@
   #pdfModal.is-open{ opacity:1; }
   .pdf-modal-box{ transform: scale(.93) translateY(24px); transition: transform .4s cubic-bezier(.22,1,.36,1); }
   #pdfModal.is-open .pdf-modal-box{ transform: scale(1) translateY(0); }
+  /* Tela cheia de verdade quando o navegador deixa; quando não deixa,
+     a caixa toma a janela inteira. Antes o teto eram 980px, e num
+     monitor grande o PDF ficava do tamanho de um selo. */
+  /* o padding de 24px é inline no elemento, então só um !important
+     o vence; e sem flex:none a caixa encolheria de volta pro espaço
+     disponível em vez de ocupar a janela inteira */
+  #pdfModal.cheio{ padding: 0 !important; }
+  #pdfModal.cheio .pdf-modal-box{
+    width: 100vw !important; height: 100vh !important;
+    flex: 0 0 auto; transform: none !important;
+  }
+  .pdf-modal-box:fullscreen{ width: 100vw !important; height: 100vh !important; }
+  .pdf-modal-close.ligado{ background: rgba(255,45,160,.28); }
 
   /* ================================================================ */
   /* ===== Respeita preferência do usuário por menos movimento ======== */
@@ -1637,35 +1917,45 @@
      com faixa lateral. */
   .gal-img.is-retrato, .gal-video.is-retrato{ object-fit: contain; }
 
-  /* As setas do cartão saíram. Elas existiam quando eram a única forma
-     de navegar; com a trilha no topo — que mostra onde você está e leva
-     a qualquer tela num clique — viraram a terceira maneira de fazer a
-     mesma coisa, cobrindo a arte e disputando o rosa com a própria
-     trilha. Continuam existindo o teclado e o arraste.
-     Ficam no DOM, invisíveis: o JS ainda as usa como alvo de clique
-     programático e o leitor de tela ainda as anuncia. */
+  /* As setas voltaram — mas não como o botão redondo rosa em cima da
+     arte, que era o desenho que incomodava. Agora são duas faixas
+     coladas nas bordas: escurecem só o que está debaixo delas,
+     aparecem quando o mouse entra no cartão e somem quando sai. Param
+     antes da barra de baixo, pra não disputar o clique com a trilha. */
   .gal-nav{
-    position: absolute; top: 50%; transform: translateY(-50%);
-    width: 1px; height: 1px; padding: 0; margin: 0; border: 0;
-    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
-    background: none; color: transparent; z-index: 3; cursor: pointer;
+    position: absolute; top: 0; bottom: 56px; width: 76px;
+    padding: 0; margin: 0; border: 0; z-index: 3; cursor: pointer;
+    display: flex; align-items: center;
+    color: #fff; font-size: 38px; line-height: 1;
+    text-shadow: 0 2px 14px rgba(0,0,0,1), 0 0 3px rgba(0,0,0,.9);
+    /* o escuro se concentra na borda, que é onde o sinal fica: no meio
+       da faixa o degradê já quase acabou e sobre um slide claro a seta
+       sumiria */
+    background: linear-gradient(90deg, rgba(8,7,11,.74) 0%, rgba(8,7,11,.46) 46%, rgba(8,7,11,0) 100%);
+    opacity: 0; transition: opacity .2s ease;
   }
+  .gal-prev{ justify-content: flex-start; padding-left: 16px; }
+  .gal-next{
+    justify-content: flex-end; padding-right: 16px;
+    background: linear-gradient(270deg, rgba(8,7,11,.74) 0%, rgba(8,7,11,.46) 46%, rgba(8,7,11,0) 100%);
+  }
+  .gallery-card:hover .gal-nav{ opacity: .8; }
+  .gal-nav:hover{ opacity: 1; }
   .gal-nav:focus-visible{
-    width: 44px; height: 44px; clip-path: none; overflow: visible;
-    border-radius: 8px; color: #fff; font-size: 24px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(10,9,13,.85);
-    box-shadow: inset 0 0 0 2px var(--pink-light);
+    opacity: 1; outline: 2px solid var(--pink-light); outline-offset: -4px;
   }
-  .gal-prev{ left: 18px; }
-  .gal-next{ right: 18px; }
-  /* a dica de que dá pra navegar, já que não há mais botão visível */
+  .gal-prev{ left: 0; }
+  .gal-next{ right: 0; }
+  /* enquanto se arrasta, nada de selecionar texto nem carregar a imagem */
+  .gallery-card.arrastando{ cursor: grabbing; user-select: none; }
+  .gal-img{ -webkit-user-drag: none; user-drag: none; }
+  /* a dica sobe pro canto de cima, que ficou livre quando a trilha desceu */
   .gal-dica{
-    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
-    z-index: 3; pointer-events: none;
+    position: absolute; right: 16px; top: 12px;
+    z-index: 4; pointer-events: none;
     font-family: 'Azeret Mono','Consolas',monospace; font-size: 9px;
     letter-spacing: .14em; text-transform: uppercase;
-    color: rgba(255,255,255,.28);
+    color: rgba(255,255,255,.5); text-shadow: 0 1px 8px rgba(0,0,0,.9);
     opacity: 0; transition: opacity .25s ease;
   }
   .gallery-card:hover .gal-dica{ opacity: 1; }
@@ -1840,10 +2130,10 @@
 
   /* ---- Galeria em telas pequenas ---- */
   @media (max-width: 1024px){
-    /* Sem hover no toque: as setas ficam sempre visíveis, e menores. */
-    .gal-nav{ opacity: 1; width: 42px; height: 42px; font-size: 24px; }
-    .gal-prev{ left: 8px; }
-    .gal-next{ right: 8px; }
+    /* Sem hover no toque: as setas ficam sempre visíveis, e mais estreitas. */
+    .gal-nav{ opacity: 1; width: 50px; font-size: 26px; bottom: 48px; }
+    .gal-prev{ left: 0; }
+    .gal-next{ right: 0; }
     .gal-bar{ padding: 30px 14px 12px; font-size: 13px; gap: 10px; }
     .proj-corpo > .gallery-card{
       aspect-ratio: 16 / 9;
@@ -1919,7 +2209,14 @@
      ================================================================ */
   @media (max-width: 900px), (max-height: 520px){
 
-    html, body{ height:auto; overflow:hidden auto; overscroll-behavior-y:none; }
+    /* Quem rola é o html. Antes o body também era `overflow-y:auto`, o
+       que faz dele um porto de rolagem — só que sem nada pra rolar,
+       porque a altura dele é a do conteúdo. E o `overscroll-behavior
+       :none` nele impedia o gesto de passar adiante pro html. Resultado:
+       o dedo arrastava e a página não saía do lugar, embora rolasse por
+       JS e a barra de rolagem aparecesse. */
+    html{ height:auto; overflow-x:hidden; overflow-y:auto; overscroll-behavior-y:none; }
+    body{ height:auto; overflow:visible; }
     #app{ height:auto; }
 
     /* a mesa sai do modo tela-fixa e vira uma coluna que rola */
@@ -1970,13 +2267,10 @@
     .lixeira:active{ background:rgba(255,255,255,.09); }
     .lixeira .arte, .lixeira svg{ max-width:74px; margin:0 auto; }
 
-    /* ---- 4. o recado, no fim da coluna ---- */
-    .leiame{
-      position:static !important; left:auto !important; top:auto !important;
-      right:auto; bottom:auto; order:4; width:100%;
-      margin:20px 0 0; opacity:1; cursor:default; touch-action:auto;
-    }
-    .leiame .lei-x{ display:none; }
+    /* ---- 4. o recado fica fora do celular ----
+       Ele é um objeto de mesa: no telefone não há mesa, e ele só empurrava
+       o resto pra baixo. */
+    .leiame{ display:none !important; }
 
     /* ---- 5. a janela vira tela cheia ---- */
     .janela{
@@ -2220,7 +2514,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="missao" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+        <div class="abs gallery-card" data-gallery="missao" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-missao/01-capa.jpg" alt="Capa do curso: Missão — Seja um Estrategista" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2262,7 +2556,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="onboarding" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+        <div class="abs gallery-card" data-gallery="onboarding" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-onboarding/slide-01.jpg" alt="Capa da apresentação Onboarding Gerente B1" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2304,7 +2598,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="higher" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+        <div class="abs gallery-card" data-gallery="higher" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-higher/slide-01.jpg" alt="Capa do treinamento Alcançando a Principalidade" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2346,7 +2640,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="prospera" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+        <div class="abs gallery-card" data-gallery="prospera" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-prospera/m1-s01.jpg" alt="Capa do treinamento Formação Dono do Negócio" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2388,7 +2682,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="gol" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
+        <div class="abs gallery-card" data-gallery="gol" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0b0b0d;">
           <img class="gal-img" src="assets/telas-gol/slide-01.jpg" alt="Capa da apresentação Team Building da GOL" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2430,7 +2724,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / OUTROS</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="cex" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b1430;">
+        <div class="abs gallery-card" data-gallery="cex" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0b1430;">
           <img class="gal-img" src="assets/telas-cex/m04-prework-p1.jpg" alt="Capa do pre-work WFM e dimensionamento" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2609,7 +2903,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / E-LEARNING</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="financas" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0a0406;">
+        <div class="abs gallery-card" data-gallery="financas" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0a0406;">
           <img class="gal-img" src="assets/telas-financas/percurso.jpg" alt="Capa do curso Banco Ouri Finance" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2650,7 +2944,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / OUTROS</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="convite" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0b0d14;">
+        <div class="abs gallery-card" data-gallery="convite" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0b0d14;">
           <img class="gal-img" src="assets/telas-convite/p1.jpg" alt="Primeira página do convite de projeto" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2691,7 +2985,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / OUTROS</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="motion" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0d0c11;">
+        <div class="abs gallery-card" data-gallery="motion" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0d0c11;">
           <img class="gal-img" src="assets/motion-poster.webp" alt="Letras recortadas de revista formando as palavras sobre fundo amarelo" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2705,7 +2999,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Motion em colagem de papel: sol, nuvens e recortes que entram sobre fundo chapado, e uma tipografia montada letra por letra, cada uma de uma fonte, como carta anônima. O trabalho está no ritmo.
+          Motion em colagem de papel: sol, nuvens e recortes que entram sobre fundo chapado, e uma tipografia montada letra por letra, cada uma de uma fonte.
         </p>
 
       </div>
@@ -2732,7 +3026,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / OUTROS</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="manipulacoes" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0d0c11;">
+        <div class="abs gallery-card" data-gallery="manipulacoes" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0d0c11;">
           <img class="gal-img" src="assets/manip-01.webp" alt="Bailarinas saltando sobre um lago ao lado de um golfinho" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2746,7 +3040,7 @@
         </div>
 
         <p class="abs" style="left:143px; top:904px; width:734px; font-size: calc(21px * var(--font-scale)); font-weight:400; line-height:1.6; color: rgb(255 255 255 / 80%); margin:0;">
-          Colagem digital: cenas impossíveis montadas de fotos avulsas, onde o trabalho está em fazer partes que nunca se encontraram parecerem da mesma luz. <span class="pink-bold">É onde eu treino o olho para o que ainda não existe.</span>
+          Manipulação de imagem feita manualmente no Photoshop.
         </p>
 
       </div>
@@ -2773,7 +3067,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="performance" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#0d1520;">
+        <div class="abs gallery-card" data-gallery="performance" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#0d1520;">
           <img class="gal-img" src="assets/telas-performance/s001.jpg" alt="Capa do Treinamento de Performance" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -2814,7 +3108,7 @@
           <span><span class="pink-bold">CATEGORIA</span> / APRESENTAÇÕES</span>
         </div>
 
-        <div class="abs gallery-card" data-gallery="aguias" style="left:37px; top:124px; width:945px; height:531px; border-radius:14px; overflow:hidden; background:#1a1008;">
+        <div class="abs gallery-card" data-gallery="aguias" style="left:37px; top:124px; width:945px; height:496px; border-radius:14px; overflow:hidden; background:#1a1008;">
           <img class="gal-img" src="assets/telas-aguias/auxilios-s01.jpg" alt="Capa do treinamento de primeiros socorros" />
           <video class="gal-video" muted loop playsinline preload="none"></video>
           <div class="gal-progresso" aria-hidden="true"><div class="gal-progresso-trilha"><div class="gal-progresso-preenchido"></div><div class="gal-progresso-alca"></div></div></div>
@@ -3128,13 +3422,45 @@
       </div>
       <div class="lei-corpo" id="leiameCorpo"><b>oi, esse é o meu computador.</b>
 fica à vontade pra abrir tudo —
-nada aqui quebra, e a lixeira
-tem coisa que não deu certo.
-
 as quatro pastas são os projetos.
 o resto você descobre clicando.
 
-— celeste<span class="lei-cursor" aria-hidden="true"></span></div>
+essa mensagem irá se autodestruir
+após sua leitura.<span class="lei-cursor" aria-hidden="true"></span></div>
+      <div class="lei-pe"><button class="lei-li" id="leiameLi">li</button></div>
+    </div>
+
+    <!-- ---------- a home no meio da mesa ---------- -->
+    <div class="home" id="home">
+      <button class="doodle" id="doodle" aria-label="Doodle da Celeste">
+        <svg class="dd-letras" viewBox="0 0 1511.101 903.201" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="celeste gouvêa">
+        <g id="Grupo_420" data-name="Grupo 420" transform="translate(-148.958 -25.766)">
+        <path id="Caminho_29" data-name="Caminho 29" d="M496.991,21.26c24.681-1.546,58.341-2.4,82.554,1.893,17.386,2.5,22.648,14.989,23.361,30.639,2.137,31.716,5.714,128.79-13.183,158.161-24.247,33.661-88.529,17.994-126.012,20.634-9.274.573-17.629.99-25.41,5.437-7.816,4.186-12.558,14.746-5.7,21.954,6.044,6.565,16.622,7.729,25.306,7.92,34.061.9,85.108-5.315,114.617,2.883,21.1,5.228,28.885,23.848,29.806,43.509,1.928,28.242.346,61.607-3.04,90.509-6.565,62.65-33.817,64.161-89.64,65.863-57.092,2.31-126.064,3.491-169.4-37.291-78.3-83.388-53.027-271.441,16.9-354.933,35.172-40.4,86.6-53.965,139.455-57.126h.382Z" transform="translate(-143.057 5.785)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_30" data-name="Caminho 30" d="M410.412,21.417c37.239-2.987,75.521-.573,112.655,1.042,11.845.469,25.463.608,36.666,4.829C574.1,32.2,575.7,46.064,576.32,59.021c.677,10.769.677,21.885.486,32.723-.331,14.937-.816,28.572-1.98,43.4-1.163,20.5-6.982,34.2-30.361,34.251-16.883.573-35.745-2.744-52.575-2.136-6.114.191-12.992,2.084-16.4,6.809-4.794,6.01-1.407,23.709,6.166,25.306,6.844,1.754,14.26.99,21.294,1.042,14.973-.33,31.525-.608,47.469,1.32C598.049,207,623.65,228.558,633.2,268c12.332,60.392,3.978,129.676-44.169,172.577-45.646,36.753-135.808,30.986-192.448,30.274-13.235-1.042-31.316-.521-41.755-8.146-10.23-7.694-10.526-21.607-11.255-33.14-1.389-29.041-.086-67.252,2.623-99.611,1.6-15.267,2.049-20.339,6.7-34.894C356,285.841,363.03,277.886,372.583,275c21-6.809,59.61-2.64,85.108-2.935,9.657.625,24.993-3.821,21.259-15.736-3.787-8.042-14.173-7.625-23.239-8.615-18.863-1.98-38.646.139-58.152-1.7-22.7-1.563-43.005-11.724-47.035-33.817-6.062-31.976-6.652-150.432,17.647-176.068,9.309-10.925,26.922-13.339,41.755-14.572h.434Z" transform="translate(691.755 5.767)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_31" data-name="Caminho 31" d="M714.43,152c-4.949,4.655-12.592,5.35-19.21,5.992-40.122,3.456-84.221-1.112-124.831,3.786-32.809,3.179-46.514,16.17-46.739,49.276-4.394,73.106,8.337,152.464.14,224.927-2.188,16.691-20.235,18.029-33.939,18.168-12.35.226-26.523,0-38.647-1.476-13.843-1.06-20.182-10.474-20.078-23.778-2.9-73.488,4.933-150.692.469-223.433-.66-8.528-1.32-17.595-5.229-25.341-10.022-20.843-43.961-10.612-59.245-19.644-8.719-5.489-8.25-17.925-9.275-27.2-1.164-20.6-1.025-50.926-.086-71.942.642-9.779.694-21.207,5.262-29.909,7.642-12.037,32.167-8.493,45.4-9.188,96.293-1.094,194.549-5.523,290.755,2.31,14.728,1.06,21.259,10.925,21.207,24.664.1,16.691,5.454,93.2-5.731,102.563Z" transform="translate(920.928 5.78)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_32" data-name="Caminho 32" d="M646.664,324.609c10.768,14.572,4.515,65.255,4.933,84.569-.921,23.4-1.581,42.067-30.934,42.484-80.036,2.119-162.433,4.273-241.948.5-15.719-1.615-37.1,4.221-49.032-8.563-4.812-6.114-4.568-16.049-4.4-23.9,3.734-124.622-7.312-252.127.747-375.9.747-19.87,20.617-24,37.2-23.691,14.729.695,43.249-2.9,53.635,6.583,4.065,4.134,5.592,11.307,5.975,17.282,2.71,49.067-1.216,101.261-2.189,152.065-.416,21.694-.382,43.127.939,63.952.695,10.161,1.529,21.242,6.7,30.222,8.476,15.076,27.825,17.108,43.631,18.533,46.878,4.186,96.71,2.484,143.918,6.288,10.161,1.337,23.032,1.893,30.569,9.258l.244.226Z" transform="translate(364.37 5.784)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_33" data-name="Caminho 33" d="M504.911,445.8c-20.618,14.225-130.093,6.652-159.534,4.273-16.205-1.06-29.718-6.9-31.021-24.421-9.292-95.095-.9-194.358-.086-289.557.521-28.8.329-57.2,3.925-85.82,1.337-20.461,18.74-25.185,36.925-27.026,37.256-4.134,90.856-3.856,128.443-1.789,8.441.695,19.279.868,26.053,5.923,16.205,12.106,4.932,101.417,5.992,123.441.087,19.818-17.421,25.272-35.1,25.046-23.36.5-50.594-3.352-72.306.834-11.708,1.928-21.816,14.451-16.066,25.5,9.917,16.24,44.829,7.712,62.285,8.806,22.735-.538,40.8,1.146,42.432,27.3,1.58,15.684,2.5,38.906-16.917,43.023-24.8,4.915-51.169-1.372-75.955,3.074-12.089,1.146-17.125,13.53-12.471,23.361,6.757,17.7,91.152,1.789,111.092,14.816,12.662,7.382,9.934,23.483,11.272,36.336a583.422,583.422,0,0,1-.278,60.739c-.625,8.806-1.251,19.262-8.3,25.862l-.294.226Z" transform="translate(151.589 5.77)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_34" data-name="Caminho 34" d="M438.513,20.141c20.773-.139,44.082-.365,65.185.417,15.407,1.3,38.663-.834,46.619,14.607,3.542,6.93,4.585,14.868,4.585,22.493,0,4.429.607,24.039-3.214,41.39-3.856,17.577-22.753,18.828-38.663,19.3-20.965.695-42.206-1.025-63.171-.139-8.146.469-17.178.469-23.726,5.628-7.868,6.878-2.415,15.337,7.712,16.031,23.187,2.71,49.8-.087,72.307,1.025,12.957.469,26.192.886,28.867,15.441,4.568,20.877-4.567,29.145-25.2,29.892-22.181,1.442-47.887-2.136-69.754-.608-6.218.382-14.695,2.848-15.771,9.588-.191,10.317,14.416,10.56,22.18,11.116,28.78,1.337,58.932-3.022,87.938.643,23.882,1.824,21.989,39.618,20.773,58.394-.8,15.962-3.542,29.857-22.144,31.021-35.833,2.657-69.459,1.3-105.5.052-22.892-1.546-45.975-1.772-66.974-9.727-15.633-5.905-23.5-20.912-26.036-36.822-7.208-48.772-4.62-122.607-.243-172.126,1.842-14.833,3.3-36.683,14.642-46.636,16.344-14.5,67.079-9.952,89.206-11.029h.383Z" transform="translate(478.972 5.775)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_35" data-name="Caminho 35" d="M458.279,169.219c-3.856,9.344,6.426,14.8,15.562,14.659,23.813,1.511,48.633-1.98,72.064,3.022,11.41,3.057,12.348,15.424,12.731,25.046.66,13.513.521,30.569-.087,44.221-.574,8.2-.434,17.595-5.3,24.594-6.114,7.451-18.342,7.225-27.529,8.163-37.256,1.581-92.472,3.717-128.93-3.109-29.145-6.427-24.334-30.274-25.845-52.419-2.449-56.24-6.461-118.421,3.3-173.724,2.918-13.878,15.094-23.049,29.337-25.22,23.813-4.655,64.508-5.106,94.73-3.856,13.634.921,27.356.486,40.278,5.089a15.725,15.725,0,0,1,10.751,13.965c1.511,11.516,1.181,32.393-1.216,43.214-.9,4.169-2.831,7.521-7.312,9.258-6.461,2.484-16.552,3.37-24.334,3.717-12.974.486-28.728-1.06-41.789-.347a29.136,29.136,0,0,0-10.144,2.206c-5.367,2.275-8.945,8.424-6.131,13.53,3.542,6.427,12.557,6.913,19.488,6.948,16.587.764,47.1-4.69,58.134,3.995,6.374,6.739,5.957,19.627.052,26.765-5.036,5.575-13.443,5.367-24.142,5.888-11.88.4-24.577.278-36.353.538-6.566.313-15.284-.087-17.213,3.769l-.1.174Z" transform="translate(1100.987 169.458)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_36" data-name="Caminho 36" d="M425.722,47.474c28.207-.729,72.271-1.181,96.484,3.057,22.319,3.543,25.254,24.317,25.949,43.388,1.65,30.187,1.6,63.431-2.57,93.462-2.884,23.014-12.385,39.01-37.135,42.067-19.349,3.37-37.742,1.459-57.561,1.129-11.828.191-25.758-1.042-34.146,6.687-13.722,13.322-11.151,69.962,8.388,81.043,5.628,3.144,13.062,5.7,19.349,3.283,4.95-1.963,6.687-8.042,4.307-12.506-2.57-5.228-9.257-8.424-11.289-14.607a17.254,17.254,0,0,1,4.047-17.317c4.724-4.828,13.2-4.776,21.225-5.419,16.552-1.007,39.254-.955,52.784-.365,9.952.5,22.094,2.1,29.076,9.727,4.9,5.7,5.4,13.878,5.628,21.433.191,9.275.33,19.054.781,28.329,2.154,49.206,2.344,82.415-1.789,131.483-1.285,15.562-18.984,16.57-31.316,17.612-55.39,2.64-120.956,4.186-169.156-27.756-73.366-57.161-60.061-202.608-44.846-287.889C317.966,88.083,349.473,48.239,425.357,47.474h.366Z" transform="translate(-143.053 447.731)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_37" data-name="Caminho 37" d="M458.453,47.049c38.367.226,61.538-3.3,92.8,22.753,31.524,31.316,32.323,90.44,35.848,138.048,2.71,62.007,7.868,124.83,2.05,186.889-1.389,14.816-3.526,29.77-9.066,43.717-5.853,15.684-17.994,29.892-34.008,35.085-33.539,9.848-64.925,7.938-101.174,6.548-23.952-.92-54.8-5.124-66.47-28.8-17.682-45.541-13.392-132.507-6.045-183.641,11.307-68.52,51.308-65.863,117.275-64.89,10.561.591,21.016-6.878,13.444-16.83-7.313-7.434-22.527-5.558-32.844-5.975-21.4-.313-43.682,1.39-65.22.33-35.781-.452-32.706-18.567-33.87-47.191-.365-18.585-.226-36.787.521-51.1,1.164-19.679,5.385-29.128,27.635-32.063,18.932-2.935,40.052-2.605,58.793-2.883h.33ZM486.5,273.3c-13.773,4.03-13.443,42.467-8.892,53.34,4.237,11.794,19.626,15.458,27.026,4.533,4.134-5.68,4.464-14.764,4.881-23.518.1-9.136,1.076-20.235-3.11-27.026-3.717-6.461-12.47-9.674-19.591-7.417Z" transform="translate(1068.245 447.74)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_38" data-name="Caminho 38" d="M347.788,48.664a264.26,264.26,0,0,1,53.183-.59c11.585.538,18.567,10.143,18.655,21.972,2.6,35.016-2.744,72.81-.4,107.322-.434,13.252,8.754,30.1,22.649,21.051,18.568-21.468-1.3-108.4,10.63-139.246,4.012-8.58,13.634-10.143,21.919-10.682,18.2-1.007,37.448-2.154,55.616,1.355,9.9,1.285,14.763,9.327,14.676,19.575,3.439,85.681,5.02,171.275,3.544,256.973-3.839,49.623,8.232,127.783-47.451,148.66-35.711,9.014-92.073,9.136-125.8-6.218-51.534-29.7-45.993-156.98-49.137-202.869-1.511-55.615-4.221-112.325-2.032-167.766,1.563-21.937-5.4-47.07,23.552-49.484h.346Z" transform="translate(364.379 447.741)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_39" data-name="Caminho 39" d="M569.527,185.991c-24.456,19.314-107.514-7.017-127.662,15.128-5.106,6.409-5.106,16.709,2.38,20.165,24.889,5.61,52.089-.608,77.152,2.05,17.421.851,32.289,2.692,32.48,25.515.486,12-2.675,24.681-11.464,30.656-29.266,14.607-65.741-1.32-96.4,7.538-9.518,2.953-9.831,16.952-.139,20.079,30.621,4.273,63.535-.139,94.556,2.327,8.875.573,19.158,1.424,26.835,6.409,15.6,11.811,6.809,38.42,8.962,56.032-.625,35.763,5.471,76.284-2.8,111.352-6.844,16.083-26.922,12.036-40.661,13.7-39.6,1.667-84.465-.191-123.2-2.084-16.1-1.372-37.8,3.422-49.1-11.672-3.839-5.454-5.333-12.575-6.148-19.835-3.144-99.923-3.11-200.559.277-300.378,1.078-25.48-.59-51.9,2.345-77.431,1.268-16.275,7.174-33.643,24.664-34.911,14.433-2.275,30.03-2.188,44.638-2.8,42.849-.347,93.671-5.228,136.415,2.5,11.36,3.37,14.018,15.945,14.07,26.765-.591,22.354,5.4,94.469-6.982,108.695l-.226.243Z" transform="translate(839.081 431.371)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_40" data-name="Caminho 40" d="M416.8,46.26c36.249-.938,83.319-.834,107.7,27.495,11.723,15.684,14.677,33.47,17.959,53.131,5.245,36.735,4.359,72.915,5.941,109.181,2.743,71.282,7.259,145.482-8.39,215.721-8.494,35.519-36.561,43.266-74.1,44.447-33.418,1.442-72.671,3.422-107.618-4.134-19.575-4.273-29.979-12.853-36.353-31.959-10.022-29.84-10.265-65.324-11.881-96.849-2.5-84.465-6.287-180.862,13.392-263.59,12.019-44.2,45.108-51.568,92.837-53.444h.5Zm9.709,160.627c-25.758,6.7-16.188,85.924-16.4,107.687.938,13.287-1.216,14.555,8.059,25.445,6.722,7.5,21.833,6.7,27.374-2.015,4.967-7.382,6.183-16.205,7.363-24.594a290.7,290.7,0,0,0-.4-75.034c-1.668-13.1-7.885-34.877-25.655-31.542l-.347.1Z" transform="translate(118.849 431.368)" fill="#fe80f1" fill-rule="evenodd"/>
+        <path id="Caminho_41" data-name="Caminho 41" d="M500.826,48.655c18.1-2.206,42.363-1.98,59.593-.643,14.033.452,19.817,12.627,19.765,25.185-3.126,89.971-6.357,181.192-20.044,270.538-5.731,33.227-11.133,68.416-26.435,98.794-7.486,14.121-16.015,25.046-29.337,31.212-25.2,10.387-71.82,9.049-97.491,1.563-74.252-19.262-63.1-266.317-67.287-333.135.712-22.2-8.337-67.513,3.8-84.83,8.858-11.446,39.983-8.094,54.955-9.136,15.736.313,37.569-2.119,42.832,15.806,3.266,14.607,2.032,30.378,2.31,44.9,0,10.56-.173,21.642-.608,32.9-.086,16.587-2.38,108.781,1.841,124.865,2.189,8.181,12.037,13.826,19.714,9.136,11.9-8.215,7.295-106.471,9.154-119.394.886-17.907,1.649-36.058,2.309-54.121,1.7-22.892-7.677-49.276,24.542-53.548h.382Z" transform="translate(593.543 447.732)" fill="#fe80f1" fill-rule="evenodd"/>
+        </g>
+        </svg>
+        <span class="dd-zzz" id="ddZzz" aria-hidden="true">z z</span>
+      </button>
+      <div class="hm-busca" id="hmBusca" role="button" tabindex="0"
+           aria-label="Buscar por nome, cliente ou categoria">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6 20 20"/>
+        </svg>
+        <span class="ph" id="hmBuscaTxt">Buscar por nome, cliente ou categoria…</span>
+        <kbd>ctrl</kbd><kbd>K</kbd>
+      </div>
+      <div class="hm-atalhos" id="hmAtalhos"></div>
     </div>
 
     <!-- ---------- busca (Ctrl/⌘ + K) ---------- -->
@@ -3224,10 +3550,11 @@ o resto você descobre clicando.
 
   <!-- ============ POP-UP DO VISUALIZADOR DE PDF ============ -->
   <div id="pdfModal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.78); align-items:center; justify-content:center; padding:24px;">
-    <div class="pdf-modal-box" style="width:min(980px,94vw); height:min(88vh,1150px); background:#1b1b1e; display:flex; flex-direction:column; overflow:hidden;">
+    <div class="pdf-modal-box" style="width:min(1360px,96vw); height:min(94vh,1500px); background:#1b1b1e; display:flex; flex-direction:column; overflow:hidden;">
       <div style="display:flex; align-items:center; gap:16px; padding:16px 22px; background:#141416; border-bottom:1px solid rgba(255,255,255,0.08); flex:0 0 auto;">
         <span aria-hidden="true" style="font-size:18px; color:rgba(255,255,255,0.85); line-height:1;">☰</span>
         <span id="pdfModalTitle" class="segoe" style="flex:1; font-size:15px; color:rgba(255,255,255,0.92); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Bob — Desenvolvimento de Personagem (Burnout Academy)</span>
+        <button id="pdfModalCheio" class="pdf-modal-close" title="Tela cheia" aria-label="Ver em tela cheia" style="font-size:15px; color:#fff;">⛶</button>
         <button id="pdfModalClose" class="pdf-modal-close" title="Fechar" aria-label="Fechar visualizador de PDF" style="font-size:17px; color:#fff;">✕</button>
       </div>
       <iframe id="pdfModalFrame" title="Visualizador de PDF" src="assets/bob-character-design.pdf" style="flex:1 1 auto; width:100%; border:0; background:#525659;"></iframe>
@@ -3281,6 +3608,29 @@ o resto você descobre clicando.
         'Projetos':'Projects', 'pasta':'folder',
         'Resumo profissional':'Profile', 'Currículo.pdf':'Resume.pdf',
         'Lixeira':'Trash', 'leiame.txt':'readme.txt',
+        /* o painel do Resumo */
+        "designer gráfico":"graphic designer",
+        "sobre":"about",
+        "Designer com experiência em <b>educação corporativa e aprendizagem digital</b>: cursos interativos, materiais multimídia, identidade visual, motion e interface.":"Designer working in <b>corporate education and digital learning</b>: interactive courses, multimedia material, visual identity, motion and interface.",
+        "atualmente":"currently",
+        "Designer Gráfico Jr. na <b>REVVO</b><br>desde 2023":"Junior Graphic Designer at <b>REVVO</b><br>since 2023",
+        "formação":"education",
+        "Pós em Animação &amp; Cenários Digitais · Belas Artes, 2026<br>Design Gráfico · Estácio de Sá, 2023":"Postgrad in Animation &amp; Digital Environments · Belas Artes, 2026<br>Graphic Design · Estácio de Sá, 2023",
+        "o que eu faço":"what i do",
+        "e também":"and also",
+        "Todo tipo de material gráfico, <b>impresso e digital</b>: e-books, cartilhas, relatórios corporativos, PDFs interativos e materiais educacionais · identidade visual, folders, flyers, cartões, embalagens, adesivos e sinalização corporativa.":"Every kind of graphic material, <b>print and digital</b>: e-books, handbooks, corporate reports, interactive PDFs and educational material · visual identity, folders, flyers, cards, packaging, stickers and corporate signage.",
+        "ferramentas":"tools",
+        "números":"numbers",
+        "projetos publicados":"projects published",
+        "categorias":"categories",
+        "anos em e-learning":"years in e-learning",
+        "onde me achar":"where to find me",
+        "Aceitando projetos":"Taking on projects",
+        "currículo em PDF":"resume as PDF",
+        'Buscar por nome, cliente ou categoria…':'Search by name, client or category…',
+        'Abrir um projeto ao acaso':'Open a random project',
+        'estou com sorte':"i'm feeling lucky",
+        'Tela cheia':'Full screen', 'Sair da tela cheia':'Exit full screen',
         'Buscar projeto…':'Search projects…', 'Arrumar ícones':'Tidy icons',
         'Preferências…':'Preferences…', 'Sobre a Celeste':'About Celeste',
         'Bom dia! Que bom te ver por aqui.':'Good morning! Glad you stopped by.',
@@ -3292,13 +3642,15 @@ o resto você descobre clicando.
         'SOBRE_HTML': 'I am <span class="destaque">Celeste</span> — a designer focused on '
                     + 'e-learning and digital animation.',
         'LEIAME_HTML': '<b>hi, this is my computer.</b>\n'
-          + 'make yourself at home — nothing\n'
-          + 'here breaks, and the trash has\n'
-          + 'the things that did not work out.\n\n'
+          + 'make yourself at home —\n'
           + 'the four folders are the projects.\n'
           + 'the rest you find by clicking.\n\n'
-          + '— celeste',
+          + 'this message will self-destruct\n'
+          + 'once you have read it.',
+        'li':'read it',
         'Lixeira de um designer':'A designer\u2019s trash',
+        'agora há pouco':'just now',
+        'clique pra tirar da lixeira':'click to take it out of the trash',
         'arquivo_final nunca é o arquivo final':'final_file is never the final file',
         'nome':'name', 'tamanho':'size', 'apagado':'deleted',
         'itens · 2,9 GB':'items · 2.9 GB',
@@ -3323,6 +3675,29 @@ o resto você descobre clicando.
         'Projetos':'Proyectos', 'pasta':'carpeta',
         'Resumo profissional':'Perfil', 'Currículo.pdf':'Curriculum.pdf',
         'Lixeira':'Papelera', 'leiame.txt':'leeme.txt',
+        /* o painel do Resumo */
+        "designer gráfico":"diseñadora gráfica",
+        "sobre":"sobre mí",
+        "Designer com experiência em <b>educação corporativa e aprendizagem digital</b>: cursos interativos, materiais multimídia, identidade visual, motion e interface.":"Diseñadora con experiencia en <b>educación corporativa y aprendizaje digital</b>: cursos interactivos, materiales multimedia, identidad visual, motion e interfaz.",
+        "atualmente":"actualmente",
+        "Designer Gráfico Jr. na <b>REVVO</b><br>desde 2023":"Diseñadora Gráfica Jr. en <b>REVVO</b><br>desde 2023",
+        "formação":"formación",
+        "Pós em Animação &amp; Cenários Digitais · Belas Artes, 2026<br>Design Gráfico · Estácio de Sá, 2023":"Posgrado en Animación &amp; Escenarios Digitales · Belas Artes, 2026<br>Diseño Gráfico · Estácio de Sá, 2023",
+        "o que eu faço":"lo que hago",
+        "e também":"y también",
+        "Todo tipo de material gráfico, <b>impresso e digital</b>: e-books, cartilhas, relatórios corporativos, PDFs interativos e materiais educacionais · identidade visual, folders, flyers, cartões, embalagens, adesivos e sinalização corporativa.":"Todo tipo de material gráfico, <b>impreso y digital</b>: e-books, cartillas, informes corporativos, PDFs interactivos y materiales educativos · identidad visual, folletos, flyers, tarjetas, packaging, adhesivos y señalización corporativa.",
+        "ferramentas":"herramientas",
+        "números":"números",
+        "projetos publicados":"proyectos publicados",
+        "categorias":"categorías",
+        "anos em e-learning":"años en e-learning",
+        "onde me achar":"dónde encontrarme",
+        "Aceitando projetos":"Aceptando proyectos",
+        "currículo em PDF":"currículum en PDF",
+        'Buscar por nome, cliente ou categoria…':'Buscar por nombre, cliente o categoría…',
+        'Abrir um projeto ao acaso':'Abrir un proyecto al azar',
+        'estou com sorte':'voy a tener suerte',
+        'Tela cheia':'Pantalla completa', 'Sair da tela cheia':'Salir de pantalla completa',
         'Buscar projeto…':'Buscar proyecto…', 'Arrumar ícones':'Ordenar iconos',
         'Preferências…':'Preferencias…', 'Sobre a Celeste':'Sobre Celeste',
         'Bom dia! Que bom te ver por aqui.':'¡Buenos días! Qué bueno verte por aquí.',
@@ -3334,13 +3709,15 @@ o resto você descobre clicando.
         'SOBRE_HTML': 'Soy <span class="destaque">Celeste</span> — diseñadora enfocada en '
                     + 'e-learning y animación digital.',
         'LEIAME_HTML': '<b>hola, esta es mi computadora.</b>\n'
-          + 'ponte cómoda — aquí nada se\n'
-          + 'rompe, y la papelera tiene\n'
-          + 'cosas que no salieron bien.\n\n'
+          + 'ponte cómoda —\n'
           + 'las cuatro carpetas son los proyectos.\n'
           + 'el resto lo descubres haciendo clic.\n\n'
-          + '— celeste',
+          + 'este mensaje se autodestruirá\n'
+          + 'tras su lectura.',
+        'li':'leído',
         'Lixeira de um designer':'La papelera de una diseñadora',
+        'agora há pouco':'hace un momento',
+        'clique pra tirar da lixeira':'haz clic para sacarlo de la papelera',
         'arquivo_final nunca é o arquivo final':'archivo_final nunca es el archivo final',
         'nome':'nombre', 'tamanho':'tamaño', 'apagado':'eliminado',
         'itens · 2,9 GB':'elementos · 2,9 GB',
@@ -3362,8 +3739,8 @@ o resto você descobre clicando.
        projeto e não pelo texto: o texto é longo e tem marcação de
        destaque no meio, e casar por texto quebraria a cada revisão. */
     const DESC = {
-      en: {"course-7":"Interface for a course built as a mission, advancing through a city-map that unlocks territory by territory. Cover, menus, highlight screens in light and dark, cards and carousel — one HUD language throughout.","course-8":"Onboarding for managers new to the segment, on the Santander Empresas identity: red and cream, hand-drawn type and the brand flame as a mask over the portraits.","course-9":"In-person training for relationship managers, in absolute black and incandescent red. Objects staged in each scene — a compass, a chess king, a dartboard — carry the idea without needing text.","course-11":"A four-module programme for micro-entrepreneurs, with its own visual system inside the Santander universe: textured paper, photo cut-outs and a yellow stroke as the highlight mark.","course-10":"Team building for GOL, in teal and white — away from the corporate red of the other projects. Circular cut-outs over photography and the wing as a rhythm element. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Every screen is animated.\u003c/em>","course-12":"Support material for a supervisor programme: pre-work, mind map and checklist. Deep blue with streaks of light, each piece in a different format — the map in landscape, for screen; the checklist in A4, to print.","course-13":"A course on the bank’s rewards programme, built around service cases: the learner takes the manager’s role and answers customers, choosing between options that change where the conversation goes.","course-14":"A fire safety course in the language of social media: every screen is a post, with likes and comments, and the learner scrolls the feed following Alex. It turns a dry subject into something you read without effort.","course-15":"A training path for ramp staff, in orange and teal over real operational photography. It covers accessibility, hold loading and centre of gravity, alternating explanatory screens with interactions.","course-19":"A finance business case built as a game: a points-and-lives HUD always in view, scoreboard screens that celebrate or penalise each choice, and medals at the close. Neon red on black, with glow treated as material.","course-20":"The document Revvo sends when inviting a freelancer: brief, deadline, fee and the invoicing terms. The challenge was making a contract read like an invitation — hence the orange-to-blue gradient in the header bands.","course-22":"Paper-collage motion: a sun, clouds and cut-outs entering over flat colour, and type assembled letter by letter, each from a different face, like a ransom note. The work is in the timing.","course-21":"Digital collage: impossible scenes assembled from unrelated photographs, where the work is making parts that never met look like they share the same light. \u003cspan class=\"pink-bold\">This is where I train my eye on what does not exist yet.\u003c/span>","course-18":"Aircraft performance for flight dispatchers — 101 slides, of which these 18 show the system. It explains gradient calculation, obstacle limits and take-off speeds without becoming a textbook.","course-17":"Two cabin safety trainings — first aid and emergency teams — sharing one visual system. A regulatory subject that has to stay legible under pressure without turning into a dry manual.","course-16":"A course on complaint management at Reclame Aqui. Built as road navigation — the learner picks which way to go by clicking the speech bubbles — closing with a recap quiz.","course-2":"A learning journey through the Gluon Universe. On a space mission across orbital bases and planets, participants explore the platform and how it connects people, processes and technology.","course-3":"Character design for the series Burnout Academy: from concept and palette to the full model sheet, the facial expressions and Bob’s colour key — a nerdy, anxious, perfectionist teenager.","course-4":"Environment design from Bob’s bedroom: wide shot, high angle and a single vanishing point. The scene translates the character’s anxiety through objects — from the noticeboard to the bin full of discarded ideas.","course-5":"Series bible for the original show Burnout Academy, a satirical comedy about an elite school that turns teenagers into miniature executives. It gathers premise, universe, characters and production pipeline.","course-6":"An animation test exploring movement, timing and character expressiveness in the 2D aesthetic. An exercise in acting and lipsync applied to the project’s visual style."},
-      es: {"course-7":"Interfaz de un curso en formato de misión: el participante avanza por una ciudad-mapa desbloqueando territorios. Portada, menús, pantallas de destaque en versión clara y oscura, tarjetas y carrusel, todo en el mismo lenguaje de HUD.","course-8":"Integración para gerentes recién llegados al segmento, sobre la identidad de Santander Empresas: rojo y crema, tipografía de trazo manual y la llama de la marca como máscara en los retratos.","course-9":"Formación presencial para gerentes de relación, en negro absoluto y rojo incandescente. Objetos en escena — brújula, rey de ajedrez, diana — cargan la idea de cada bloque sin necesitar texto.","course-11":"Formación en cuatro módulos para microemprendedores, con sistema visual propio dentro del universo Santander: papel texturizado, recortes de foto y un trazo amarillo como marca de destaque.","course-10":"Team building para GOL, en verde azulado y blanco — lejos del rojo corporativo de los otros proyectos. Recortes circulares sobre fotografía y el ala como elemento de ritmo. \u003cem style=\"font-style:normal; color:var(--pink-light);\">Todas las pantallas están animadas.\u003c/em>","course-12":"Apoyo de un programa de supervisores: pre-work, mapa mental y checklist. Azul profundo con trazos de luz, y cada pieza en un formato diferente — el mapa en horizontal, para pantalla; el checklist en A4, para imprimir.","course-13":"Curso sobre el programa de recompensas del banco, construido en casos de atención: el participante asume el papel de la gerente y responde a clientes, eligiendo entre alternativas que cambian el rumbo de la conversación.","course-14":"Curso de seguridad contra incendios en el lenguaje de las redes sociales: cada pantalla es un post, con likes y comentarios, y el participante recorre el feed acompañando a Alex. Convierte un tema árido en algo que se lee sin esfuerzo.","course-15":"Itinerario para el personal de rampa, en naranja y verde azulado sobre fotografía de operación real. Cubre accesibilidad, carga en la bodega y centro de gravedad, alternando pantallas explicativas con interacciones.","course-19":"Business case de finanzas construido como juego: HUD de puntos y vidas siempre visible, pantallas de marcador que celebran o penalizan la elección, y medallas en el cierre. Rojo neón sobre negro, con brillo tratado como material.","course-20":"Documento que Revvo envía al invitar a un freelance: demanda, plazo, importe y las condiciones de facturación. El desafío era hacer que un contrato pareciera una invitación — de ahí el degradado de naranja a azul en las franjas de cabecera.","course-22":"Motion en collage de papel: sol, nubes y recortes que entran sobre fondo plano, y una tipografía montada letra por letra, cada una de una fuente, como carta anónima. El trabajo está en el ritmo.","course-21":"Collage digital: escenas imposibles montadas de fotos sueltas, donde el trabajo está en hacer que partes que nunca se encontraron parezcan de la misma luz. \u003cspan class=\"pink-bold\">Es donde entreno el ojo para lo que todavía no existe.\u003c/span>","course-18":"Performance de aeronave para despachadores de vuelo — 101 diapositivas, de las cuales estas 18 muestran el sistema. Explica cálculo de gradiente, límite de obstáculo y velocidades de despegue sin volverse un manual.","course-17":"Dos formaciones de seguridad de cabina — primeros auxilios y equipos de emergencia — en el mismo sistema visual. Tema normativo que necesita ser legible bajo presión, sin volverse un manual árido.","course-16":"Curso sobre la gestión de reclamaciones en Reclame Aqui. Construido en navegación por carretera — el participante elige por dónde seguir haciendo clic en los globos — y cierra con un quiz de fijación.","course-2":"Recorrido de aprendizaje por el Universo Gluon. En una misión espacial por bases orbitales y planetas, los participantes exploran la plataforma y cómo conecta personas, procesos y tecnología.","course-3":"Creación de personaje para la serie Burnout Academy: del concepto y la paleta al model sheet completo, las expresiones faciales y el color key de Bob — un adolescente nerd, ansioso y perfeccionista.","course-4":"Ambientación a partir del cuarto de Bob: plano general, ángulo en picado y punto de fuga único. La escena traduce la ansiedad del personaje por los objetos — del tablero de notas a la papelera llena de ideas descartadas.","course-5":"Biblia de animación de la serie autoral Burnout Academy, comedia satírica sobre una escuela de elite que transforma adolescentes en ejecutivos en miniatura. Reúne argumento, universo, personajes y cadena de producción.","course-6":"Prueba de animación explorando movimiento, timing y expresividad de los personajes en la estética 2D. Un ejercicio de actuación y lipsync aplicado al estilo visual del proyecto."}
+      en: {"course-7":"Interface for a course built as a mission, advancing through a city-map that unlocks territory by territory. Cover, menus, highlight screens in light and dark, cards and carousel — one HUD language throughout.","course-8":"Onboarding for managers new to the segment, on the Santander Empresas identity: red and cream, hand-drawn type and the brand flame as a mask over the portraits.","course-9":"In-person training for relationship managers, in absolute black and incandescent red. Objects staged in each scene — a compass, a chess king, a dartboard — carry the idea without needing text.","course-11":"A four-module programme for micro-entrepreneurs, with its own visual system inside the Santander universe: textured paper, photo cut-outs and a yellow stroke as the highlight mark.","course-10":"Team building for GOL, in teal and white — away from the corporate red of the other projects. Circular cut-outs over photography and the wing as a rhythm element. <em style=\"font-style:normal; color:var(--pink-light);\">Every screen is animated.</em>","course-12":"Support material for a supervisor programme: pre-work, mind map and checklist. Deep blue with streaks of light, each piece in a different format — the map in landscape, for screen; the checklist in A4, to print.","course-13":"A course on the bank’s rewards programme, built around service cases: the learner takes the manager’s role and answers customers, choosing between options that change where the conversation goes.","course-14":"A fire safety course in the language of social media: every screen is a post, with likes and comments, and the learner scrolls the feed following Alex. It turns a dry subject into something you read without effort.","course-15":"A training path for ramp staff, in orange and teal over real operational photography. It covers accessibility, hold loading and centre of gravity, alternating explanatory screens with interactions.","course-19":"A finance business case built as a game: a points-and-lives HUD always in view, scoreboard screens that celebrate or penalise each choice, and medals at the close. Neon red on black, with glow treated as material.","course-20":"The document Revvo sends when inviting a freelancer: brief, deadline, fee and the invoicing terms. The challenge was making a contract read like an invitation — hence the orange-to-blue gradient in the header bands.","course-22":"Paper-collage motion: a sun, clouds and cut-outs entering over flat colour, and type assembled letter by letter, each from a different face.","course-21":"Image manipulation done by hand in Photoshop.","course-18":"Aircraft performance for flight dispatchers — 101 slides, of which these 18 show the system. It explains gradient calculation, obstacle limits and take-off speeds without becoming a textbook.","course-17":"Two cabin safety trainings — first aid and emergency teams — sharing one visual system. A regulatory subject that has to stay legible under pressure without turning into a dry manual.","course-16":"A course on complaint management at Reclame Aqui. Built as road navigation — the learner picks which way to go by clicking the speech bubbles — closing with a recap quiz.","course-2":"A learning journey through the Gluon Universe. On a space mission across orbital bases and planets, participants explore the platform and how it connects people, processes and technology.","course-3":"Character design for the series Burnout Academy: from concept and palette to the full model sheet, the facial expressions and Bob’s colour key — a nerdy, anxious, perfectionist teenager.","course-4":"Environment design from Bob’s bedroom: wide shot, high angle and a single vanishing point. The scene translates the character’s anxiety through objects — from the noticeboard to the bin full of discarded ideas.","course-5":"Series bible for the original show Burnout Academy, a satirical comedy about an elite school that turns teenagers into miniature executives. It gathers premise, universe, characters and production pipeline.","course-6":"An animation test exploring movement, timing and character expressiveness in the 2D aesthetic. An exercise in acting and lipsync applied to the project’s visual style."},
+      es: {"course-7":"Interfaz de un curso en formato de misión: el participante avanza por una ciudad-mapa desbloqueando territorios. Portada, menús, pantallas de destaque en versión clara y oscura, tarjetas y carrusel, todo en el mismo lenguaje de HUD.","course-8":"Integración para gerentes recién llegados al segmento, sobre la identidad de Santander Empresas: rojo y crema, tipografía de trazo manual y la llama de la marca como máscara en los retratos.","course-9":"Formación presencial para gerentes de relación, en negro absoluto y rojo incandescente. Objetos en escena — brújula, rey de ajedrez, diana — cargan la idea de cada bloque sin necesitar texto.","course-11":"Formación en cuatro módulos para microemprendedores, con sistema visual propio dentro del universo Santander: papel texturizado, recortes de foto y un trazo amarillo como marca de destaque.","course-10":"Team building para GOL, en verde azulado y blanco — lejos del rojo corporativo de los otros proyectos. Recortes circulares sobre fotografía y el ala como elemento de ritmo. <em style=\"font-style:normal; color:var(--pink-light);\">Todas las pantallas están animadas.</em>","course-12":"Apoyo de un programa de supervisores: pre-work, mapa mental y checklist. Azul profundo con trazos de luz, y cada pieza en un formato diferente — el mapa en horizontal, para pantalla; el checklist en A4, para imprimir.","course-13":"Curso sobre el programa de recompensas del banco, construido en casos de atención: el participante asume el papel de la gerente y responde a clientes, eligiendo entre alternativas que cambian el rumbo de la conversación.","course-14":"Curso de seguridad contra incendios en el lenguaje de las redes sociales: cada pantalla es un post, con likes y comentarios, y el participante recorre el feed acompañando a Alex. Convierte un tema árido en algo que se lee sin esfuerzo.","course-15":"Itinerario para el personal de rampa, en naranja y verde azulado sobre fotografía de operación real. Cubre accesibilidad, carga en la bodega y centro de gravedad, alternando pantallas explicativas con interacciones.","course-19":"Business case de finanzas construido como juego: HUD de puntos y vidas siempre visible, pantallas de marcador que celebran o penalizan la elección, y medallas en el cierre. Rojo neón sobre negro, con brillo tratado como material.","course-20":"Documento que Revvo envía al invitar a un freelance: demanda, plazo, importe y las condiciones de facturación. El desafío era hacer que un contrato pareciera una invitación — de ahí el degradado de naranja a azul en las franjas de cabecera.","course-22":"Motion en collage de papel: sol, nubes y recortes que entran sobre fondo plano, y una tipografía montada letra por letra, cada una de una fuente.","course-21":"Manipulación de imagen hecha a mano en Photoshop.","course-18":"Performance de aeronave para despachadores de vuelo — 101 diapositivas, de las cuales estas 18 muestran el sistema. Explica cálculo de gradiente, límite de obstáculo y velocidades de despegue sin volverse un manual.","course-17":"Dos formaciones de seguridad de cabina — primeros auxilios y equipos de emergencia — en el mismo sistema visual. Tema normativo que necesita ser legible bajo presión, sin volverse un manual árido.","course-16":"Curso sobre la gestión de reclamaciones en Reclame Aqui. Construido en navegación por carretera — el participante elige por dónde seguir haciendo clic en los globos — y cierra con un quiz de fijación.","course-2":"Recorrido de aprendizaje por el Universo Gluon. En una misión espacial por bases orbitales y planetas, los participantes exploran la plataforma y cómo conecta personas, procesos y tecnología.","course-3":"Creación de personaje para la serie Burnout Academy: del concepto y la paleta al model sheet completo, las expresiones faciales y el color key de Bob — un adolescente nerd, ansioso y perfeccionista.","course-4":"Ambientación a partir del cuarto de Bob: plano general, ángulo en picado y punto de fuga único. La escena traduce la ansiedad del personaje por los objetos — del tablero de notas a la papelera llena de ideas descartadas.","course-5":"Biblia de animación de la serie autoral Burnout Academy, comedia satírica sobre una escuela de elite que transforma adolescentes en ejecutivos en miniatura. Reúne argumento, universo, personajes y cadena de producción.","course-6":"Prueba de animación explorando movimiento, timing y expresividad de los personajes en la estética 2D. Un ejercicio de actuación y lipsync aplicado al estilo visual del proyecto."}
     };
 
     /* Os rótulos das telas de galeria: [inglês, espanhol]. */
@@ -3498,7 +3875,8 @@ o resto você descobre clicando.
         + '<span class="rotulo">' + T('Resumo profissional').replace(' ', '<br>') + '</span></button>'
         + '<a class="mesa-icone" data-chave="curriculo" href="assets/curriculo-celeste-araujo.pdf" target="_blank" rel="noopener" download="Curriculo-Celeste-Araujo.pdf">'
         + '<span class="arte">' + svgDoc('pdf') + '</span>'
-        + '<span class="rotulo">' + T('Currículo.pdf') + '</span></a>';
+        + '<span class="rotulo">' + T('Currículo.pdf') + '</span></a>'
+        ;
 
       icones.innerHTML = pastas + docs;
 
@@ -3597,6 +3975,7 @@ o resto você descobre clicando.
       corpoJan.scrollTop = 0;
       avisar('aoTrocarPasta', cat);
     }
+
 
     /* uma página inteira dentro da janela — usada pelo Resumo */
     function abrirPagina(titulo, endereco){
@@ -3753,7 +4132,18 @@ o resto você descobre clicando.
       /* o text-align:center vem no inline de quando ela era uma linha
          só; em coluna ele centraliza cada quebra e fica torto */
       ficha.style.textAlign = 'left';
-      ficha.style.gap = '7px';
+      /* As quatro linhas continuam as quatro. O que muda é o desenho:
+         corpo menor, entrelinha mais curta e o rótulo numa caixa de
+         largura fixa, pra que as barras e os valores fiquem alinhados
+         em coluna em vez de começarem cada um num lugar. */
+      ficha.style.gap = '5px';
+      ficha.style.fontSize = 'calc(13px * var(--font-scale))';
+      ficha.style.lineHeight = '1.35';
+      ficha.querySelectorAll(':scope > span').forEach(sp => {
+        sp.style.display = 'block';
+        const rot = sp.querySelector('.pink-bold');
+        if (rot){ rot.style.display = 'inline-block'; rot.style.minWidth = '84px'; }
+      });
       ficha.querySelectorAll(':scope > img').forEach(i => i.style.display = 'none');
 
       /* a descrição desce um pouco menos de texto por linha, então o
@@ -3942,7 +4332,6 @@ o resto você descobre clicando.
         if (d === 'resumo')    window.__mesa.abrirResumo();
         if (d === 'curriculo') window.open('assets/curriculo-celeste-araujo.pdf', '_blank', 'noopener');
         if (d === 'linkedin')  window.open('https://www.linkedin.com/in/celestegouvea/', '_blank', 'noopener');
-        if (d === 'buscar')    abrirPasta(pastaAtual || 'elearning');
         if (d === 'prefs')     window.__mesa.abrirPrefs && window.__mesa.abrirPrefs();
       });
     });
@@ -4108,7 +4497,9 @@ o resto você descobre clicando.
     window.__mesa = Object.assign(window.__mesa || {}, {
       abrirPasta, abrirProjeto, abrirAvulso, abrirPagina, remedir,
       todos: () => cards.slice().sort((a,b) => parseFloat(b.dataset.order||0) - parseFloat(a.dataset.order||0)),
-      nomeCategoria: c => (CATS[c] && CATS[c].nome) || c
+      /* passa pelo dicionário: quem chama de fora — as barras do Resumo,
+         a busca — mostrava o nome sempre em português */
+      nomeCategoria: c => T((CATS[c] && CATS[c].nome) || c)
     });
   })();
 
@@ -4285,6 +4676,13 @@ o resto você descobre clicando.
       const ic = e.target.closest('.mesa-icone, .lixeira, .leiame');
       if (!ic) { marcar(null); return; }
       if (ic.tagName === 'A') return;   /* documentos são link, não arrastam */
+      /* Botão dentro de um item arrastável continua sendo botão. O
+         arrasto captura o ponteiro no item inteiro, e a captura leva
+         junto o clique: o ✕ e o "li" do bilhete nunca chegavam a
+         disparar. O próprio ícone é um <button>, daí o teste de que o
+         botão precisa estar dentro dele, e não ser ele. */
+      const bt = e.target.closest('button, a');
+      if (bt && bt !== ic && ic.contains(bt)) return;
       pegou = ic; andou = false;
       const r = ic.getBoundingClientRect();
       ox = e.clientX - r.left; oy = e.clientY - r.top;
@@ -4673,10 +5071,11 @@ o resto você descobre clicando.
     function abrirResumo(){
       window.__vista = { tipo:'resumo' };
       /* a contagem vem dos projetos de verdade, não de um número escrito */
-      const cats = [['E-learning','elearning'], ['Apresentações','apresentacoes'],
-                    ['Animação','animacao'], ['Outros','outros']];
-      const contas = cats.map(function(c){ return [c[0], M.todos().filter(function(p){
-        return p.dataset.category === c[1]; }).length]; });
+      /* o nome da pasta vem do dicionário, e não escrito à mão: assim a
+         barra acompanha o idioma como todo o resto */
+      const cats = ['elearning', 'apresentacoes', 'animacao', 'outros'];
+      const contas = cats.map(function(c){ return [M.nomeCategoria(c), M.todos().filter(function(p){
+        return p.dataset.category === c; }).length]; });
       const total = contas.reduce(function(a, c){ return a + c[1]; }, 0);
 
       const maior = Math.max.apply(null, contas.map(function(c){ return c[1]; }));
@@ -4695,51 +5094,45 @@ o resto você descobre clicando.
                            'Word','Excel','PowerPoint','HTML','CSS','GitHub','UX','UI',
                            'Claude','Copilot','ChatGPT','Gemini','DeepSeek'];
 
-      M.abrirAvulso('Resumo profissional',
+      M.abrirAvulso(M_t('Resumo profissional'),
         '<div class="pn">'
 
         + '<div class="pn-c pn-foto">'
         +   '<img src="assets/celeste-foto.webp" alt="Retrato da Celeste">'
-        +   '<div class="nome">Celeste Gouvêa<small>designer gráfico</small></div>'
+        +   '<div class="nome">Celeste Gouvêa<small>' + M_t('designer gráfico') + '</small></div>'
         + '</div>'
 
-        + '<div class="pn-c pn-sobre"><h3>sobre</h3><div class="pn-duo">'
-        +   '<p class="pn-bio">Designer com experiência em <b>educação corporativa e '
-        +     'aprendizagem digital</b>: cursos interativos, materiais multimídia, identidade '
-        +     'visual, motion e interface.</p>'
+        + '<div class="pn-c pn-sobre"><h3>' + M_t('sobre') + '</h3><div class="pn-duo">'
+        +   '<p class="pn-bio">' + M_t("Designer com experiência em <b>educação corporativa e aprendizagem digital</b>: cursos interativos, materiais multimídia, identidade visual, motion e interface.") + '</p>'
         +   '<div class="pn-fatos">'
-        +     '<div><span class="rot">atualmente</span>'
-        +       '<p>Designer Gráfico Jr. na <b>REVVO</b><br>desde 2023</p></div>'
-        +     '<div><span class="rot">formação</span>'
-        +       '<p>Pós em Animação &amp; Cenários Digitais · Belas Artes, 2026<br>'
-        +       'Design Gráfico · Estácio de Sá, 2023</p></div>'
+        +     '<div><span class="rot">' + M_t('atualmente') + '</span>'
+        +       '<p>' + M_t("Designer Gráfico Jr. na <b>REVVO</b><br>desde 2023") + '</p></div>'
+        +     '<div><span class="rot">' + M_t('formação') + '</span>'
+        +       '<p>' + M_t("Pós em Animação &amp; Cenários Digitais · Belas Artes, 2026<br>Design Gráfico · Estácio de Sá, 2023") + '</p></div>'
         +   '</div>'
         + '</div></div>'
 
-        + '<div class="pn-c pn-faz"><h3>o que eu faço</h3>'
+        + '<div class="pn-c pn-faz"><h3>' + M_t('o que eu faço') + '</h3>'
         +   '<ul>' + barras + '</ul>'
-        +   '<div class="pn-alem"><span class="rot">e também</span>'
-        +     '<p>Todo tipo de material gráfico, <b>impresso e digital</b>: e-books, '
-        +     'cartilhas, relatórios corporativos, PDFs interativos e materiais '
-        +     'educacionais · identidade visual, folders, flyers, cartões, embalagens, '
-        +     'adesivos e sinalização corporativa.</p>'
+        +   '<div class="pn-alem"><span class="rot">' + M_t('e também') + '</span>'
+        +     '<p>' + M_t("Todo tipo de material gráfico, <b>impresso e digital</b>: e-books, cartilhas, relatórios corporativos, PDFs interativos e materiais educacionais · identidade visual, folders, flyers, cartões, embalagens, adesivos e sinalização corporativa.") + '</p>'
         +   '</div>'
         + '</div>'
 
-        + '<div class="pn-c pn-fer"><h3>ferramentas</h3>'
+        + '<div class="pn-c pn-fer"><h3>' + M_t('ferramentas') + '</h3>'
         +   '<div class="pn-chips">' + FERRAMENTAS.map(function(f, i){
               return '<span style="animation-delay:' + (330 + i * 20) + 'ms">' + f + '</span>';
             }).join('') + '</div>'
         + '</div>'
 
-        + '<div class="pn-c pn-num"><h3>números</h3>'
-        +   '<div class="linha"><span class="grande" data-n="' + total + '">0</span><span class="rot">projetos publicados</span></div>'
-        +   '<div class="linha"><span class="grande" data-n="4">0</span><span class="rot">categorias</span></div>'
-        +   '<div class="linha"><span class="grande" data-n="4">0</span><span class="rot">anos em e-learning</span></div>'
+        + '<div class="pn-c pn-num"><h3>' + M_t('números') + '</h3>'
+        +   '<div class="linha"><span class="grande" data-n="' + total + '">0</span><span class="rot">' + M_t('projetos publicados') + '</span></div>'
+        +   '<div class="linha"><span class="grande" data-n="4">0</span><span class="rot">' + M_t('categorias') + '</span></div>'
+        +   '<div class="linha"><span class="grande" data-n="4">0</span><span class="rot">' + M_t('anos em e-learning') + '</span></div>'
         + '</div>'
 
-        + '<div class="pn-c pn-livre"><div><h3>onde me achar</h3>'
-        +   '<p><span class="pt"></span><b>Aceitando projetos</b></p>'
+        + '<div class="pn-c pn-livre"><div><h3>' + M_t('onde me achar') + '</h3>'
+        +   '<p><span class="pt"></span><b>' + M_t('Aceitando projetos') + '</b></p>'
         +   '<div class="pn-ct">'
         +     '<a href="https://wa.me/5521974955774" target="_blank" rel="noopener">'
         +       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1a14 14 0 0 1-6.5-5.7c-.5-.8-.8-1.7-.8-2.5 0-.9.5-1.4.7-1.6.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.8 2c.1.2 0 .4-.1.6l-.4.5c-.1.2-.3.3-.1.6a9 9 0 0 0 4 3.4c.3.2.5.1.6 0l.9-1c.2-.2.4-.2.6-.1l2 1c.2.1.3.2.4.3v.9Z"/></svg>'
@@ -4752,16 +5145,20 @@ o resto você descobre clicando.
         +       '<span>celestegouvea378@gmail.com</span></a>'
         +   '</div></div>'
         +   '<a class="cv" href="assets/curriculo-celeste-araujo.pdf" target="_blank" rel="noopener" '
-        +   'download="Curriculo-Celeste-Araujo.pdf">currículo em PDF <i>↓</i></a>'
+        +   'download="Curriculo-Celeste-Araujo.pdf">' + M_t('currículo em PDF') + ' <i>↓</i></a>'
         + '</div>'
 
         + '</div>');
 
-      /* o painel cabe na janela: nada rola */
+      /* No computador o painel cabe inteiro na janela e travar a rolagem
+         evita um pulinho de um pixel. No celular ele vira uma coluna
+         alta — e a trava virava uma tela que não desce de jeito nenhum.
+         Era esse o "não consigo arrastar pra baixo". */
+      const estreito = matchMedia('(max-width: 980px)').matches;
       const c = document.getElementById('winCorpo');
-      if (c) c.style.overflow = 'hidden';
+      if (c) c.style.overflow = estreito ? '' : 'hidden';
       const g = document.getElementById('winGrade');
-      if (g) g.style.height = '100%';
+      if (g) g.style.height = estreito ? '' : '100%';
 
       animarPainel();
       if (window.__cv) window.__cv();
@@ -4869,13 +5266,22 @@ o resto você descobre clicando.
       ['paleta_que_o_cliente_odiou.ase',        'ASE', '12 KB',  'há 2 anos'],
       ['ideia_boa_projeto_errado.fig',          'FIG', '46 MB',  'há 7 meses']
     ];
-    const CORES_ARQ = { PSD:'#31a8ff', AI:'#ff9a00', AEP:'#9999ff', DOC:'#4a90d9',
+    const CORES_ARQ = { TXT:'#9aa0a6', PSD:'#31a8ff', AI:'#ff9a00', AEP:'#9999ff', DOC:'#4a90d9',
       PDF:'#e5252a', MP4:'#ff6b9d', PNG:'#7ed957', FIG:'#a259ff', ASE:'#ffd166' };
 
     function abrirLixeira(){
       window.__vista = { tipo:'lixeira' };
-      const linhas = LIXO.map(function(a){
-        return '<div class="lix-ln"><span class="nm">'
+      /* quem leu o bilhete jogou ele fora — então ele está aqui, e dá pra
+         pescar de volta clicando: é a única linha da lixeira que responde,
+         porque é a única que existe de verdade */
+      const temBilhete = lembrar('mesa-leiame-fechado', false);
+      const lista = (temBilhete
+        ? [[M_t('leiame.txt'), 'TXT', '1 KB', M_t('agora há pouco')]]
+        : []).concat(LIXO);
+      const linhas = lista.map(function(a, i){
+        return '<div class="lix-ln' + (temBilhete && i === 0
+            ? ' de-volta" title="' + M_t('clique pra tirar da lixeira') + '"'
+            : '"') + '><span class="nm">'
           + '<span class="ic" style="background:' + (CORES_ARQ[a[1]] || '#888') + '">' + a[1] + '</span>'
           + '<span>' + a[0] + '</span></span>'
           + '<span class="tam">' + a[2] + '</span><span class="qd">' + a[3] + '</span></div>';
@@ -4888,11 +5294,19 @@ o resto você descobre clicando.
         + '<div class="lix-cab"><span>' + M_t('nome') + '</span><span>' + M_t('tamanho')
         + '</span><span>' + M_t('apagado') + '</span></div>'
         + linhas
-        + '<div class="lix-rod"><span>' + LIXO.length + ' ' + M_t('itens · 2,9 GB') + '</span>'
+        + '<div class="lix-rod"><span>' + lista.length + ' ' + M_t('itens · 2,9 GB') + '</span>'
         + '<span class="dir">'
         + M_t('esvaziar a lixeira não está disponível — eu não consigo apagar nada')
         + '</span></div>'
         + '</div>');
+
+      /* devolver o bilhete pra mesa: some da lixeira e volta pro canto */
+      const volta = document.querySelector('.lix-ln.de-volta');
+      if (volta) volta.addEventListener('click', function(){
+        guardar('mesa-leiame-fechado', false);
+        somAbrir();
+        location.reload();
+      });
     }
 
 
@@ -4902,6 +5316,9 @@ o resto você descobre clicando.
     const lista  = document.getElementById('buscaLista');
     let achados = [], marcado = 0;
 
+    /* Com o campo vazio a caixa não lista nada. Antes ela despejava os
+       21 projetos de uma vez, e quem abria só queria digitar. */
+    let termoAtual = '';
     function pintarBusca(){
       lista.innerHTML = achados.length
         ? achados.map((c, i) =>
@@ -4910,17 +5327,39 @@ o resto você descobre clicando.
             + '<span class="txt"><b>' + c.dataset.title + '</b>'
             + '<span>' + (c.dataset.cliente || '—') + ' · ' + M.nomeCategoria(c.dataset.category) + ' · ' + c.dataset.year + '</span></span>'
             + '</button>').join('')
-        : '<p class="busca-vazio">Nada com esse nome.</p>';
+        : (termoAtual ? '<p class="busca-vazio">' + M_t('Nada com esse nome.') + '</p>' : '');
       lista.querySelectorAll('.busca-item').forEach(b =>
         b.addEventListener('click', () => escolher(+b.dataset.i)));
       lista.querySelector('.marcado')?.scrollIntoView({ block:'nearest' });
     }
+    /* Sem acento e em caixa baixa: quem digita "apresentacoes" quer
+       achar "Apresentações". */
+    const semAcento = txt => txt.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+    /* Tudo que se pode procurar num projeto, numa string só, montada uma
+       vez por projeto. Antes só o título, o cliente e a categoria
+       entravam — procurar por "2025" ou por "after effects" não
+       achava nada, embora o ano e a ferramenta estejam na tela. */
+    function textoDoProjeto(c){
+      if (c.__busca) return c.__busca;
+      const desc = c.querySelector('.proj-corpo > p');
+      const pedacos = [
+        c.dataset.title, c.dataset.cliente, c.dataset.year,
+        c.dataset.category, M.nomeCategoria(c.dataset.category),
+        c.dataset.ferramenta, desc ? desc.textContent : ''
+      ];
+      return (c.__busca = semAcento(pedacos.filter(Boolean).join(' ')));
+    }
+
     function buscar(){
-      const t = campo.value.trim().toLowerCase();
-      achados = M.todos().filter(c => !t
-        || c.dataset.title.toLowerCase().includes(t)
-        || (c.dataset.cliente || '').toLowerCase().includes(t)
-        || M.nomeCategoria(c.dataset.category).toLowerCase().includes(t));
+      const t = campo.value.trim();
+      termoAtual = t;
+      /* cada palavra digitada precisa aparecer: "gol 2026" é gol E 2026 */
+      const termos = semAcento(t).split(/s+/).filter(Boolean);
+      achados = !termos.length ? [] : M.todos().filter(c => {
+        const alvo = textoDoProjeto(c);
+        return termos.every(p => alvo.includes(p));
+      });
       marcado = 0; pintarBusca();
     }
     function escolher(i){
@@ -4928,12 +5367,35 @@ o resto você descobre clicando.
       if (!c) return;
       fecharBusca(); somAbrir(); M.abrirProjeto(c);
     }
-    function abrirBusca(){
+    /* Quando a busca é chamada pela barra da home, a caixa é encaixada
+       em cima dela: mesma largura, mesmo lugar. Chamada pelo dock ou
+       pelo ctrl+K, ela volta a ser o painel de sempre — ali não há
+       barra nenhuma pra encostar. */
+    const caixaBusca = palco.querySelector('.busca-caixa');
+    function encaixarNaHome(){
+      const barra = document.getElementById('hmBusca');
+      if (!barra || !caixaBusca) return false;
+      const b = barra.getBoundingClientRect();
+      const m = palco.getBoundingClientRect();
+      if (!b.width) return false;
+      caixaBusca.style.left  = Math.round(b.left - m.left) + 'px';
+      caixaBusca.style.top   = Math.round(b.top - m.top) + 'px';
+      caixaBusca.style.width = Math.round(b.width) + 'px';
+      return true;
+    }
+    function abrirBusca(naHome){
       fecharMenu();
+      palco.classList.toggle('na-home', !!naHome && encaixarNaHome());
       palco.classList.add('aberta');
       campo.value = ''; buscar(); campo.focus(); somClique();
     }
-    function fecharBusca(){ palco.classList.remove('aberta'); }
+    function fecharBusca(){
+      palco.classList.remove('aberta');
+      palco.classList.remove('na-home');
+    }
+    addEventListener('resize', () => {
+      if (palco.classList.contains('na-home')) encaixarNaHome();
+    });
 
     campo.addEventListener('input', buscar);
     palco.addEventListener('pointerdown', e => { if (e.target === palco) fecharBusca(); });
@@ -4980,16 +5442,50 @@ o resto você descobre clicando.
       }
     });
 
-    /* o leiame.txt pode ser fechado; quem fechou nao ve de novo */
+    /* O leiame se autodestrói, como ele mesmo avisa: amassa, voa até a
+       lixeira e passa a constar lá dentro. Vale tanto pelo botão "li"
+       quanto pelo ✕ — as duas saídas são a mesma saída. */
     const leiame = document.getElementById('leiame');
-    if (leiame){
-      if (lembrar('mesa-leiame-fechado', false)) leiame.remove();
-      document.getElementById('leiameFechar').addEventListener('click', ev => {
-        ev.stopPropagation();
+    /* Quem já jogou o bilhete fora não o vê de novo — mas aí ele saiu do
+       DOM inteiro, e com ele o ✕ e o botão. Ligar ouvinte em elemento que
+       não existe estourava aqui e matava todo o resto deste bloco: era
+       por isso que, depois do primeiro descarte, nada mais funcionava. */
+    if (leiame && lembrar('mesa-leiame-fechado', false)) leiame.remove();
+    else if (leiame){
+      let indo = false;
+      function descartar(ev){
+        if (ev) ev.stopPropagation();
+        if (indo) return;
+        indo = true;
         guardar('mesa-leiame-fechado', true);
         somFechar();
-        leiame.remove();
-      });
+
+        const lata = document.querySelector('.lixeira');
+        const a = leiame.getBoundingClientRect();
+        const b = lata ? lata.getBoundingClientRect()
+                       : { left: innerWidth - 90, top: innerHeight - 140, width: 60, height: 60 };
+        leiame.style.setProperty('--dx', Math.round((b.left + b.width / 2) - (a.left + a.width / 2)) + 'px');
+        leiame.style.setProperty('--dy', Math.round((b.top + b.height / 2) - (a.top + a.height / 2)) + 'px');
+        leiame.classList.add('amassando');
+
+        /* a lata reage quando a bola chega, e não quando ela sai */
+        setTimeout(function(){
+          if (!lata) return;
+          lata.classList.add('recebeu');
+          setTimeout(function(){ lata.classList.remove('recebeu'); }, 500);
+        }, 1120);
+        setTimeout(function(){ leiame.remove(); }, 1300);
+      }
+      document.getElementById('leiameFechar').addEventListener('click', descartar);
+      const btLi = document.getElementById('leiameLi');
+      if (btLi){
+        btLi.textContent = M_t('li');
+        btLi.addEventListener('click', descartar);
+      }
+      window.__mesa.pintarLeiameBotao = function(){
+        const b = document.getElementById('leiameLi');
+        if (b) b.textContent = M_t('li');
+      };
     }
 
     window.__mesa.abrirPrefs = abrirPrefs;
@@ -5015,6 +5511,247 @@ o resto você descobre clicando.
         prefs:   function(){ abrirPrefs(); }
       }[v.tipo];
       if (abrir) requestAnimationFrame(function(){ try { abrir(); } catch(e){} });
+    })();
+
+    /* ============ a home no meio da mesa ============ */
+    (function homeDaMesa(){
+      const home = document.getElementById('home');
+      if (!home) return;
+
+      /* ---- os atalhos: o que a pessoa abriu por último ----
+         Na primeira visita não há histórico, então entram os mais
+         recentes do acervo: a fileira nunca aparece vazia. */
+      const CHAVE = 'mesa-recentes';
+      let recentes = [];
+      try { recentes = JSON.parse(localStorage.getItem(CHAVE) || '[]') || []; } catch(e){}
+
+      function pintarAtalhos(){
+        const caixa = document.getElementById('hmAtalhos');
+        if (!caixa) return;
+        const lista = recentes.map(id => document.getElementById(id)).filter(Boolean);
+        M.todos().forEach(c => { if (lista.length < 4 && lista.indexOf(c) < 0) lista.push(c); });
+        caixa.innerHTML = '';
+        lista.slice(0, 4).forEach(card => {
+          const bt = document.createElement('button');
+          bt.className = 'hm-at';
+          bt.title = card.dataset.title;
+          bt.innerHTML = '<span class="capa"><img alt="" loading="lazy"></span>'
+            + '<span class="nm"></span>';
+          bt.querySelector('img').src = card.dataset.capa;
+          bt.querySelector('.nm').textContent = card.dataset.title;
+          bt.addEventListener('click', () => { somAbrir(); M.abrirProjeto(card); });
+          caixa.appendChild(bt);
+        });
+      }
+      pintarAtalhos();
+
+      /* Um projeto é aberto por muitos caminhos — a grade, a busca, o
+         teclado, a tira de vizinhos. Em vez de caçar cada um, escuto o
+         próprio DOM: quando uma janela de projeto aparece, ela conta. */
+      const olho = new MutationObserver(muda => {
+        muda.forEach(m => {
+          const el = m.target;
+          if (!el.classList || !el.classList.contains('proj-janela')) return;
+          if (el.style.display === 'none') return;
+          const i = recentes.indexOf(el.id);
+          if (i >= 0) recentes.splice(i, 1);
+          recentes.unshift(el.id);
+          recentes = recentes.slice(0, 8);
+          try { localStorage.setItem(CHAVE, JSON.stringify(recentes)); } catch(e){}
+          pintarAtalhos();
+        });
+      });
+      document.querySelectorAll('.proj-janela').forEach(p =>
+        olho.observe(p, { attributes:true, attributeFilter:['style'] }));
+
+      /* ---- a busca ----
+         Não é uma segunda busca: é a porta da que já existe, que até
+         agora só abria por um atalho de teclado que ninguém adivinha. */
+      const barra = document.getElementById('hmBusca');
+      /* chama a busca direto: passar pelo botão do dock arrastava
+         junto a abertura da pasta de projetos. O true diz pra ela nascer
+         colada nesta barra. */
+      const abrir = () => abrirBusca(true);
+      barra.addEventListener('click', abrir);
+      barra.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abrir(); }
+        else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey){
+          abrir();
+          const campo = document.getElementById('buscaCampo');
+          if (campo){ campo.value = e.key; campo.dispatchEvent(new Event('input', { bubbles:true })); }
+        }
+      });
+
+      /* ---- o doodle ----
+         Três coisas, todas em resposta a alguém: as letras se afastam
+         do cursor, a mascote acorda quando o mouse chega, e o clique
+         abre um projeto ao acaso. Parado, nada se mexe além do "z z". */
+      const doodle = document.getElementById('doodle');
+      const svgLetra = doodle.querySelector('.dd-letras');
+      const zzz = document.getElementById('ddZzz');
+      /* em ordem de leitura, e não de desenho: os paths do arquivo não
+         vêm na ordem das letras, e a mascote precisa saber onde está o L */
+      const letras = (() => {
+        if (!svgLetra) return [];
+        const cx = [...svgLetra.querySelectorAll('path')].map(p => ({ p, r:p.getBoundingClientRect() }));
+        if (!cx.length) return [];
+        const meio = (Math.min(...cx.map(c => c.r.top)) + Math.max(...cx.map(c => c.r.bottom))) / 2;
+        cx.sort((a, b) => ((a.r.top + a.r.height / 2 > meio) - (b.r.top + b.r.height / 2 > meio))
+          || a.r.left - b.r.left);
+        return cx.map(c => c.p);
+      })();
+
+      /* a mascote entra dentro do próprio SVG, deitada em cima da
+         terceira letra — assim ela acompanha qualquer redimensionamento
+         sem uma linha de conta */
+      function porMascote(){
+        if (!svgLetra || letras.length < 3 || svgLetra.querySelector('.dd-dorme')) return;
+        const caixa = svgLetra.getBoundingClientRect();
+        const vb = svgLetra.viewBox.baseVal;
+        if (!caixa.width) return;
+        const k = vb.width / caixa.width;
+        const r = letras[2].getBoundingClientRect();
+        const x = (r.left - caixa.left) * k, y = (r.top - caixa.top) * k, w = r.width * k;
+        const l = w * 1.45;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'dd-dorme');
+        /* o quadro de olhos fechados é dela, desenhado pra isso */
+        g.innerHTML = '<image id="ddCara" href="assets/mascote/dormindo.png" x="'
+          + (x - l * .18) + '" y="' + (y - l * .78) + '" width="' + l + '" height="' + (l * 1.08) + '"/>';
+        svgLetra.insertBefore(g, svgLetra.firstChild);
+        zzz.style.left = Math.round((x + l * .82) / k) + 'px';
+        zzz.style.top  = Math.round((y - l * .74) / k - 6) + 'px';
+      }
+      /* Ela só entra quando o SVG já tem largura. Se a mesa ainda
+         estiver entrando, a primeira tentativa sai vazia — então
+         tenta de novo algumas vezes. Chamar duas vezes não duplica:
+         a função desiste se a mascote já estiver lá. */
+      porMascote();
+      [80, 300, 900, 2000].forEach(ms => setTimeout(porMascote, ms));
+      addEventListener('resize', () => {
+        const g = svgLetra && svgLetra.querySelector('.dd-dorme');
+        if (g) g.remove();
+        porMascote();
+      });
+
+      const cara = () => document.getElementById('ddCara');
+      doodle.addEventListener('pointerenter', () => {
+        const c = cara(); if (c) c.setAttribute('href', 'assets/mascote/expressao_06.png');
+      });
+      doodle.addEventListener('pointerleave', () => {
+        const c = cara(); if (c) c.setAttribute('href', 'assets/mascote/dormindo.png');
+      });
+
+      /* As letras fogem do cursor, e escutam a mesa inteira e não só o
+         próprio quadrado: assim elas já começam a se afastar antes de o
+         mouse chegar, que é o que faz parecer vivo. Os centros ficam em
+         cache — ler 13 caixas a cada movimento do mouse trava. */
+      let centros = [], ancora = -1;
+      function medirLetras(){
+        const c = doodle.getBoundingClientRect();
+        ancora = c.top + c.left;
+        centros = letras.map((p, i) => {
+          const anterior = centros[i];
+          /* a caixa vem deslocada pela própria mola; o centro de repouso
+             é ela menos o deslocamento atual */
+          const r = p.getBoundingClientRect();
+          const ox = (anterior && anterior.px) || 0, oy = (anterior && anterior.py) || 0;
+          return { p,
+            x: r.left + r.width / 2 - ox, y: r.top + r.height / 2 - oy,
+            px: ox, py: oy,
+            vx: (anterior && anterior.vx) || 0, vy: (anterior && anterior.vy) || 0 };
+        });
+      }
+      /* A primeira medida saía zerada: a mesa ainda estava entrando e as
+         letras não tinham lugar. Em vez de adivinhar o momento certo, o
+         próprio movimento do mouse confere se o doodle saiu do lugar —
+         é uma leitura de caixa por evento, contra treze. */
+      medirLetras();
+      addEventListener('resize', medirLetras);
+      function conferir(){
+        const c = doodle.getBoundingClientRect();
+        if (Math.abs(c.top + c.left - ancora) > .5 || !centros.length) medirLetras();
+      }
+
+      /* O movimento é uma mola em laço de animação, e não um salto a
+         cada evento do mouse. Antes cada pointermove escrevia a posição
+         final e o CSS interpolava: entre um evento e outro nada
+         acontecia, e o resultado era uma sucessão de solavancos. Agora
+         cada letra tem posição e velocidade próprias e persegue o alvo
+         quadro a quadro — o mouse só move o alvo. */
+      const ALCANCE = 300, EMPURRAO = 52;
+      /* mola um pouco mais frouxa: a letra demora um triz a mais pra
+         alcançar o alvo, sem virar arrasto */
+      const RIGIDEZ = 0.11, ATRITO = 0.80;
+      let mx = -9999, my = -9999, rodando = false;
+
+      addEventListener('pointermove', e => {
+        mx = e.clientX; my = e.clientY;
+        acordar();
+      }, { passive: true });
+
+      function acordar(){
+        if (rodando || document.hidden) return;
+        rodando = true;
+        requestAnimationFrame(quadro);
+      }
+
+      function quadro(){
+        if (document.hidden){ rodando = false; return; }
+        conferir();
+        let vivo = false;
+        for (let i = 0; i < centros.length; i++){
+          const c = centros[i];
+          /* o alvo: para onde essa letra quer estar agora */
+          let ax = 0, ay = 0;
+          const dx = c.x - mx, dy = c.y - my;
+          const d = Math.hypot(dx, dy) || 1;
+          if (d < ALCANCE){
+            const f = Math.pow(1 - d / ALCANCE, 1.7) * EMPURRAO;
+            ax = dx / d * f; ay = dy / d * f;
+          }
+          /* a mola: cada letra tem a sua, com rigidez um pouco
+             diferente — se todas tivessem a mesma, as treze andariam
+             como um bloco só */
+          const k = RIGIDEZ * (0.82 + (i % 5) * 0.09);
+          c.vx = (c.vx || 0) + (ax - (c.px || 0)) * k;
+          c.vy = (c.vy || 0) + (ay - (c.py || 0)) * k;
+          c.vx *= ATRITO; c.vy *= ATRITO;
+          c.px = (c.px || 0) + c.vx;
+          c.py = (c.py || 0) + c.vy;
+          if (Math.abs(c.px) > .05 || Math.abs(c.py) > .05
+              || Math.abs(c.vx) > .05 || Math.abs(c.vy) > .05){
+            vivo = true;
+            c.p.style.translate = c.px.toFixed(2) + 'px ' + c.py.toFixed(2) + 'px';
+          } else if (c.p.style.translate){
+            c.px = c.py = c.vx = c.vy = 0;
+            c.p.style.translate = '';
+          }
+        }
+        /* o laço para quando tudo assenta, e volta no próximo movimento */
+        if (vivo) requestAnimationFrame(quadro);
+        else rodando = false;
+      }
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) acordar(); });
+
+      /* estou com sorte */
+      doodle.setAttribute('aria-label', M_t('Abrir um projeto ao acaso'));
+      /* o aviso do clique é a dica do próprio navegador, e não mais um
+         rótulo desenhado por cima da mesa */
+      doodle.title = M_t('estou com sorte');
+      doodle.addEventListener('click', () => {
+        const todos = M.todos();
+        if (!todos.length) return;
+        somAbrir();
+        M.abrirProjeto(todos[(Math.random() * todos.length) | 0]);
+      });
+
+      /* a frase da barra também troca de idioma */
+      window.__mesa.pintarHome = function(){
+        const ph = document.getElementById('hmBuscaTxt');
+        if (ph) ph.textContent = M_t('Buscar por nome, cliente ou categoria…');
+      };
+      window.__mesa.pintarHome();
     })();
 
     /* som ao fechar a janela pelo ✕ */
@@ -5166,6 +5903,8 @@ o resto você descobre clicando.
     pdfModalClose.focus();
   }
   function closePdfModal(){
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    pdfModal.classList.remove('cheio');
     pdfModal.classList.remove('is-open');
     document.body.style.overflow = '';
     setTimeout(() => {
@@ -5177,8 +5916,42 @@ o resto você descobre clicando.
   pdfModalClose.addEventListener('click', closePdfModal);
   pdfModal.addEventListener('click', (e) => { if (e.target === pdfModal) closePdfModal(); });
   document.addEventListener('keydown', (e) => {
+    /* Esc dentro da tela cheia é do navegador: ele sai da tela cheia.
+       Fechar o visualizador junto tiraria o PDF da frente de quem só
+       queria voltar ao tamanho normal. */
+    if (document.fullscreenElement) return;
     if (e.key === 'Escape' && pdfModal.style.display !== 'none') closePdfModal();
   });
+
+  /* ---- tela cheia do visualizador ---- */
+  const pdfModalCheio = document.getElementById('pdfModalCheio');
+  const pdfCaixa = pdfModal.querySelector('.pdf-modal-box');
+  function pintarBotaoCheio(){
+    if (!pdfModalCheio) return;
+    const cheio = !!document.fullscreenElement || pdfModal.classList.contains('cheio');
+    const rot = __tr(cheio ? 'Sair da tela cheia' : 'Tela cheia');
+    pdfModalCheio.title = rot;
+    pdfModalCheio.setAttribute('aria-label', rot);
+    pdfModalCheio.classList.toggle('ligado', cheio);
+  }
+  if (pdfModalCheio && pdfCaixa){
+    pdfModalCheio.addEventListener('click', () => {
+      if (document.fullscreenElement){ document.exitFullscreen(); return; }
+      if (pdfModal.classList.contains('cheio')){
+        pdfModal.classList.remove('cheio'); pintarBotaoCheio(); return;
+      }
+      /* alguns contextos — um <iframe> sem permissão, por exemplo —
+         recusam a API; aí a caixa cresce até os limites da janela */
+      let p = null;
+      try{ p = pdfCaixa.requestFullscreen && pdfCaixa.requestFullscreen(); }catch(e){}
+      if (p && p.then) p.then(pintarBotaoCheio, () => {
+        pdfModal.classList.add('cheio'); pintarBotaoCheio();
+      });
+      else { pdfModal.classList.add('cheio'); pintarBotaoCheio(); }
+    });
+    document.addEventListener('fullscreenchange', pintarBotaoCheio);
+    pintarBotaoCheio();
+  }
 
   document.querySelectorAll('[data-pdf-card]').forEach(card => {
     const src = card.dataset.pdfSrc;
@@ -5748,7 +6521,31 @@ o resto você descobre clicando.
     card.querySelector('.gal-prev').addEventListener('click', e => { e.stopPropagation(); ir(i - 1); });
     card.querySelector('.gal-next').addEventListener('click', e => { e.stopPropagation(); ir(i + 1); });
     card.querySelector('.gal-expand').addEventListener('click', e => { e.stopPropagation(); abrirLightbox(api); });
-    img.addEventListener('click', () => abrirLightbox(api));
+
+    /* Arrastar com o mouse. Só existia o gesto de toque: no computador
+       não havia como puxar a tela pro lado, e quem tentava concluía que
+       era clique por clique. */
+    let px = null, arrastou = false;
+    img.addEventListener('dragstart', e => e.preventDefault());
+    card.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'touch') return;          /* o toque tem o seu */
+      if (telas.length < 2) return;
+      if (e.target.closest('.gal-bar, .gal-nav')) return;
+      px = e.clientX; arrastou = false;
+      card.classList.add('arrastando');
+    });
+    card.addEventListener('pointermove', e => {
+      if (px !== null && Math.abs(e.clientX - px) > 6) arrastou = true;
+    });
+    window.addEventListener('pointerup', e => {
+      if (px === null) return;
+      const dx = e.clientX - px;
+      px = null; card.classList.remove('arrastando');
+      if (Math.abs(dx) > 44) ir(dx < 0 ? i + 1 : i - 1);
+    });
+
+    /* o clique que encerra um arraste não é um clique: não abre o ampliado */
+    img.addEventListener('click', () => { if (!arrastou) abrirLightbox(api); });
     img.style.cursor = 'zoom-in';
 
     card.setAttribute('tabindex', '0');
