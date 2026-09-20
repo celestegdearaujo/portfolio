@@ -1242,6 +1242,17 @@
   .textura::before{
     background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px);
   }
+  /* As riscas tem periodo de 3px. Em escala de tela fracionada — Windows a
+     125% ou 150%, ou zoom do navegador — esse periodo cai em pixels
+     quebrados e a risca vira listra dura e irregular: medi amplitude 2,75
+     em 100% contra 18,8 em 125% e 20,5 em 150%. Fora do 1:1 elas saem; o
+     chuvisco tem o mesmo problema: o ladrilho de 200px tambem reamostra.
+     Medido em 125%: a camada inteira da amplitude 9,17; sem ela, 1,05 (a
+     parede sozinha da 0,10). Em 2x exato o periodo volta a ser inteiro,
+     entao la a textura fica. */
+  @media (min-resolution: 1.01dppx) and (max-resolution: 1.99dppx){
+    .textura{ display:none; }
+  }
   .textura::after{
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
     opacity:.07; mix-blend-mode:overlay;
@@ -2641,7 +2652,7 @@
         <div class="proj-corpo" style="position:relative; width:1020px;">
 
         <div class="abs segoe" style="left:70px; top:52px; width:calc(100% - 140px); min-height:24px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; row-gap:10px; column-gap:14px; font-size:16px; color:#fff; text-align:center;">
-          <span><span class="pink-bold">CLIENTE</span> / SANTANDER PROSPERA</span>
+          <span><span class="pink-bold">CLIENTE</span> / SANTANDER</span>
           <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
           <span><span class="pink-bold">PROJETO</span> / FORMAÇÃO DONO DO NEGÓCIO</span>
           <img src="assets/icons/icone-estrela.png" alt="" style="width:14px; height:14px; opacity:.4;" />
@@ -3899,9 +3910,14 @@ após sua leitura.<span class="lei-cursor" aria-hidden="true"></span></div>
       palco.appendChild(card);
     });
 
+    /* Ano primeiro, do mais novo para o mais velho; o data-order só
+       desempata dentro do mesmo ano. Antes a ordem era só o data-order, e
+       Apresentações saía 2026, 2024, 2026, 2026, 2025. */
+    const porData = (a,b) => (parseInt(b.dataset.year||0) - parseInt(a.dataset.year||0))
+                    || (parseFloat(b.dataset.order||0) - parseFloat(a.dataset.order||0));
     const porCategoria = cat => cards
       .filter(c => c.dataset.category === cat)
-      .sort((a,b) => parseFloat(b.dataset.order||0) - parseFloat(a.dataset.order||0));
+      .sort(porData);
 
     /* ---------- desenho das pastas ---------- */
     function objeto(tipo){
@@ -4591,7 +4607,9 @@ após sua leitura.<span class="lei-cursor" aria-hidden="true"></span></div>
     /* o bloco de comportamentos conversa com a janela por aqui */
     window.__mesa = Object.assign(window.__mesa || {}, {
       abrirPasta, abrirProjeto, abrirAvulso, abrirPagina, remedir,
-      todos: () => cards.slice().sort((a,b) => parseFloat(b.dataset.order||0) - parseFloat(a.dataset.order||0)),
+      /* mesma regra da grade: ano primeiro, data-order desempata */
+      todos: () => cards.slice().sort((a,b) => (parseInt(b.dataset.year||0) - parseInt(a.dataset.year||0))
+                    || (parseFloat(b.dataset.order||0) - parseFloat(a.dataset.order||0))),
       /* passa pelo dicionário: quem chama de fora — as barras do Resumo,
          a busca — mostrava o nome sempre em português */
       nomeCategoria: c => T((CATS[c] && CATS[c].nome) || c)
